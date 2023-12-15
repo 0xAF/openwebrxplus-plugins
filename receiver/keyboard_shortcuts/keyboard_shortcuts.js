@@ -2,7 +2,7 @@
  * Plugin: Keyboard Shortcuts
  *
  * Add keyboard shortcuts to OWRX receiver interface.
- * press '?' to see help.
+ * press '?' for help.
  *
  */
 
@@ -120,11 +120,11 @@ Plugins.keyboard_shortcuts.init = function () {
           break;
 
           // change squelch
-        case '[':
-        case ']':
+        case ';':
+        case '\'':
           var sql = $('.openwebrx-squelch-slider');
-          sql.val(parseInt(sql.val()) + (e.key === '[' ? -1 : +1)).change();
-          notify('SQL: ' + (e.key === '[' ? '-' : '+'));
+          sql.val(parseInt(sql.val()) + (e.key === ';' ? -1 : +1)).change();
+          notify('SQL: ' + (e.key === ';' ? '-' : '+'));
           break;
 
           // auto set squelch / start scanner
@@ -150,13 +150,13 @@ Plugins.keyboard_shortcuts.init = function () {
           break;
 
           // bookmarks
-        case ';':
-        case '\'':
+        case '[':
+        case ']':
           var bms = $('#openwebrx-bookmarks-container .bookmark').find('.bookmark-content');
           var idx = Plugins.keyboard_shortcuts.bookmarkIdx;
-          idx = typeof idx !== 'undefined' || idx == -1 ? idx : (e.key === ';' ? bms.length : -1);
+          idx = typeof idx !== 'undefined' || idx == -1 ? idx : (e.key === '[' ? bms.length : -1);
           if (bms.length) {
-            idx += (e.key === ';') ? -1 : 1; // change index
+            idx += (e.key === '[') ? -1 : 1; // change index
             idx = Math.min(Math.max(idx, 0), bms.length - 1); // limit to min/max
             bms.eq(idx).click();
             Plugins.keyboard_shortcuts.bookmarkIdx = parseInt(idx);
@@ -169,10 +169,10 @@ Plugins.keyboard_shortcuts.init = function () {
 
   function gen_key(key) {
     var keymap = {
-      ',': ', (comma)',
-      '.': '. (dot)',
-      ';': '; (semicolon)',
-      '\'': '\' (apostrophe)',
+      ',': ', <b style="font-size: 0.7rem">comma</b>',
+      '.': '. <b style="font-size: 0.7rem">dot</b>',
+      ';': '; <b style="font-size: 0.7rem">semicolon</b>',
+      '\'': '\' <b style="font-size: 0.7rem">apostrophe</b>',
       'SHIFT': '&#8679; Shift',
       'CONTROL': '&#8963; Ctrl',
       'COMMAND': '&#8984; Cmd',
@@ -240,7 +240,7 @@ Plugins.keyboard_shortcuts.init = function () {
         <div class="ks-item-txt">toggle mute or change volume</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-kbd">${gen_key('S')}|${gen_key('[')}|${gen_key(']')}</div>
+        <div class="ks-item-kbd">${gen_key('S')}|${gen_key(';')}|${gen_key('\'')}</div>
         <div class="ks-item-txt">auto set or change squelch</div>
       </div>
       <div class="ks-item">
@@ -257,7 +257,7 @@ Plugins.keyboard_shortcuts.init = function () {
         <div class="ks-item-txt">open MAP</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-kbd">${gen_key(';')}|${gen_key('\'')}</div>
+        <div class="ks-item-kbd">${gen_key('[')}|${gen_key(']')}</div>
         <div class="ks-item-txt">change bookmark</div>
       </div>
 
