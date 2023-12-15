@@ -1,0 +1,116 @@
+/*
+ * Plugin: Keyboard Shortcuts
+ *
+ * Add keyboard shortcuts to OWRX interface.
+ * press '?' to see help.
+ *
+ */
+
+/* import keyboard-css for keys in help */
+@import url("https://unpkg.com/keyboard-css@1.2.4/dist/css/main.min.css");
+
+#ks-overlay {
+  position: fixed;
+  top: 30vh;
+  left: calc((100vw - 800px) / 2);
+  max-height: 60vh;
+  width: 800px;
+  color: white;
+  background-color: #000;
+  opacity: 0.8;
+  z-index: 10000;
+  border: 3px solid white;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+.ks-title {
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+
+.ks-subtitle {
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.ks-separator {
+  border-top: 1px dotted white;
+  align-self: stretch;
+  margin: 1rem;
+}
+
+.ks-content {
+  padding: 0 0.75rem;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  overflow-y: auto;
+}
+
+.ks-item {
+  width: 240px;
+  padding: 0.5rem;
+  border: 1px dashed #444;
+  margin-bottom: 0.25rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  align-items: center;
+  flex-direction: column;
+  /* flex-direction: row; */
+}
+
+.ks-item-kbd {
+  text-wrap: nowrap;
+}
+
+a.kbc-button-xs,
+button.kbc-button-xs {
+  padding: 0.02rem 0.25rem;
+}
+
+a.kbc-button-sm,
+button.kbc-button-sm {
+  padding: 0 0.5rem;
+  font-size: 1rem;
+}
+
+#ks-notification {
+  text-align: center;
+  vertical-align: middle;
+  width: 200px;
+  position: absolute;
+  bottom: 50px;
+  left: calc((100vw / 2) - 100px);
+  border: 2px solid white;
+  background: #333;
+  margin: 20px;
+  display: none;
+  opacity: 0.9;
+  color: white;
+  border-radius: 10px;
+  font-family: monospace;
+}
+
+/* we are using keyboard-css now, so no need of our key styling
+.ks-item kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font: 12px monospace;
+  font-weight: bold;
+  line-height: normal;
+  vertical-align: middle;
+  color: white;
+  background-color: #555;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  box-shadow: inset -0px -2px 0px 0px #aaa;
+} */
