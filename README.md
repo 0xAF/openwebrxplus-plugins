@@ -42,18 +42,17 @@ Plugins.load('utils').then(function () {
 
 ```
 
-Each of the local plugins should be in its own sub-folder under `$OWRX_FOLDER/plugins/receiver/` and should be loaded by the its name.  
+Each of the local plugins should be in its own sub-folder under `$OWRX_FOLDER/plugins/receiver/` and should be loaded by its name.  
 The remote plugins should be loaded with direct url to the `.js` file.  
 
 
 ## docker
-If you're using Docker images, then bind-mount the plugins folder to your host system and follow the instructions above.  
-More info can be found in my docker images.
+If you're using Docker images, then bind-mount the plugins folder to your host system and follow the instructions above. More info can be found in my docker images.
 
 
 ## hosting your plugins on github
 If you want to host your plugins on Github, you will have to create [Github Page](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) over your repository. Finding the rest is up to you.
 
 ## support
-Use these plugins at your own risk.  
-For support, you can find me (`LZ2SLL`) in the [OWRX+ Telegram Chat](https://t.me/openwebrx_chat) or [here](https://0xAF.org/about/)
+Use these plugins at your own risk. No warranty at all.  
+For support, you can find me (`LZ2SLL`) in the [OWRX+ Telegram Chat](https://t.me/openwebrx_chat) or [here](https://0xAF.org/about/).
