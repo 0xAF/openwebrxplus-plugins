@@ -160,7 +160,7 @@ Plugins.keyboard_shortcuts.init = function () {
             idx = Math.min(Math.max(idx, 0), bms.length - 1); // limit to min/max
             bms.eq(idx).click();
             Plugins.keyboard_shortcuts.bookmarkIdx = parseInt(idx);
-            notify('BOOKMARK: ' + (parseInt(idx)+1));
+            notify('BOOKMARK[' + (parseInt(idx)+1) + ']: ' + bms.eq(idx).text());
           }
           break;
       }
