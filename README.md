@@ -30,6 +30,9 @@ An example `init.js` file would look like:
 ```js
 // Receiver plugins loader.
 
+// enable debug info in browser console
+Plugins._enable_debug = true;
+
 // First load the utils, needed for some plugins
 Plugins.load('utils').then(function () {
 
@@ -40,6 +43,7 @@ Plugins.load('utils').then(function () {
 
   // load remote plugins
   Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/keyboard_shortcuts/keyboard_shortcuts.js');
+  Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/colorful_spectrum/colorful_spectrum.js');
 });
 
 ```
