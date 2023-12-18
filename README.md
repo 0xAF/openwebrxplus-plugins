@@ -4,6 +4,8 @@ Plugins collection for OpenWebRX+
 My public plugins for OWRX+.  
 Every plugin has it's own documentation.  
 
+ - [keyboard_shortcuts](https://0xaf.github.io/openwebrxplus-plugins/receiver/keyboard_shortcuts/)
+ - [colorful_spectrum](https://0xaf.github.io/openwebrxplus-plugins/receiver/colorful_spectrum/)
 
 ## load plugin
 To load a plugin you need to create `init.js` file inside your `openwebrx` installation under `htdocs/plugins/{type}` folder. The `{type}` could be `receiver` or `map` as of the time of writing this info.   
