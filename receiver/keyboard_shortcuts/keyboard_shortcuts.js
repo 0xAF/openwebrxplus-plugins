@@ -48,6 +48,8 @@ Plugins.keyboard_shortcuts.init = async function () {
           }, 100);
           handled = true;
           Plugins.notify.show('CHAT: toggle');
+          e.preventDefault();
+          e.stopPropagation();
         }
         break;
 
@@ -58,6 +60,8 @@ Plugins.keyboard_shortcuts.init = async function () {
           $('a.button[target="openwebrx-map"]')[0].click();
           handled = true;
           Plugins.notify.show('MAP: open');
+          e.preventDefault();
+          e.stopPropagation();
         }
         break;
         // toggle panes
@@ -74,6 +78,8 @@ Plugins.keyboard_shortcuts.init = async function () {
             toggle_panel('openwebrx-panel-log', false);
           }
           Plugins.notify.show('Toggle panels');
+          e.preventDefault();
+          e.stopPropagation();
         }
         break;
     }
