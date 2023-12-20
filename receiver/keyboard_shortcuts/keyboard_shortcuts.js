@@ -308,7 +308,7 @@ Plugins.keyboard_shortcuts.init = async function () {
       </div>
 
       <div class="ks-item">
-        <div class="ks-item-kbd">${gen_key('Shift')}+${gen_key('[')}|${gen_key(']')}</div>
+        <div class="ks-item-kbd">${gen_key('{')}|${gen_key('}')}</div>
         <div class="ks-item-txt">change bookmark</div>
       </div>
       <div class="ks-item">
