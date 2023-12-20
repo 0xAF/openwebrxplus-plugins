@@ -6,8 +6,24 @@
  *
  */
 
+// Plugin version
+Plugins.keyboard_shortcuts._version = 0.2;
+
 // Initialize the plugin
-Plugins.keyboard_shortcuts.init = function () {
+Plugins.keyboard_shortcuts.init = async function () {
+
+  if (!Plugins.isLoaded('notify', 0.1)) {
+    // try to load the notify plugin
+    await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
+
+    // check again if it was loaded successfuly
+    if (!Plugins.isLoaded('notify', 0.1)) {
+      console.error('Keyboard shortcuts plugin depends on "notify >= 0.1".');
+      return false;
+    } else {
+      Plugins._debug('Plugin "notify" has been loaded as dependency.');
+    }
+  }
 
   // create the help overlay
   Plugins.keyboard_shortcuts.overlay = jQuery('<div id="ks-overlay"></div>');
@@ -25,23 +41,39 @@ Plugins.keyboard_shortcuts.init = function () {
     switch (String(e.key).toLowerCase()) {
       // open chat
       case 'c':
-        if (e.altKey) {
+        if (e.metaKey) {
           $('.button[data-toggle-panel="openwebrx-panel-log"').click();
           setTimeout(function () {
             $('#openwebrx-chat-message').focus();
           }, 100);
           handled = true;
-          notify('CHAT: toggle');
+          Plugins.notify.show('CHAT: toggle');
         }
         break;
 
         // open map
       case 'm':
-        if (e.altKey) {
+        if (e.metaKey) {
           var z = $('a.button[href="map"]');
           $('a.button[target="openwebrx-map"]')[0].click();
           handled = true;
-          notify('MAP: open');
+          Plugins.notify.show('MAP: open');
+        }
+        break;
+        // toggle panes
+      case ' ':
+        if (e.metaKey) {
+          console.log('toggle')
+          handled = true;
+          if ($('#openwebrx-panel-receiver').is(':hidden')) {
+            toggle_panel('openwebrx-panel-receiver', true);
+            toggle_panel('openwebrx-panel-status', true);
+            // toggle_panel('openwebrx-panel-log', true);
+          } else {
+            toggle_panel('openwebrx-panel-receiver', false);
+            toggle_panel('openwebrx-panel-status', false);
+            toggle_panel('openwebrx-panel-log', false);
+          }
         }
         break;
     }
@@ -57,7 +89,7 @@ Plugins.keyboard_shortcuts.init = function () {
           // show/hide help
         case '?':
           Plugins.keyboard_shortcuts.overlay.slideToggle(100);
-          notify('HELP: toggle');
+          Plugins.notify.show('HELP: toggle');
           break;
 
           // change to previous profile
@@ -65,7 +97,7 @@ Plugins.keyboard_shortcuts.init = function () {
           var sel = $('#openwebrx-sdr-profiles-listbox');
           var prev_val = sel.find(':selected').prev().val();
           if (prev_val) sel.val(prev_val).change();
-          notify('PROFILE: -');
+          Plugins.notify.show('PROFILE: -');
           break;
 
           // change to next profile
@@ -73,7 +105,7 @@ Plugins.keyboard_shortcuts.init = function () {
           var sel = $('#openwebrx-sdr-profiles-listbox');
           var next_val = sel.find(':selected').next().val();
           if (next_val) sel.val(next_val).change();
-          notify('PROFILE: +');
+          Plugins.notify.show('PROFILE: +');
           break;
 
           // change 10 profiles behind
@@ -87,7 +119,7 @@ Plugins.keyboard_shortcuts.init = function () {
             if (prev_el && prev_el.val()) last_val = prev_el.val();
           }
           if (last_val) sel.val(last_val).change();
-          notify('PROFILE: -10');
+          Plugins.notify.show('PROFILE: -10');
           break;
 
           // change 10 profile ahead
@@ -101,13 +133,13 @@ Plugins.keyboard_shortcuts.init = function () {
             if (next_el && next_el.val()) last_val = next_el.val();
           }
           if (last_val) sel.val(last_val).change();
-          notify('PROFILE: +10');
+          Plugins.notify.show('PROFILE: +10');
           break;
 
           // toggle mute
         case 'm':
           UI.toggleMute();
-          notify('MUTE: toggle');
+          Plugins.notify.show('MUTE: toggle');
           break;
 
           // change volume
@@ -116,7 +148,7 @@ Plugins.keyboard_shortcuts.init = function () {
         case '=':
           var vol = $('#openwebrx-panel-volume');
           vol.val(parseInt(vol.val()) + (e.key === '-' ? -1 : +1)).change();
-          notify('VOL: ' + (e.key === '-' ? '-' : '+'));
+          Plugins.notify.show('VOL: ' + (e.key === '-' ? '-' : '+'));
           break;
 
           // change squelch
@@ -124,44 +156,57 @@ Plugins.keyboard_shortcuts.init = function () {
         case '\'':
           var sql = $('.openwebrx-squelch-slider');
           sql.val(parseInt(sql.val()) + (e.key === ';' ? -1 : +1)).change();
-          notify('SQL: ' + (e.key === ';' ? '-' : '+'));
+          Plugins.notify.show('SQL: ' + (e.key === ';' ? '-' : '+'));
           break;
 
           // auto set squelch / start scanner
         case 's':
           $('.openwebrx-squelch-auto').trigger(e.shiftKey ? 'contextmenu' : 'click');
-          notify((e.shiftKey ? 'SCANNER: toggle' : 'SQL: auto'));
+          Plugins.notify.show((e.shiftKey ? 'SCANNER: toggle' : 'SQL: auto'));
           break;
 
           // update waterfall colors
         case 'w':
           $('#openwebrx-waterfall-colors-auto').trigger(e.shiftKey ? 'contextmenu' : 'click');
-          notify((e.shiftKey ? 'WATERFALL: continuous' : 'WATERFALL: auto'));
+          Plugins.notify.show((e.shiftKey ? 'WATERFALL: continuous' : 'WATERFALL: auto'));
           break;
 
           // zoom controls
         case 'z':
           e.shiftKey ? zoomInTotal() : zoomInOneStep();
-          notify((e.shiftKey ? 'ZOOM: ++' : 'ZOOM: +'));
+          Plugins.notify.show((e.shiftKey ? 'ZOOM: ++' : 'ZOOM: +'));
           break;
         case 'x':
           e.shiftKey ? zoomOutTotal() : zoomOutOneStep();
-          notify((e.shiftKey ? 'ZOOM: --' : 'ZOOM: -'));
+          Plugins.notify.show((e.shiftKey ? 'ZOOM: --' : 'ZOOM: -'));
           break;
 
           // bookmarks
-        case '[':
-        case ']':
+        case '{':
+        case '}':
           var bms = $('#openwebrx-bookmarks-container .bookmark').find('.bookmark-content');
           var idx = Plugins.keyboard_shortcuts.bookmarkIdx;
-          idx = typeof idx !== 'undefined' || idx == -1 ? idx : (e.key === '[' ? bms.length : -1);
+          idx = typeof idx !== 'undefined' || idx == -1 ? idx : (e.key === '{' ? bms.length : -1);
           if (bms.length) {
-            idx += (e.key === '[') ? -1 : 1; // change index
+            idx += (e.key === '{') ? -1 : 1; // change index
             idx = Math.min(Math.max(idx, 0), bms.length - 1); // limit to min/max
             bms.eq(idx).click();
             Plugins.keyboard_shortcuts.bookmarkIdx = parseInt(idx);
-            notify('BOOKMARK[' + (parseInt(idx)+1) + ']: ' + bms.eq(idx).text());
+            Plugins.notify.show('BOOKMARK[' + (parseInt(idx) + 1) + ']: ' + bms.eq(idx).text());
           }
+          break;
+
+          // enter change freq by step
+        case '[':
+        case ']':
+          tuneBySteps(e.key === '[' ? -1 : 1);
+          break;
+
+          // add bookmark
+        case 'b':
+          $('.openwebrx-bookmark-button').trigger('click');
+          e.preventDefault();
+          e.stopPropagation();
           break;
       }
   });
@@ -176,6 +221,7 @@ Plugins.keyboard_shortcuts.init = function () {
       'SHIFT': '&#8679; Shift',
       'CONTROL': '&#8963; Ctrl',
       'COMMAND': '&#8984; Cmd',
+      'META': '&#8984; Meta',
       'ALT': '&#8997; Alt',
       'OPTION': '&#8997; Opt',
       'ENTER': '&crarr; Enter',
@@ -249,16 +295,29 @@ Plugins.keyboard_shortcuts.init = function () {
       </div>
 
       <div class="ks-item">
-        <div class="ks-item-kbd">${gen_key('Alt')}+${gen_key('C')}</div>
+        <div class="ks-item-kbd">${gen_key('Meta')}+${gen_key('C')}</div>
         <div class="ks-item-txt">toggle chat panel</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-kbd">${gen_key('Alt')}+${gen_key('M')}</div>
+        <div class="ks-item-kbd">${gen_key('Meta')}+${gen_key('M')}</div>
         <div class="ks-item-txt">open MAP</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-kbd">${gen_key('[')}|${gen_key(']')}</div>
+        <div class="ks-item-kbd">${gen_key('Meta')}+${gen_key('Space')}</div>
+        <div class="ks-item-txt">toggle all panel</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${gen_key('Shift')}+${gen_key('[')}|${gen_key(']')}</div>
         <div class="ks-item-txt">change bookmark</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${gen_key('[')}|${gen_key(']')}</div>
+        <div class="ks-item-txt">tune freq by step</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${gen_key('B')}</div>
+        <div class="ks-item-txt">add local bookmark</div>
       </div>
 
     </div>
@@ -270,25 +329,6 @@ Plugins.keyboard_shortcuts.init = function () {
   $(document).on('event:profile_changed', function (e, data) {
     Plugins.keyboard_shortcuts.bookmarkIdx = -1;
   });
-
-  // show notification
-  function notify(text) {
-    // create the message div if it's not there
-    if ($("#ks-notification").length < 1)
-      $("body").append("<div id='ks-notification'></div>");
-
-    // set the message text
-    $("#ks-notification").html(text);
-
-    // show the message
-    $("#ks-notification").fadeIn('fast');
-
-    // clear the timeout of previous message (if exists)
-    clearTimeout(Plugins.keyboard_shortcuts.notify_timeout);
-
-    // timeout the current message
-    Plugins.keyboard_shortcuts.notify_timeout = setTimeout('$("#ks-notification").fadeOut("fast")', 1000);
-  }
 
   return true;
 }

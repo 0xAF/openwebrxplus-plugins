@@ -4,8 +4,10 @@ Plugins collection for OpenWebRX+
 My public plugins for OWRX+.  
 Every plugin has it's own documentation.  
 
- - [keyboard_shortcuts](https://0xaf.github.io/openwebrxplus-plugins/receiver/keyboard_shortcuts/)
- - [colorful_spectrum](https://0xaf.github.io/openwebrxplus-plugins/receiver/colorful_spectrum/)
+ - [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/) - (this is utility plugin, required by some other plugins)
+ - [keyboard_shortcuts](https://0xaf.github.io/openwebrxplus-plugins/receiver/keyboard_shortcuts/) - add keyboard shortcuts to the receiver
+ - [colorful_spectrum](https://0xaf.github.io/openwebrxplus-plugins/receiver/colorful_spectrum/) - colorize the spectrum analyzer
+ - [connect_notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/connect_notify/) - send/receive notifications on user connect/disconnect
 
 ## load plugin
 To load a plugin you need to create `init.js` file inside your `openwebrx` installation under `htdocs/plugins/{type}` folder. The `{type}` could be `receiver` or `map` as of the time of writing this info.   
@@ -18,7 +20,9 @@ You can find the folder with this command:
 
 You need to create/edit the `init.js`.  
 NOTE: you can use the `init.js.sample` file.  
+
 In the next example we will load `receiver` plugins.  
+First we need to create the `init.js` file:  
 ```bash
 OWRX_FOLDER=$(dirname `find / -name openwebrx.js`)
 cd "$OWRX_FOLDER/plugins/receiver"
@@ -34,21 +38,25 @@ An example `init.js` file would look like:
 Plugins._enable_debug = true;
 
 // First load the utils, needed for some plugins
-Plugins.load('utils').then(function () {
+Plugins.load('utils').then(async function () {
 
   // load local plugins
-  Plugins.load('example');
-  Plugins.load('example_theme');
-  Plugins.load('sort_profiles');
+  // Plugins.load('example');
+  // Plugins.load('example_theme');
+  // Plugins.load('sort_profiles');
+
+  // load notify uutility plugin, required by some other plugins
+  await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
 
   // load remote plugins
   Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/keyboard_shortcuts/keyboard_shortcuts.js');
   Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/colorful_spectrum/colorful_spectrum.js');
+  Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/connect_notify/connect_notify.js');
 });
 
 ```
 
-Each of the local plugins should be in its own sub-folder under `$OWRX_FOLDER/plugins/receiver/` and should be loaded by its name.  
+Each of the local plugins (if any) you want to load, should be in its own sub-folder under `$OWRX_FOLDER/plugins/receiver/` and should be loaded by its name.  
 The remote plugins should be loaded with direct url to the `.js` file.  
 
 

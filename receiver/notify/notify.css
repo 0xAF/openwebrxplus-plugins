@@ -1,0 +1,21 @@
+/*
+ * Plugin: Notifications for other plugins
+ *
+ */
+
+#plugins-notification {
+  text-align: center;
+  vertical-align: middle;
+  width: 200px;
+  position: absolute;
+  bottom: 50px;
+  left: calc((100vw / 2) - 100px);
+  border: 2px solid white;
+  background: #333;
+  margin: 20px;
+  display: none;
+  opacity: 0.9;
+  color: white;
+  border-radius: 10px;
+  font-family: monospace;
+}

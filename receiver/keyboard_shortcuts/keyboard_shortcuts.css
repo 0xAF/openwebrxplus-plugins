@@ -57,7 +57,7 @@
 
 .ks-item {
   width: 240px;
-  padding: 0.5rem;
+  padding: 0.25rem;
   border: 1px dashed #444;
   margin-bottom: 0.25rem;
   display: flex;
@@ -81,23 +81,6 @@ a.kbc-button-sm,
 button.kbc-button-sm {
   padding: 0 0.5rem;
   font-size: 1rem;
-}
-
-#ks-notification {
-  text-align: center;
-  vertical-align: middle;
-  width: 200px;
-  position: absolute;
-  bottom: 50px;
-  left: calc((100vw / 2) - 100px);
-  border: 2px solid white;
-  background: #333;
-  margin: 20px;
-  display: none;
-  opacity: 0.9;
-  color: white;
-  border-radius: 10px;
-  font-family: monospace;
 }
 
 /* we are using keyboard-css now, so no need of our key styling
