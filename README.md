@@ -21,8 +21,6 @@ You can find the folder with this command:
 `find / -name openwebrx.js`
 
 You need to create/edit the `init.js`.  
-NOTE: you can use the [init.js.sample](init.js.sample) file.  
-
 In the next example we will load `receiver` plugins.  
 First we need to create the `init.js` file:  
 ```bash
@@ -32,7 +30,8 @@ cp init.js.sample init.js
 $EDITOR init.js
 ```
 
-See the `init.js.sample` file in this repo for a template.
+__Use the [receiver/init.js.sample](receiver/init.js.sample) file.__  
+
 
 Each of the local plugins (if any) you want to load, should be in its own sub-folder under `$OWRX_FOLDER/plugins/receiver/` and should be loaded by its name.  
 The remote plugins should be loaded with direct url to the `.js` file.  
