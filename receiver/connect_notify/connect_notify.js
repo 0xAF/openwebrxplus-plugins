@@ -3,6 +3,9 @@
  *
  * - Send a chat message to all users when you connect to SDR
  * - Show notification when another user is connected to SDR
+ *
+ * License: MIT
+ * Copyright (c) 2023 Stanislav Lechev [0xAF], LZ2SLL
  */
 
 // no css for this plugin
@@ -17,7 +20,7 @@ Plugins.connect_notify.init = async function () {
 
     // check again if it was loaded successfuly
     if (!Plugins.isLoaded('notify', 0.1)) {
-      console.error('Connect notify plugin depends on "notify >= 0.1".');
+      console.error('connect_notify plugin depends on "notify >= 0.1".');
       return false;
     } else {
       Plugins._debug('Plugin "notify" has been loaded as dependency.');

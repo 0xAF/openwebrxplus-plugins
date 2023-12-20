@@ -1,18 +1,30 @@
 /*
  * Plugin: colorify the spectrum analyzer.
+ *
+ * License: MIT
+ * Copyright (c) 2023 Stanislav Lechev [0xAF], LZ2SLL
  */
 
 // do not load CSS for this plugin
 Plugins.colorful_spectrum.no_css = true;
 
-Plugins.colorful_spectrum.init = function () {
+Plugins.colorful_spectrum.init = async function () {
 
   // Check if utils plugin is loaded
   if (!Plugins.isLoaded('utils', 0.1)) {
-    console.error('colorful_spectrum plugin depends on "utils >= 0.1".');
-    return false;
+    // try to load the utils plugin
+    await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
+
+    // check again if it was loaded successfuly
+    if (!Plugins.isLoaded('utils', 0.1)) {
+      console.error('colorful_spectrum plugin depends on "utils >= 0.1".');
+      return false;
+    } else {
+      Plugins._debug('Plugin "utils" has been loaded as dependency.');
+    }
   }
 
+  // wait for OWRX to initialize
   $(document).on('event:owrx_initialized', function () {
     Plugins.utils.wrap_func(
       'draw',

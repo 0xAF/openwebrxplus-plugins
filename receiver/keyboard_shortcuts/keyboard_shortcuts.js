@@ -4,6 +4,8 @@
  * Add keyboard shortcuts to OWRX receiver interface.
  * press '?' for help.
  *
+ * License: MIT
+ * Copyright (c) 2023 Stanislav Lechev [0xAF], LZ2SLL
  */
 
 // Plugin version

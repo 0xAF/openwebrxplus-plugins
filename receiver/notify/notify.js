@@ -4,6 +4,9 @@
  * Usage:
  *   Plugins.notify.send('some notification');
  *
+ * License: MIT
+ * Copyright (c) 2023 Stanislav Lechev [0xAF], LZ2SLL
+ *
  */
 
 // Notify plugin version
