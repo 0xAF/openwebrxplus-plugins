@@ -1,7 +1,7 @@
 # OWRX+ Receiver Plugin: keyboard_shortcuts
 
 This `receiver` plugin will add keyboard shortcuts to your OWRX+.
-The plugin depends on [notify](https://github.com/0xAF/openwebrxplus-plugins/receiver/notify) plugin.
+The plugin depends on [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/) plugin.
 
 
 # load
