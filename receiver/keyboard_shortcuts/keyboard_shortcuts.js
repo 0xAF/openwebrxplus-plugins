@@ -63,7 +63,6 @@ Plugins.keyboard_shortcuts.init = async function () {
         // toggle panes
       case ' ':
         if (e.metaKey) {
-          console.log('toggle')
           handled = true;
           if ($('#openwebrx-panel-receiver').is(':hidden')) {
             toggle_panel('openwebrx-panel-receiver', true);
@@ -74,6 +73,7 @@ Plugins.keyboard_shortcuts.init = async function () {
             toggle_panel('openwebrx-panel-status', false);
             toggle_panel('openwebrx-panel-log', false);
           }
+          Plugins.notify.show('Toggle panels');
         }
         break;
     }
@@ -200,11 +200,13 @@ Plugins.keyboard_shortcuts.init = async function () {
         case '[':
         case ']':
           tuneBySteps(e.key === '[' ? -1 : 1);
+          Plugins.notify.show('TUNE: ' + (e.key === '[' ? '-' : '+'));
           break;
 
           // add bookmark
         case 'b':
           $('.openwebrx-bookmark-button').trigger('click');
+          Plugins.notify.show('Add bookmark');
           e.preventDefault();
           e.stopPropagation();
           break;
