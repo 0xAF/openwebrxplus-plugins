@@ -3,5 +3,5 @@
 Plugins._enable_debug = true;
 
 // Maidenhead (QTH) grid layer
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/map/layer_qth_maidenhead.js');
+Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/map/layer_qth_maidenhead/layer_qth_maidenhead.js');
 
