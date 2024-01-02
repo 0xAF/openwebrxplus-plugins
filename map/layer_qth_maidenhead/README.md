@@ -1,6 +1,7 @@
 # OWRX+ Map Plugin: Maidenhead (QTH) grid
 
-This `map` plugin will show Maidenhead (QTH) grid on the map as an extra layer.
+This `map` plugin will show Maidenhead (QTH) grid on the map as an extra layer.  
+This plugin will work up to __OWRX+ v1.2.43__. The later releases have this layer built-in and the plugin will not install.  
 
 
 # load

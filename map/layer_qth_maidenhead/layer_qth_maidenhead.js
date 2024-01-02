@@ -23,6 +23,15 @@ Plugins.layer_qth_maidenhead.init = async function () {
     if (typeof (L) === 'undefined') return;
     clearInterval(interval);
 
+    var installed = false;
+    $.each(mapExtraLayers, function (idx, mel) {
+      if (mel.name === "Maidenhead-QTH") installed = true;
+    });
+    if (installed || typeof (L.maidenhead) !== 'undefined') {
+      console.error('This OWRX+ installation already have Maidenhead (QTH) layer. Not installing the plugin.');
+      return false;
+    }
+
     // now load Maidenhead QTH locators and add them to the map
     await Plugins._load_script("https://ha8tks.github.io/Leaflet.Maidenhead/src/L.Maidenhead.js")
       .then(function () {
