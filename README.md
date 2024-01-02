@@ -4,6 +4,7 @@ Plugins collection for OpenWebRX+
 My public plugins for OWRX+.  
 Every plugin has it's own documentation.  
 
+### receiver plugins
  - [keyboard_shortcuts](receiver/keyboard_shortcuts/) - add keyboard shortcuts to the receiver
  - [colorful_spectrum](receiver/colorful_spectrum/) - colorize the spectrum analyzer
  - [connect_notify](receiver/connect_notify/) - send/receive notifications on user connect/disconnect
@@ -11,10 +12,13 @@ Every plugin has it's own documentation.
  - [utils](receiver/utils/) - (this is utility plugin, required by many plugins)
  - [notify](receiver/notify/) - (this is utility plugin, required by some plugins)
 
+### map plugins
+ - [layer_qth_maidenhead](map/layer_qth_maidenhead/) - add Maidenhead (QTH) grid to the map
+
 ## load plugin
 To load a plugin you need to create `init.js` file inside your `openwebrx` installation under `htdocs/plugins/{type}` folder. The `{type}` could be `receiver` or `map` as of the time of writing this info.   
 This could be one of the following folders or any other folder:
- * /opt/openwebrx/htdocs/plugins
+ * /opt/openwebrx/htdocs
  * /usr/lib/python3/dist-packages/htdocs
 
 You can find the folder with this command:  
@@ -30,11 +34,11 @@ cp init.js.sample init.js
 $EDITOR init.js
 ```
 
-__Use the [receiver/init.js.sample](receiver/init.js.sample) file.__  
+__Use [receiver/init.js.sample](receiver/init.js.sample) or [map/init.js.sample](map/init.js.sample) file as a template.__  
 
 
-Each of the local plugins (if any) you want to load, should be in its own sub-folder under `$OWRX_FOLDER/plugins/receiver/` and should be loaded by its name.  
-The remote plugins should be loaded with direct url to the `.js` file.  
+Each of the locally installed plugins (if any) should be in its own sub-folder under `$OWRX_FOLDER/plugins/{type}/` and should be loaded by its name. i.e. `Plugins.load('layer_qth_maidenhead');`.  
+The remote plugins should be loaded with direct url to the `.js` file. i.e. `Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/map/layer_qth_maidenhead/layer_qth_maidenhead.js');`.  
 
 
 ## docker
