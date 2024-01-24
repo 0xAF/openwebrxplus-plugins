@@ -6,7 +6,7 @@ This `receiver` plugin will colorify your spectrum analyzer.
 # load
 Add this line in your `init.js` file:
 ```js
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/cororful_spectrum/colorful_spectrum.js');
+Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/colorful_spectrum/colorful_spectrum.js');
 ```
 
 # init.js
