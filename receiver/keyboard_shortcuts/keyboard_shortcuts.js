@@ -35,7 +35,8 @@ Plugins.keyboard_shortcuts.init = async function () {
   // catch all key presses
   $(document).on('keydown', function (e) {
     // check if we are focusiing an input
-    var on_input = !!($('input:focus').length && $('input:focus')[0].type === 'text');
+    // var on_input = !!($('input:focus').length && $('input:focus')[0].type === 'text');
+    var on_input = !!($(':focus').is('input'));
 
     // handle the global shortcuts, which will work even if an input is focused
     // please use modifier keys (like ctrl and alt) always
