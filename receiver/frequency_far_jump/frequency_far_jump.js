@@ -1,6 +1,7 @@
 /*
  * Plugin: Jump to a frequency outside the boundaries of the selected profile by typing it in the receiver's frequency dial.
  * Requires the option 'Allow users to change center frequency' to be enabled in the admin panel.
+ * Please note that you must supply the magic key for your OpenWebRX+ instance if you have one configured with a '#key=[KEY]' at the end of the URL.
  *
  * License: Apache License 2.0
  * Copyright (c) 2024 Dimitar Milkov, LZ2DMV
