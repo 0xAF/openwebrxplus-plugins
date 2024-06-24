@@ -145,6 +145,11 @@ Plugins.keyboard_shortcuts.init = async function () {
           Plugins.notify.show('PROFILE: +10');
           break;
 
+          // open frequency input
+        case 'f':
+          $('.webrx-actual-freq').frequencyDisplay().inputGroup.click().focus();
+          break;
+
           // toggle mute
         case 'm':
           UI.toggleMute();
@@ -329,6 +334,11 @@ Plugins.keyboard_shortcuts.init = async function () {
       <div class="ks-item">
         <div class="ks-item-kbd">${gen_key('B')}</div>
         <div class="ks-item-txt">add local bookmark</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${gen_key('F')}</div>
+        <div class="ks-item-txt">freq input</div>
       </div>
 
     </div>

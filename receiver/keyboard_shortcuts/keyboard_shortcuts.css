@@ -80,7 +80,7 @@ button.kbc-button-xs {
 a.kbc-button-sm,
 button.kbc-button-sm {
   padding: 0 0.5rem;
-  font-size: 1rem;
+  font-size: .85rem;
 }
 
 /* we are using keyboard-css now, so no need of our key styling
