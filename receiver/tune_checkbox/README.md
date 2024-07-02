@@ -4,6 +4,8 @@ This a one-line `receiver` plugin to make the 'Hold mouse wheel down to tune' se
 
 This setting allows you to use the mouse scroll to zoom into the waterfall.
 
+By default, the state of this checkbox is stored in localStorage in your browser. If you often delete your browser's cache and localStorage contents, this plugin might be useful.
+
 # load
 Add this lines in your `init.js` file:
 ```js
