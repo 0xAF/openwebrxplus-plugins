@@ -49,7 +49,7 @@ Plugins.colorful_spectrum.init = async function () {
             var y = (data - thisArg.min) * y_ratio;
             thisArg.ctx.fillRect(x, spec_height, 1, -y);
             if (data) {
-              var c = waterfall_mkcolor(data);
+              var c = Waterfall.makeColor(data);
               thisArg.ctx.fillStyle = "rgba(" +
                 c[0] + ", " + c[1] + ", " + c[2] + ", " +
                 (25 + y * 2) + "%)";
