@@ -1,3 +1,9 @@
+# Simple Flask backend to work with the JavaScript frontend for the antenna switcher by DL9UL
+# License: Apache 2
+# Copyright (c) 2024 Dimitar Milkov, LZ2DMV
+
+# pip install flask flask-cors RPi.GPIO
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import RPi.GPIO as GPIO
