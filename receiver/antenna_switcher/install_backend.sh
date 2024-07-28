@@ -16,8 +16,8 @@ apt-get install -y python3 python3-pip python3-venv nginx
 mkdir -p /opt/antenna_switcher
 cd /opt/antenna_switcher
 
-wget -O antenna_switcher.py https://raw.githubusercontent.com/0xAF/openwebrxplus-plugins/main/receiver/antenna_switcher/antenna_switcher.py
-wget -O antenna_switcher.cfg https://raw.githubusercontent.com/0xAF/openwebrxplus-plugins/main/receiver/antenna_switcher/antenna_switcher.cfg
+wget -O antenna_switcher.py https://raw.githubusercontent.com/0xAF/openwebrxplus-plugins/main/receiver/antenna_switcher/plugin/antenna_switcher.py
+wget -O antenna_switcher.cfg https://raw.githubusercontent.com/0xAF/openwebrxplus-plugins/main/receiver/antenna_switcher/plugin/antenna_switcher.cfg
 
 echo "1" > ant
 
