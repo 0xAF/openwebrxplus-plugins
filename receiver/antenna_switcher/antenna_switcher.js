@@ -4,7 +4,7 @@
 // Modified by DL9UL to provide UI buttons used to call a WebAPI
 // Re-written by Dimitar Milkov, LZ2DMV to a more optimized and clean state
 
-Plugins.antenna_switcher.API_URL ??= `http://${window.location.origin}/antenna_switch`;
+Plugins.antenna_switcher.API_URL ??= `${window.location.origin}/antenna_switch`;
 
 // Init function of the plugin
 Plugins.antenna_switcher.init = function () {
