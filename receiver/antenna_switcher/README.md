@@ -1,7 +1,7 @@
   
 # OWRX+ Receiver Plugin: antenna_switcher
 
-This is a `receiver` plugin to provide antenna switching functionality for Raspberry Pi devices, providing logical levels on their GPIO ports that correpond to the user's antenna selection via buttons on the WebSDR's front-end.
+This is a `receiver` plugin to add antenna switching functionality for Raspberry Pi devices, providing logical levels on their GPIO ports that correpond to the user's antenna selection via buttons on the WebSDR's front-end.
 
 It consists of a **front-end** and **back-end** part.
 
