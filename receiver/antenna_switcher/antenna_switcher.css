@@ -1,0 +1,24 @@
+.openwebrx-ant-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: -5px -5px 0 0;
+}
+
+.openwebrx-ant-grid {
+    margin: 0;
+    white-space: nowrap;
+    flex: 1 0 38px;
+    margin: 5px 5px 0 0;
+}
+
+@supports(gap: 5px) {
+    .openwebrx-ant-grid {
+        margin: 0;
+        gap: 5px;
+    }
+
+    .openwebrx-ants-grid {
+        margin: 0;
+    }
+}
