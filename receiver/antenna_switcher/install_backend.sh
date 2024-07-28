@@ -1,6 +1,6 @@
 # Install script for the antenna_switcher backend.
-# Assumes a Debian / Raspbian / Ubuntu system with an APT package manager
-# and a OpenWebRX+ installation from the repository.
+# Assumes a Debian / Raspberry Pi OS / Ubuntu system with an APT
+# package manager and a OpenWebRX+ installation from the repository.
 #
 # You would need to adjust the script if you want to use it inside
 # a Docker container, but it is probably a bad idea anyway.
