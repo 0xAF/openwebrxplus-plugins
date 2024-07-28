@@ -5,6 +5,7 @@ My public plugins for OWRX+.
 Every plugin has it's own documentation.  
 
 ### receiver plugins
+- [antenna_switcher](receiver/antenna_switcher/) - antenna switching functionality for Raspberry Pi devices (LZ2DMV)
  - [tune_checkbox](receiver/tune_checkbox/) - make the 'Hold mouse wheel down to tune' setting enabled by default (LZ2DMV)
  - [frequency_far_jump](receiver/frequency_far_jump/) - jump to a frequency outside of the current profile, by typing it in the receiver's frequency dial (LZ2DMV)
  - [keyboard_shortcuts](receiver/keyboard_shortcuts/) - add keyboard shortcuts to the receiver
