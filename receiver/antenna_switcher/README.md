@@ -44,6 +44,4 @@ The nginx configuration will be extended to provide reverse proxying from the Op
 
 ## Configuration
 
-Things like number of antennas and which GPIO pins to raise high when the corresponding button from the front-end is selected can be configured in `/opt/antenna_switcher/antenna_switcher.cfg`.
-
-The number of pins defined in `antenna_pins` must be equal to the number of antennas defined in `num_antennas`, otherwise the back-end app will refuse to start.
+Things like which GPIO pins to raise high when the corresponding button from the front-end is selected can be configured in `/opt/antenna_switcher/antenna_switcher.cfg`.
