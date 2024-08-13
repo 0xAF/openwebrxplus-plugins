@@ -18,20 +18,17 @@ def load_config():
         with open(config_file, 'r') as file:
             for line in file:
                 name, value = line.strip().split('=')
-                if name == 'num_antennas':
-                    config[name] = int(value)
-                elif name == 'antenna_pins':
+                if name == 'antenna_pins':
                     config[name] = eval(value)
     return config
 
 config = load_config()
-num_antennas = config.get('num_antennas')
 antenna_pins = config.get('antenna_pins')
 
-if num_antennas is None or antenna_pins is None:
+if antenna_pins is None:
     raise ValueError("Configuration file is missing required values.")
-if len(antenna_pins) != num_antennas:
-    raise ValueError("The number of antenna pins does not match the number of antennas.")
+
+num_antennas = len(antenna_pins)
 
 app = Flask(__name__)
 CORS(app)
@@ -99,5 +96,8 @@ def set_antenna(antenna_id):
         return jsonify(payload={'response': '0'}), 500
 
 if __name__ == '__main__':
-    initialize_antenna()
-    app.run(host='127.0.0.1', port=8075)
+    try:
+        initialize_antenna()
+        app.run(host='127.0.0.1', port=8075)
+    finally:
+        GPIO.cleanup()
