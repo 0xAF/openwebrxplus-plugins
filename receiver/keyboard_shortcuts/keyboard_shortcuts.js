@@ -9,10 +9,15 @@
  */
 
 // Plugin version
-Plugins.keyboard_shortcuts._version = 0.2;
+Plugins.keyboard_shortcuts._version = 0.3;
 
 // Initialize the plugin
 Plugins.keyboard_shortcuts.init = async function () {
+
+  if (window['Shortcuts'] && typeof (window.Shortcuts) === 'function') {
+    console.error('This OWRX+ installation already have Keyboard Shortcuts. This plugin will not load.');
+    return false;
+  }
 
   if (!Plugins.isLoaded('notify', 0.1)) {
     // try to load the notify plugin
