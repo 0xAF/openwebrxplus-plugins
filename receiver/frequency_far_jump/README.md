@@ -11,11 +11,17 @@ The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/recei
 
 
 # load
-Add this lines in your `init.js` file:
+1. Add this lines in your `init.js` file:
 ```js
-await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/frequency_far_jump/frequency_far_jump.js');
+Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js')
+    .then(async function () {
+        Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/frequency_far_jump/frequency_far_jump.js');
+    });
 ```
+
+2. In case you are using OWRX+ installed from the package repository or you are using the Raspberry Pi images, **please invalidate the cache by restarting the corresponding services**:
+
+```sudo systemctl restart varnish nginx```
 
 # init.js
 You can find more info on `init.js` [on GitHub pages](https://0xaf.github.io/openwebrxplus-plugins/) or directly in [0xAF's GitHub repo](https://github.com/0xAF/openwebrxplus-plugins).
