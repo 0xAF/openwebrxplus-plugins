@@ -45,7 +45,7 @@ The remote plugins should be loaded with direct url to the `.js` file. i.e. `Plu
 
 ### restart cache
 
-If you are using OWRX+ **installed from the package repository** or you are using **the Raspberry Pi images**, there is an active caching service called `varnish` that might prevent your plugins from loading immediately after you install them.
+If you are using **the Raspberry Pi images**, there is an active caching service called `varnish` that might prevent your plugins from loading immediately after you install them.
 
 To avoid weird issues, it is recommended to invalidate the cache after any changes to the plugins system by restarting the corresponding services:
 
