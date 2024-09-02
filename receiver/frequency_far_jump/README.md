@@ -21,7 +21,7 @@ Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.
 
 2. In case you are using OWRX+ installed from the package repository or you are using the Raspberry Pi images, **please invalidate the cache by restarting the corresponding services**:
 
-```sudo systemctl restart varnish nginx```
+`sudo systemctl restart varnish nginx`
 
 # init.js
 You can find more info on `init.js` [on GitHub pages](https://0xaf.github.io/openwebrxplus-plugins/) or directly in [0xAF's GitHub repo](https://github.com/0xAF/openwebrxplus-plugins).
