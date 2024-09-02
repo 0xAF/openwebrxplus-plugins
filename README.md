@@ -43,6 +43,13 @@ __Use [receiver/init.js.sample](receiver/init.js.sample) or [map/init.js.sample]
 Each of the locally installed plugins (if any) should be in its own sub-folder under `$OWRX_FOLDER/plugins/{type}/` and should be loaded by its name. i.e. `Plugins.load('layer_qth_maidenhead');`.  
 The remote plugins should be loaded with direct url to the `.js` file. i.e. `Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/map/layer_qth_maidenhead/layer_qth_maidenhead.js');`.  
 
+### restart cache
+
+If you are using **the Raspberry Pi images**, there is an active caching service called `varnish` that might prevent your plugins from loading immediately after you install them.
+
+To avoid weird issues, it is recommended to invalidate the cache after any changes to the plugins system by restarting the corresponding services:
+
+`sudo systemctl restart varnish nginx`
 
 ## docker
 If you're using Docker images, then bind-mount the plugins folder to your host system and follow the instructions above. More info can be found in my docker images.
