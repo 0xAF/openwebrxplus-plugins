@@ -20,24 +20,24 @@ Learn how to [install and load the plugins](#load-plugins).
 
 | Name | Description |
 | :------ | :---------- |
-|[antenna_switcher](receiver/antenna_switcher/)|antenna switching functionality for Raspberry Pi devices ([LZ2DMV](#contributors))|
-|[tune_checkbox](receiver/tune_checkbox/)|make the 'Hold mouse wheel down to tune' setting enabled by default ([LZ2DMV](#contributors))|
-|[frequency_far_jump](receiver/frequency_far_jump/)|jump to a frequency outside of the current profile, by typing it in the receiver's frequency dial ([LZ2DMV](#contributors))|
-|[keyboard_shortcuts](receiver/keyboard_shortcuts/)|add keyboard shortcuts to the receiver|
-|[colorful_spectrum](receiver/colorful_spectrum/)|colorize the spectrum analyzer|
-|[connect_notify](receiver/connect_notify/)|send/receive notifications on user connect/disconnect|
-|[sort_profiles](receiver/sort_profiles/)|sort profiles by __NAME__|
-|[tune_checkbox](receiver/tune_checkbox/)|enable mouse-scroll to zoom by default ([LZ2DMV](#contributors))|
-|[utils](receiver/utils/)|this is utility plugin, required by many plugins|
-|[notify](receiver/notify/)|this is utility plugin, required by some plugins|
-|[example](receiver/example/)|example plugin for developers|
-|[example_theme](receiver/example_theme/)|example theme plugin for developers|
+|[antenna_switcher](receiver/antenna_switcher)|antenna switching functionality for Raspberry Pi devices ([LZ2DMV](#contributors))|
+|[tune_checkbox](receiver/tune_checkbox)|make the 'Hold mouse wheel down to tune' setting enabled by default ([LZ2DMV](#contributors))|
+|[frequency_far_jump](receiver/frequency_far_jump)|jump to a frequency outside of the current profile, by typing it in the receiver's frequency dial ([LZ2DMV](#contributors))|
+|[keyboard_shortcuts](receiver/keyboard_shortcuts)|add keyboard shortcuts to the receiver|
+|[colorful_spectrum](receiver/colorful_spectrum)|colorize the spectrum analyzer|
+|[connect_notify](receiver/connect_notify)|send/receive notifications on user connect/disconnect|
+|[sort_profiles](receiver/sort_profiles)|sort profiles by __NAME__|
+|[tune_checkbox](receiver/tune_checkbox)|enable mouse-scroll to zoom by default ([LZ2DMV](#contributors))|
+|[utils](receiver/utils)|this is utility plugin, required by many plugins|
+|[notify](receiver/notify)|this is utility plugin, required by some plugins|
+|[example](receiver/example)|example plugin for developers|
+|[example_theme](receiver/example_theme)|example theme plugin for developers|
 
 ### Map Plugins
 
 | Name | Description |
 | :------ | :---------- |
-|[layer_qth_maidenhead](map/layer_qth_maidenhead/)|add Maidenhead (QTH) grid to the map|
+|[layer_qth_maidenhead](map/layer_qth_maidenhead)|add Maidenhead (QTH) grid to the map|
 
 ---
 
