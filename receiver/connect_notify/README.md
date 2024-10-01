@@ -1,4 +1,8 @@
-# OWRX+ Receiver Plugin: connect/disconnect notifications
+---
+layout: page
+title: "OpenWebRX+ Receiver Plugin: Connect/Disconnect notifications"
+permalink: /receiver/connect_notify
+---
 
 This `receiver` plugin will:
  - Send a chat message to all users when you connect/disconnect to SDR
@@ -6,8 +10,10 @@ This `receiver` plugin will:
 
 The plugin depends on [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/) plugin.
 
+# Preview
+![connect](connect_notify.png "Preview")
 
-# load
+# Load
 Add this line in your `init.js` file:
 ```js
 Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
@@ -15,7 +21,4 @@ Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/connect_noti
 ```
 
 # init.js
-You can find more info on `init.js` [on github pages](https://0xaf.github.io/openwebrxplus-plugins/) or directly in [my github repo](https://github.com/0xAF/openwebrxplus-plugins)
-
-# preview
-![shortcuts](connect_notify.png "Preview")
+Learn how to [load plugins](/openwebrxplus-plugins/#load-plugins).

@@ -1,11 +1,15 @@
-# OWRX+ Receiver Plugin: sort_profiles
+---
+layout: page
+title: "OpenWebRX+ Receiver Plugin: Sort Profiles by NAME"
+permalink: /receiver/sort_profiles
+---
 
-This `receiver` plugin will sort your profile list by name (__NOT__ by frequency)  
+This `receiver` plugin will sort your profile list by *name* (__NOT__ by frequency)  
+This plugin is more an example for devs, than useful to users.
 
 The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/) plugin.
 
-
-# load
+# Load
 Add this lines in your `init.js` file:
 ```js
 await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
@@ -13,5 +17,4 @@ Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/connect_noti
 ```
 
 # init.js
-You can find more info on `init.js` [on github pages](https://0xaf.github.io/openwebrxplus-plugins/) or directly in [my github repo](https://github.com/0xAF/openwebrxplus-plugins)
-
+Learn how to [load plugins](/openwebrxplus-plugins/#load-plugins).

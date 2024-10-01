@@ -1,21 +1,25 @@
-// Plugin initialization.
+// Receiver plugins initialization.
+// everything after '//' is a comment.
 
-// uncomment to enable plugin debugging.
+// uncomment the next line to enable plugin debugging in browser console.
 // Plugins._enable_debug = true;
 
-// First load the utils, needed for some plugins
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js').then(async function () {
+// base URL for receiver plugins
+const rp_url = 'https://0xaf.github.io/openwebrxplus-plugins/receiver';
 
-  // load a local plugins if you have one
+// First load the utils, needed for some plugins
+Plugins.load(rp_url + '/utils/utils.js').then(async function () {
+
+  // you can load a local plugins if you have one
   //Plugins.load('example');
 
   // Load the notification plugin, used by some plugins. await to ensure it is loaded before the rest.
-  await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
+  await Plugins.load(rp_url + '/notify/notify.js');
 
   // load remote plugins
-  Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/keyboard_shortcuts/keyboard_shortcuts.js');
-  Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/colorful_spectrum/colorful_spectrum.js');
-  Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/connect_notify/connect_notify.js');
-  // Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/sort_profiles/sort_profiles.js');
+  // Plugins.load(rp_url + '/keyboard_shortcuts/keyboard_shortcuts.js');
+  Plugins.load(rp_url + '/colorful_spectrum/colorful_spectrum.js');
+  Plugins.load(rp_url + '/connect_notify/connect_notify.js');
+  // Plugins.load(rp_url + '/sort_profiles/sort_profiles.js');
 
 });

@@ -1,10 +1,14 @@
-# OWRX+ Receiver Plugin: Utils
+---
+layout: page
+title: "OpenWebRX+ Receiver Plugin: Utils (utility)"
+permalink: /receiver/utils
+---
 
 This `utility` plugin will give a function wrapping method and will send some events.  
-This is a dependency for many plugins.
+This plugin is a dependency for almost all plugins.
 
 
-# load
+L :oad
 Add this lines in your `init.js` file:
 ```js
 Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js').then(async function () {
@@ -13,4 +17,4 @@ Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.
 ```
 
 # init.js
-You can find more info on `init.js` [on github pages](https://0xaf.github.io/openwebrxplus-plugins/) or directly in [my github repo](https://github.com/0xAF/openwebrxplus-plugins)
+Learn how to [load plugins](/openwebrxplus-plugins/#load-plugins).

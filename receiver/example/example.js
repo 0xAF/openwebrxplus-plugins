@@ -1,5 +1,5 @@
 /*
- * example UI plugin for OpenWebRx+
+ * example Receiver Plugin for OpenWebRx+
  *
  * License: MIT
  * Copyright (c) 2023 Stanislav Lechev [0xAF], LZ2SLL
