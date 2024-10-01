@@ -7,7 +7,7 @@ permalink: /receiver/sort_profiles
 This `receiver` plugin will sort your profile list by *name* (__NOT__ by frequency)  
 This plugin is more an example for devs, than useful to users.
 
-The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/) plugin.
+The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils) plugin.
 
 # Load
 Add this lines in your `init.js` file:

@@ -8,7 +8,7 @@ This `receiver` plugin will:
  - Send a chat message to all users when you connect/disconnect to SDR
  - Show notification when another user is connected/disconnected to SDR
 
-The plugin depends on [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/) plugin.
+The plugin depends on [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/notify) plugin.
 
 # Preview
 ![connect](connect_notify.png "Preview")
