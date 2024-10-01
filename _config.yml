@@ -24,8 +24,8 @@ author:
   name: Stanislav Lechev - 0xAF - LZ2SLL
 description: >- # this means to ignore newlines until "baseurl:"
   Plugins collection for OpenWebRX+
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://0xaf.github.io/openwebrxplus-plugins" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/openwebrxplus-plugins" # the subpath of your site, e.g. /blog
+url: "https://0xaf.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 #domain: 0xaf.github.io
 
 # Build settings

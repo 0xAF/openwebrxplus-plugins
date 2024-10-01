@@ -18,6 +18,7 @@ Learn how to [install and load the plugins](#load-plugins).
 
 ### Receiver Plugins
 
+| Name | Description |
 | :------ | :---------- |
 |[antenna_switcher](receiver/antenna_switcher/)|antenna switching functionality for Raspberry Pi devices ([LZ2DMV](#contributors))|
 |[tune_checkbox](receiver/tune_checkbox/)|make the 'Hold mouse wheel down to tune' setting enabled by default ([LZ2DMV](#contributors))|
@@ -34,6 +35,7 @@ Learn how to [install and load the plugins](#load-plugins).
 
 ### Map Plugins
 
+| Name | Description |
 | :------ | :---------- |
 |[layer_qth_maidenhead](map/layer_qth_maidenhead/)|add Maidenhead (QTH) grid to the map|
 
