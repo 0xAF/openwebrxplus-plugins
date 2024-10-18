@@ -132,7 +132,6 @@ Plugins.utils.init = function () {
   };
 
   $.each(send_events_for, function (key, obj) {
-    console.log('wrapping ' + key);
     Plugins.utils.wrap_func(
       key,
       typeof (obj.handler) === 'function' ? obj.handler : function () {
