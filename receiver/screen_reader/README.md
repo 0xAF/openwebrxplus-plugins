@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "OpenWebRX+ Receiver Plugin: Screen Reader
+title: "OpenWebRX+ Receiver Plugin: Screen Reader"
 permalink: /receiver/screen_reader
 ---
 
