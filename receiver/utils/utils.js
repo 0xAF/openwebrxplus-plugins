@@ -6,13 +6,21 @@
  *
  * License: MIT
  * Copyright (c) 2023 Stanislav Lechev [0xAF], LZ2SLL
+ *
+ * Changes:
+ * 0.1:
+ *  - initial release
+ * 0.2:
+ *  - add document.owrx_initialized boolean var, once initialized
+ *  - add _DEBUG_ALL_EVENTS
+ *
  */
 
 // Disable CSS loading for this plugin
 Plugins.utils.no_css = true;
 
 // Utils plugin version
-Plugins.utils._version = 0.1;
+Plugins.utils._version = 0.2;
 
 /**
  * Wrap an existing function with before and after callbacks.
@@ -66,78 +74,87 @@ Plugins.utils._version = 0.1;
  *
  */
 Plugins.utils.wrap_func = function (name, before_cb, after_cb, obj = window) {
-    if (typeof(obj[name]) !== "function") {
-        console.error("Cannot wrap non existing function: '" + obj + '.' + name + "'");
-        return false;
+  if (typeof (obj[name]) !== "function") {
+    console.error("Cannot wrap non existing function: '" + obj + '.' + name + "'");
+    return false;
+  }
+
+  var fn_original = obj[name];
+  var proxy = new Proxy(obj[name], {
+    apply: function (target, thisArg, args) {
+      if (before_cb(target, thisArg, args)) {
+        after_cb(fn_original.apply(thisArg, args), thisArg, args);
+      }
     }
+  });
 
-    var fn_original = obj[name];
-    var proxy = new Proxy(obj[name], {
-        apply: function (target, thisArg, args) {
-            if (before_cb(target, thisArg, args)) {
-                after_cb(fn_original.apply(thisArg, args), thisArg, args);
-            }
-        }
-    });
-
-    obj[name] = proxy;
+  obj[name] = proxy;
 }
 
 // Init utils plugin
 Plugins.utils.init = function () {
-    var send_events_for = {};
+  var send_events_for = {};
 
-    // function name to proxy.
-    send_events_for['sdr_profile_changed'] = {
-        // [optional] event name (prepended with 'event:'). Default is function name.
-        name: 'profile_changed',
-        // [optional] data to send with the event (should be function).
-        data: function () {
-            return $('#openwebrx-sdr-profiles-listbox').find(':selected').text()
-        }
-    };
+  // function name to proxy.
+  send_events_for['sdr_profile_changed'] = {
+    // [optional] event name (prepended with 'event:'). Default is function name.
+    name: 'profile_changed',
+    // [optional] data to send with the event (should be function).
+    data: function () {
+      return $('#openwebrx-sdr-profiles-listbox').find(':selected').text()
+    }
+  };
 
-    send_events_for['on_ws_recv'] = {
-        // if handler exist, it will replace the before_cb
-        handler: function (orig, thisArg, args) {
-            if (typeof(args[0].data) === 'string' && args[0].data.substr(0, 16) !== "CLIENT DE SERVER") {
-                try {
-                    var json = JSON.parse(args[0].data);
-                    $(document).trigger('server:' + json.type + ":before", [json['value']]);
-                } catch (e) {}
-            }
+  send_events_for['on_ws_recv'] = {
+    // if we use handler, it will replace the before_cb
+    handler: function (orig, thisArg, args) {
+      if (typeof (args[0].data) === 'string' && args[0].data.substr(0, 16) !== "CLIENT DE SERVER") {
+        try {
+          var json = JSON.parse(args[0].data);
+          if (Plugins.utils._DEBUG_ALL_EVENTS && json.type !== 'smeter')
+            console.debug("server:" + json.type + ":before", [json['value']]);
+          $(document).trigger('server:' + json.type + ":before", [json['value']]);
+        } catch (e) {}
+      }
 
-            // we handle original function here
-            orig.apply(thisArg, args);
+      // we handle original function here
+      orig.apply(thisArg, args);
 
-            if (typeof(json) === 'object') {
-                  $(document).trigger('server:' + json.type + ":after", [json['value']]);
-            }
+      if (typeof (json) === 'object') {
+        if (Plugins.utils._DEBUG_ALL_EVENTS && json.type !== 'smeter')
+          console.debug("server:" + json.type + ":after", [json['value']]);
+        $(document).trigger('server:' + json.type + ":after", [json['value']]);
+      }
 
-            // do not call the after_cb
-            return false;
-        }
-    };
+      // do not call the after_cb
+      return false;
+    }
+  };
 
-    $.each(send_events_for, function (key, obj) {
-        Plugins.utils.wrap_func(
-            key,
-            typeof(obj.handler)==='function'? obj.handler : function () { return true; },
-            function (res) {
-                var ev_data;
-                var ev_name = key;
-                if (typeof(obj.name) === 'string') ev_name = obj.name;
-                if (typeof(obj.data) === 'function') ev_data = obj.data(res);
-                $(document).trigger('event:' + ev_name, [ev_data]);
-            }
-        );
-    });
+  $.each(send_events_for, function (key, obj) {
+    console.log('wrapping ' + key);
+    Plugins.utils.wrap_func(
+      key,
+      typeof (obj.handler) === 'function' ? obj.handler : function () {
+        return true;
+      },
+      function (res) {
+        var ev_data;
+        var ev_name = key;
+        if (typeof (obj.name) === 'string') ev_name = obj.name;
+        if (typeof (obj.data) === 'function') ev_data = obj.data(res);
+        if (Plugins.utils._DEBUG_ALL_EVENTS) console.debug("event:" + ev_name, ev_data);
+        $(document).trigger("event:" + ev_name, [ev_data]);
+      }
+    );
+  });
 
-    var interval = setInterval(function () {
-        if (typeof(clock) === 'undefined') return;
-        clearInterval(interval);
-        $(document).trigger('event:owrx_initialized');
-    }, 10);
+  var interval = setInterval(function () {
+    if (typeof (clock) === 'undefined') return;
+    clearInterval(interval);
+    $(document).trigger('event:owrx_initialized');
+    document.owrx_initialized = true;
+  }, 10);
 
-    return true;
+  return true;
 }
