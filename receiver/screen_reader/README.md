@@ -12,7 +12,7 @@ This `receiver` plugin will:
 The plugin depends on [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils) v0.2 plugin.
 
 # Preview
-![connect](screen_reader.png "Preview")
+![screen_reader](screen_reader/screen_reader.png "Preview")
 
 # Load
 Add this line in your `init.js` file:
