@@ -17,7 +17,7 @@ Plugins.screen_reader.no_css = true;
 Plugins.screen_reader.init = async function () {
 
   // Check if utils plugin is loaded
-  if (!Plugins.isLoaded('utils', 0.1)) {
+  if (!Plugins.isLoaded('utils', 0.2)) {
     // try to load the utils plugin
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 
