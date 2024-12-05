@@ -8,7 +8,7 @@ This a simple `receiver` plugin to allow jumping to a frequency outside the boun
 
 **Beware of the limitations of this approach:** the modulation and the other settings of the receiver **will stay the same** when jumping to the new, far frequency.
 
-Please note that you **must supply the magic key** for your OpenWebRX+ instance if you have one configured with a '*#key=[KEY]*' at the end of the URL.
+Please note that you **must** enable *"Allow users to change center frequency"* and in case you have set a **magic key**, you will have to provide it with a '*#key=[KEY]*' at the end of the URL.
 
 The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils) plugin.
 
