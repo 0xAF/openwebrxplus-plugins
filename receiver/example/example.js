@@ -8,6 +8,9 @@
 // Disable CSS loading for this plugin
 Plugins.example.no_css = true;
 
+// remove the next line if you really want to use this plugin
+throw ("This is the example plugin. It is not made for real world use.");
+
 // Init function of the plugin
 Plugins.example.init = function () {
 
