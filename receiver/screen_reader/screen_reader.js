@@ -22,8 +22,8 @@ Plugins.screen_reader.init = async function () {
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 
     // check again if it was loaded successfuly
-    if (!Plugins.isLoaded('utils', 0.1)) {
-      console.error('screen_reader plugin depends on "utils >= 0.1".');
+    if (!Plugins.isLoaded('utils', 0.2)) {
+      console.error('screen_reader plugin depends on "utils >= 0.2".');
       return false;
     } else {
       Plugins._debug('Plugin "utils" has been loaded as dependency.');
