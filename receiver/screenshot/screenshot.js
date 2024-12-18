@@ -12,8 +12,7 @@ Plugins.screenshot.no_css = true;
 // Initialize the plugin
 Plugins.screenshot.init = async function () {
 
-  // await Plugins._load_script('https://0xaf.github.io/openwebrxplus-plugins/receiver/screenshot/html2canvas.min.js').catch(function() {
-  await Plugins._load_script('http://192.168.175.99:8080/screenshot/html2canvas.min.js').catch(function() {
+  await Plugins._load_script('https://0xaf.github.io/openwebrxplus-plugins/receiver/screenshot/html2canvas.min.js').catch(function() {
     throw("Cannot load html2canvas script.");
   });
 
