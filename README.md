@@ -20,6 +20,7 @@ Learn how to [install and load the plugins](#load-plugins).
 
 | Name | Description |
 | :------ | :---------- |
+|[screenshot](receiver/screenshot)|take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|provide spoken notifications to users with Assistive Technology|
 |[antenna_switcher](receiver/antenna_switcher)|antenna switching functionality for Raspberry Pi devices ([LZ2DMV](#contributors))|
 |[tune_checkbox](receiver/tune_checkbox)|make the 'Hold mouse wheel down to tune' setting enabled by default ([LZ2DMV](#contributors))|
