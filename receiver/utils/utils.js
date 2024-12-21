@@ -13,20 +13,21 @@
  * 0.2:
  *  - add document.owrx_initialized boolean var, once initialized
  *  - add _DEBUG_ALL_EVENTS
- *
+ * 0.3:
+ *  - handle return value of AfterCallBack of the wrapper
  */
 
 // Disable CSS loading for this plugin
 Plugins.utils.no_css = true;
 
 // Utils plugin version
-Plugins.utils._version = 0.2;
+Plugins.utils._version = 0.3;
 
 /**
  * Wrap an existing function with before and after callbacks.
  * @param {string} name The name of function to wrap with before and after callbacks.
  * @param {function(orig, thisArg, args):boolean} before_cb Callback before original. Return true to call the original.
- * @param {function(result, orig, thisArg, args):void} after_cb Callback after original, will receive the result of original
+ * @param {function(result, orig, thisArg, args):any} after_cb Callback after original, will receive the result of original
  * @param {object} obj [optional] Object to look for function into. Default is 'window'
  * @description
  *   - Before Callback:
@@ -40,6 +41,7 @@ Plugins.utils._version = 0.2;
  *       - res: Result of the original function
  *       - thisArg: local 'this' for the original function
  *       - args: arguments passed to the original function
+ *     - Returns: Any. Return anything to the original caller. This can be used to replace the original value.
  *
  * @example
  * // Using before and after callbacks.
@@ -54,6 +56,7 @@ Plugins.utils._version = 0.2;
  *   },
  *   function (res, thisArg, args) { // after callback
  *     console.log(res);
+ *     return res;
  *   }
  * );
  *
@@ -67,8 +70,9 @@ Plugins.utils._version = 0.2;
  *     do_something_after_original(res);
  *     return false; // to prevent calling the original and after_cb
  *   },
- *   function (res, thisArg, args) { // after callback
+ *   function (res) { // after callback
  *     // ignored
+ *     return res;
  *   }
  * );
  *
@@ -83,7 +87,9 @@ Plugins.utils.wrap_func = function (name, before_cb, after_cb, obj = window) {
   var proxy = new Proxy(obj[name], {
     apply: function (target, thisArg, args) {
       if (before_cb(target, thisArg, args)) {
-        after_cb(fn_original.apply(thisArg, args), thisArg, args);
+        var orgRet = fn_original.apply(thisArg, args);
+        var ret = after_cb(orgRet, thisArg, args);
+        return ret !== undefined ? ret : orgRet;
       }
     }
   });
