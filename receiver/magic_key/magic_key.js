@@ -12,15 +12,13 @@ Plugins.magic_key.no_css = true;
 // Initialize the plugin
 Plugins.magic_key.init = async function () {
   // Check if utils plugin is loaded
-  if (!Plugins.isLoaded('utils', 0.1)) {
-    console.error('Example plugin depends on "utils >= 0.1".');
+  if (!Plugins.isLoaded('utils', 0.3)) {
+    console.error('Example plugin depends on "utils >= 0.3".');
     return false;
   }
 
 
   if ($("#setMagicKeyBtn").length < 1) {
-    var localKey;
-    var localKeyInitialized = false;
     $(".openwebrx-bookmark-button").before(
       '<div id="setMagicKeyBtn" class="openwebrx-button openwebrx-square-button">' +
       '<svg fill="#FFFFFF" width="27px" height="27px" viewBox="-18.91 0 122.88 122.88" version="1.1" ' +
@@ -39,19 +37,16 @@ Plugins.magic_key.init = async function () {
       '</g></svg></div>');
     $("#setMagicKeyBtn").css({ width: '27px', height: '27px', textAlign: 'center' });
     $('#setMagicKeyBtn').click(function () {
-      localKey = prompt("Enter new Magic Key");
-      if (localKey !== null) {
-        localKeyInitialized = true;
-        $('#openwebrx-panel-receiver').demodulatorPanel().setMagicKey(localKey);
-      }
+      window.localKey = prompt("Enter new Magic Key");
+      if (window.localKey !== undefined) $('#openwebrx-panel-receiver').demodulatorPanel().setMagicKey(window.localKey);
     });
 
     Plugins.utils.wrap_func(
       'getMagicKey',
-      // beforeCB: return true to call original, so we can handle in afterCB
+      // beforeCB: return true to call the afterCB
       function (orig, thisArg, args) { return true; },
-      // afterCB: use our local var or pass the original
-      function (res) { if (localKeyInitialized) return localKey; return res; },
+      // afterCB: return localKey or the original one
+      function (res) { return window.localKey !== undefined ? window.localKey : res; },
       $('#openwebrx-panel-receiver').demodulatorPanel()
     );
 
