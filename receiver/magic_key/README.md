@@ -4,7 +4,7 @@ title: "OpenWebRX+ Receiver Plugin: MagicKey"
 permalink: /receiver/magic_key
 ---
 
-This `receiver` plugin will allow you to set the MagicKey without writing it in the browser's address bar.
+This `receiver` plugin will allow you to set the MagicKey without typing it in the browser's address bar.
 
 ## Preview
 

@@ -1,5 +1,5 @@
 /*
- * Plugin: MagicKey - Set the MagicKey without writing it in browser's address bar
+ * Plugin: MagicKey - Set the MagicKey without typing it in browser's address bar
  *
  * License: MIT
  * Copyright (c) 2024 Stanislav Lechev [0xAF], LZ2SLL
