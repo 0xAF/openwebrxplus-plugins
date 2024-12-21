@@ -9,12 +9,15 @@ This plugin is more an example for devs, than useful to users.
 
 The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils) plugin.
 
-# Load
+## Load
+
 Add this lines in your `init.js` file:
+
 ```js
 await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/connect_notify/connect_notify.js');
 ```
 
-# init.js
+## init.js
+
 Learn how to [load plugins](/openwebrxplus-plugins/#load-plugins).

@@ -16,7 +16,7 @@ Plugins.sort_profiles.init = async function () {
     // try to load the utils plugin
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 
-    // check again if it was loaded successfuly
+    // check again if it was loaded successfully
     if (!Plugins.isLoaded('utils', 0.1)) {
       console.error('soft_profiles plugin depends on "utils >= 0.1".');
       return false;
@@ -37,7 +37,7 @@ Plugins.sort_profiles.init = async function () {
     var selected = sel.val();
     var list = sel.find('option');
 
-    // sort the list of options, alphanumeric and ignorring the case
+    // sort the list of options, alphanumeric and ignoring the case
     list.sort(function (a, b) {
       return $(a).text()
         .localeCompare(

@@ -19,7 +19,7 @@ Plugins.screenshot.init = async function () {
 
   if ($("#screenshot-btn").length < 1) {
     $(".openwebrx-record-button").wrap("<div class='openwebrx-button openwebrx-square-button' style='background: none; width:2rem;'></div>");
-    $(".openwebrx-record-button").after("<div id='screenshot-btn' class='openwebrx-button openwebrx-square-button xopenwebrx-record-button'>PIC</div>");
+    $(".openwebrx-record-button").after("<div id='screenshot-btn' class='openwebrx-button openwebrx-square-button'>PIC</div>");
     $(".openwebrx-record-button, #screenshot-btn").css({ float: 'none', marginTop: 0, width: '2rem', textAlign: 'center', padding: '2px 8px' });
     $('#screenshot-btn').click(function () {
 

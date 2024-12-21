@@ -15,7 +15,7 @@ Plugins.colorful_spectrum.init = async function () {
     // try to load the utils plugin
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 
-    // check again if it was loaded successfuly
+    // check again if it was loaded successfully
     if (!Plugins.isLoaded('utils', 0.1)) {
       console.error('colorful_spectrum plugin depends on "utils >= 0.1".');
       return false;

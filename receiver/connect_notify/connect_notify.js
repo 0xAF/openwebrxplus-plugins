@@ -18,7 +18,7 @@ Plugins.connect_notify.init = async function () {
     // try to load the notify plugin
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
 
-    // check again if it was loaded successfuly
+    // check again if it was loaded successfully
     if (!Plugins.isLoaded('notify', 0.1)) {
       console.error('connect_notify plugin depends on "notify >= 0.1".');
       return false;

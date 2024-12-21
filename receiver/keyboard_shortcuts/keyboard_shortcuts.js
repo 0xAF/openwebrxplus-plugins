@@ -23,7 +23,7 @@ Plugins.keyboard_shortcuts.init = async function () {
     // try to load the notify plugin
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
 
-    // check again if it was loaded successfuly
+    // check again if it was loaded successfully
     if (!Plugins.isLoaded('notify', 0.1)) {
       console.error('Keyboard shortcuts plugin depends on "notify >= 0.1".');
       return false;
@@ -39,7 +39,7 @@ Plugins.keyboard_shortcuts.init = async function () {
 
   // catch all key presses
   $(document).on('keydown', function (e) {
-    // check if we are focusiing an input
+    // check if we are focusing an input
     var on_input = !!($('input:focus').length && ($('input:focus')[0].type === 'text' || $('input:focus')[0].type === 'number'));
     // var on_input = !!($(':focus').is('input:text'));
 
@@ -351,7 +351,7 @@ Plugins.keyboard_shortcuts.init = async function () {
 
 
   // reset bookmark index on profile change.
-  // this will work only if 'utils' plugin is loaded, but it's not a reqirement
+  // this will work only if 'utils' plugin is loaded, but it's not a requirement
   $(document).on('event:profile_changed', function (e, data) {
     Plugins.keyboard_shortcuts.bookmarkIdx = -1;
   });

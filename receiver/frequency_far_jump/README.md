@@ -12,13 +12,16 @@ Please note that you **must** enable *"Allow users to change center frequency"* 
 
 The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils) plugin.
 
-# Load
+## Load
+
 Add this lines in your `init.js` file:
+
 ```js
 Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js').then(async function () {
   Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/frequency_far_jump/frequency_far_jump.js');
 });
 ```
 
-# init.js
+## init.js
+
 Learn how to [load plugins](/openwebrxplus-plugins/#load-plugins).

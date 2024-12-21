@@ -6,14 +6,18 @@ permalink: /receiver/colorful_spectrum
 
 This `receiver` plugin will colorify your spectrum analyzer.
 
-# Preview
+## Preview
+
 ![spectrum](colorful_spectrum.png "Preview")
 
-# Load
+## Load
+
 Add this line in your `init.js` file:
+
 ```js
 Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/colorful_spectrum/colorful_spectrum.js');
 ```
 
-# init.js
+## init.js
+
 Learn how to [load plugins](/openwebrxplus-plugins/#load-plugins).

@@ -31,7 +31,7 @@ Plugins.example.init = function () {
   // event:owrx_initialized - called when OWRX is initialized
 
   // Server events are triggered when server sends data over the WS
-  // All server events have suffix ':before' or ':after', based on the original functoin call.
+  // All server events have suffix ':before' or ':after', based on the original function call.
   // :before events are before the original function call,
   // :after events are after the original function call.
   // Some interesting server events:
@@ -141,7 +141,7 @@ Plugins.example.init = function () {
         /* not executed because the before function returns false always */
       },
 
-      // this is the object, where the repalce_boomarks() function should be found
+      // this is the object, where the replace_bookmarks() function should be found
       bookmarks
     );
   });
