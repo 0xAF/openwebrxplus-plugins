@@ -74,7 +74,9 @@ Plugins.doppler.init = async function () {
           Plugins.doppler.intervalId = setInterval(() => {
             var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
             curFreq = demodulator.get_offset_frequency() + center_freq;
-            newFreq = GetDoppler(data.line1, data.line2, receiverPos.lat, receiverPos.lon, curFreq);
+            newFreq = AF_GetDoppler(data.line1, data.line2, receiverPos.lat, receiverPos.lon, curFreq);
+            // newFreqAF = AF_GetDoppler(data.line1, data.line2, receiverPos.lat, receiverPos.lon, curFreq);
+            // console.log(`NewFreq: Sergey's: ${newFreq}, AF: ${newFreqAF}`);
             demodulator.set_offset_frequency(newFreq - center_freq);
           }, 1000);
         })
@@ -103,7 +105,7 @@ Plugins.doppler.init = async function () {
       var observerEcf = satellite.geodeticToEcf(observerGd);
       velocityEcf = satellite.eciToEcf(velocityEci, gmst);
       dopplerFactor = satellite.dopplerFactor(observerEcf, positionEcf, velocityEcf);
-      //console.log("Freq is:" + dopplerFactor * center + " Hz");
+      // console.log("Freq is:" + dopplerFactor * center + " Hz");
       return (Math.round(dopplerFactor * center));
     }
   }
