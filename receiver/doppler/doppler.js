@@ -20,7 +20,7 @@ Plugins.doppler.init = async function () {
     return false;
   }
 
-  await Plugins._load_script('https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.js').catch(function() {
+  await Plugins._load_script('https://0xaf.github.io/openwebrxplus-plugins/receiver/doppler/sat.js').catch(function() {
     throw("Cannot load satellite-js script.");
   });
 
@@ -86,7 +86,7 @@ Plugins.doppler.init = async function () {
     });
 
     // 0xAF: Copied from Sergey's work.
-    function GetDoppler(tle1, tle2, GPSlat, GPSlon, center) {
+    function AF_GetDoppler(tle1, tle2, GPSlat, GPSlon, center) {
       var satrec = satellite.twoline2satrec(tle1, tle2);
       var positionAndVelocity = satellite.propagate(satrec, new Date());
       var positionEci = positionAndVelocity.position;
