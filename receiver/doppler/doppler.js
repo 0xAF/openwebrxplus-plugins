@@ -28,7 +28,7 @@ Plugins.doppler.init = async function () {
 
   if ($("#satellite-row").length < 1) {
     $(".openwebrx-modes").after(
-      '<div id="satellite-row" class="openwebrx-panel-line openwebrx-panel-flex-line" style="padding: 4px 0px; justify-content: space-between">' +
+      '<div id="satellite-row" class="openwebrx-panel-line openwebrx-panel-flex-line" style="padding: 4px 0px; justify-content: space-between" title="ISS Zarya: 25544">' +
         '<input id="satellite-input" type="text" placeholder="Sat ID" style="width: 60px;">' +
         '<div id="satellite-name" class="openwebrx-button" style="border: 0px solid; width: 122px; align-content: center; text-align: center">Find SAT</div>' +
         '<div id="satellite-track" class="openwebrx-button">TRACK</div>' +
@@ -38,42 +38,39 @@ Plugins.doppler.init = async function () {
       window.open("https://tle.ivanstanojevic.me/", "_blank");
     });
 
+    function stop_tracker(info) {
+      clearInterval(Plugins.doppler.intervalId);
+      Plugins.doppler.intervalId = undefined;
+      $('#satellite-track').removeClass('highlighted').text('TRACK');
+      $('#satellite-name').text((info && info.length) ? info : "Not tracking.");
+    }
+
     $("#satellite-track").click(() => {
       if (Plugins.doppler.intervalId) {
-        clearInterval(Plugins.doppler.intervalId);
-        Plugins.doppler.intervalId = undefined;
-        $('#satellite-track').removeClass('highlighted').text('TRACK');
-        $('#satellite-name').text("Not tracking.");
-        Plugins.doppler.tracking = false;
+        stop_tracker();
         return;
       }
 
       var receiverPos = Utils.getReceiverPos();
       if (!receiverPos || !receiverPos.lat || !receiverPos.lon) {
-        $('#satellite-name').text("Set Receiver Position");
-          clearInterval(Plugins.doppler.intervalId);
-          Plugins.doppler.intervalId = undefined;
+        stop_tracker("Set Receiver Position");
         return;
       }
 
       if (($('#satellite-input').val()).length < 1) {
-        $('#satellite-name').text("NOT FOUND!");
-        clearInterval(Plugins.doppler.intervalId);
-        Plugins.doppler.intervalId = undefined;
-        return
+        stop_tracker("NOT FOUND!");
+        return;
       }
 
       fetch('https://tle.ivanstanojevic.me/api/tle/' + $('#satellite-input').val())
         .then(response => response.json())
         .then(data => {
           if (data.name === undefined) {
-            $('#satellite-name').text("NOT FOUND!");
-            clearInterval(Plugins.doppler.intervalId);
-            Plugins.doppler.intervalId = undefined;
-            return
+            stop_tracker("NOT FOUND!");
+            return;
           }
           $("#satellite-name").text(data.name);
-          $("#satellite-track").text("STOP");
+          $("#satellite-track").addClass('highlighted').text("STOP");
           Plugins.doppler.intervalId = setInterval(() => {
             var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
             curFreq = demodulator.get_offset_frequency() + center_freq;
@@ -83,9 +80,7 @@ Plugins.doppler.init = async function () {
         })
         .catch((error) => {
           console.error(error);
-          $("#satellite-name").text(error);
-          clearInterval(Plugins.doppler.intervalId);
-          Plugins.doppler.intervalId = undefined;
+          stop_tracker(error);
         });
 
     });
@@ -96,10 +91,12 @@ Plugins.doppler.init = async function () {
       var positionAndVelocity = satellite.propagate(satrec, new Date());
       var positionEci = positionAndVelocity.position;
       var velocityEci = positionAndVelocity.velocity;
+      var asl=$('.webrx-rx-desc').text().match(/ASL:\s*(\d+)\s*m/);
+      asl = (asl && asl[1] && parseInt(asl[1]) > 0) ? parseInt(asl[1]) / 1000 : 0;
       var observerGd = {
         longitude: satellite.degreesToRadians(GPSlon),
         latitude: satellite.degreesToRadians(GPSlat),
-        height: 0.000 // TODO: we have this info (parse .webrx-rx-desc)
+        height: asl
       };
       var gmst = satellite.gstime(new Date());
       var positionEcf = satellite.eciToEcf(positionEci, gmst);
