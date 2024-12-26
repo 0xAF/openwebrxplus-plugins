@@ -29,9 +29,9 @@ Plugins.doppler.init = async function () {
   if ($("#satellite-row").length < 1) {
     $(".openwebrx-modes").after(
       '<div id="satellite-row" class="openwebrx-panel-line openwebrx-panel-flex-line" style="padding: 4px 0px; justify-content: space-between" title="ISS Zarya: 25544">' +
-        '<input id="satellite-input" type="text" placeholder="Sat ID" style="width: 60px;">' +
-        '<div id="satellite-name" class="openwebrx-button" style="border: 0px solid; width: 122px; align-content: center; text-align: center">Find SAT</div>' +
-        '<div id="satellite-track" class="openwebrx-button">TRACK</div>' +
+        '<input id="satellite-input" type="text" placeholder="Sat ID" style="width: 54px;">' +
+        '<div id="satellite-name" class="openwebrx-button" style="border: 0px solid; width: 126px; align-content: center; text-align: center">Find SAT</div>' +
+        '<div id="satellite-track" class="openwebrx-button" style="width: 48px; text-align: center">TRACK</div>' +
       '</div>');
 
     $("#satellite-name").click(() => {
