@@ -21,6 +21,7 @@ Learn how to [install and load the plugins](#load-plugins).
 
 | Name | Description |
 | :------ | :---------- |
+|[doppler](receiver/doppler)|Track Doppler shift/effect of satellites (based on Sergey Osipov's work)|
 |[magic_key](receiver/magic_key)|set MagicKey without typing it in the browser's address bar|
 |[screenshot](receiver/screenshot)|take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|provide spoken notifications to users with Assistive Technology|
