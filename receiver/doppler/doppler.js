@@ -71,11 +71,11 @@ Plugins.doppler.init = async function () {
           }
           $("#satellite-name").text(data.name);
           $("#satellite-track").addClass('highlighted').text("STOP");
+          var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
+          startFreq = demodulator.get_offset_frequency() + center_freq;
           Plugins.doppler.intervalId = setInterval(() => {
-            var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
-            curFreq = demodulator.get_offset_frequency() + center_freq;
-            newFreq = AF_GetDoppler(data.line1, data.line2, receiverPos.lat, receiverPos.lon, curFreq);
-            // newFreqAF = AF_GetDoppler(data.line1, data.line2, receiverPos.lat, receiverPos.lon, curFreq);
+            newFreq = AF_GetDoppler(data.line1, data.line2, receiverPos.lat, receiverPos.lon, startFreq);
+            // newFreqAF = AF_GetDoppler(data.line1, data.line2, receiverPos.lat, receiverPos.lon, startFreq);
             // console.log(`NewFreq: Sergey's: ${newFreq}, AF: ${newFreqAF}`);
             demodulator.set_offset_frequency(newFreq - center_freq);
           }, 1000);
@@ -112,7 +112,3 @@ Plugins.doppler.init = async function () {
 
   return true;
 }
-
-
-
-
