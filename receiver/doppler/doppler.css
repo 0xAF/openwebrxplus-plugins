@@ -1,0 +1,182 @@
+:root {
+  --satellite-bg: #333333;
+  --satellite-fg: #ffffff;
+  --satellite-bg-bars: #575757;
+  --satellite-grad-1: #373737;
+  --satellite-grad-2: #4F4F4F;
+}
+
+body.has-theme {
+  --satellite-bg: var(--theme-color1);
+  --satellite-bg-bars: var(--theme-color2);
+  --satellite-grad-1: var(--theme-gradient-color1);
+  --satellite-grad-2: var(--theme-gradient-color2);
+}
+
+.blocker {
+  z-index: 2001 !important;
+}
+
+.modal {
+  z-index: 2002 !important;
+}
+
+.modal.satellite-modal {
+  height: 500px;
+  background-color: var(--satellite-bg);
+  color: var(--satellite-fg);
+  padding: 2rem 0.5rem;
+}
+
+.satellite-modal-header {
+  background-color: var(--satellite-bg-bars);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+  padding: 4px 10px;
+  font-variant: small-caps;
+  text-align: center;
+}
+
+.satellite-modal-body {
+  position: absolute;
+  top: 1.7rem;
+  bottom: 2.3rem;
+  left: 0;
+  right: 0;
+  padding: 0;
+}
+
+.satellite-modal-footer {
+  background-color: var(--satellite-bg-bars);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  padding: 4px 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+.satellite-modal-tabs-wrapper {
+  max-width: 50rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.satellite-modal-tabs {
+  position: relative;
+  background-color: var(--satellite-bg-bars);
+  /* background: linear-gradient(to bottom, var(--satellite-grad-1) 0%, var(--satellite-grad-2) 100%); */
+  /* height: 14.75rem; */
+}
+
+.satellite-modal-tabs::before,
+.satellite-modal-tabs::after {
+  content: "";
+  display: table;
+}
+
+.satellite-modal-tabs::after {
+  clear: both;
+}
+
+.satellite-modal-tab {
+  float: left;
+}
+
+.satellite-modal-tab-switch {
+  display: none;
+}
+
+.satellite-modal-tab-label {
+  position: relative;
+  display: block;
+  line-height: 1.75em;
+  height: 2em;
+  padding: 0 .6em;
+  /* background: linear-gradient(to bottom, var(--satellite-grad-1) 0%, var(--satellite-grad-2) 100%); */
+  background: var(--satellite-bg-bars);
+  border-right: 0.125rem solid var(--satellite-bg);
+  color: var(--satellite-fg);
+  cursor: pointer;
+  top: 0;
+  transition: all 0.25s;
+}
+
+.satellite-modal-tab-label:hover {
+  border-top: var(--satellite-bg) solid 1px;
+  top: -0.25rem;
+  transition: top 0.25s;
+}
+
+.satellite-modal-tab-content {
+  height: 12rem;
+  position: absolute;
+  z-index: 1;
+  top: 2em;
+  left: 0;
+  padding: .25rem .25rem;
+  background: linear-gradient(to bottom, var(--satellite-grad-1) 0%, var(--satellite-grad-2) 100%);
+  color: var(--satellite-fg);
+  /* border-bottom: 0.25rem solid var(--satellite-bg); */
+  opacity: 0;
+  transition: all 0.35s;
+  height: 404px;
+  width: calc(100% - .5rem);
+}
+
+.satellite-modal-tab-switch:checked+.satellite-modal-tab-label {
+  background: linear-gradient(to bottom, var(--satellite-grad-1) 0%, var(--satellite-grad-2) 100%);
+  color: var(--satellite-fg);
+  border-bottom: 0;
+  border-right: 0.125rem solid var(--satellite-bg);
+  transition: all 0.35s;
+  z-index: 1;
+  top: -0.0625rem;
+}
+
+.satellite-modal-tab-switch:checked+label+.satellite-modal-tab-content {
+  z-index: 2;
+  opacity: 1;
+  transition: all 0.35s;
+}
+
+.satellite-table {
+  width: 100%;
+  cursor: pointer;
+}
+
+.satellite-table>tbody>tr:hover {
+  background-color: var(--satellite-bg-bars);
+  filter: drop-shadow(3px 3px 10px black);
+}
+
+#satellite-name {
+  border: 0px solid;
+  width: 126px;
+  align-content: center;
+  text-align: center;
+  height: 15px;
+  overflow: hidden;
+}
+
+#satellite-row {
+  padding: 4px 0px;
+  justify-content: space-between;
+}
+
+#satellite-input {
+  width: 54px;
+}
+
+#satellite-track {
+  width: 48px;
+  text-align: center;
+}

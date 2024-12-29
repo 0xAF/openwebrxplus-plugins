@@ -5,6 +5,7 @@
  * License: MIT
  *
  * Sergey Osipov: Fixed doppler factor bug and added GetDoppler() function
+ * Stanislav Lechev: Added object2satrec, so we can use the CelesTrak JSON data.
  */
 
 (function (global, factory) {
@@ -2682,6 +2683,140 @@
   }
 
   /* -----------------------------------------------------------------------------
+  *
+  *                           function json2satrec
+  *
+  *  this function converts the OMM json data to variables and initializes the sgp4 
+  *    variables. several intermediate varaibles and quantities are determined. note 
+  *    that the result is a structure so multiple satellites can be processed 
+  *    simultaneously without having to reinitialize. the verification mode is an 
+  *    important option that permits quick checks of any changes to the underlying 
+  *    technical theory. this option works using a modified tle file in which the 
+  *    start, stop, and delta time values are included at the end of the second line
+  *    of data. this only works with the verification mode. the catalog mode simply 
+  *    propagates from -1440 to 1440 min from epoch and is useful when performing 
+  *    entire catalog runs.
+  *
+  *  author        : Hariharan Vitaladevuni                   18 Aug 2023
+  *                  Theodore Kruczek                         19 Aug 2023
+  *
+  *  inputs        :
+  *    jsonobj     - OMM json data
+  *    opsmode     - mode of operation afspc or improved 'a', 'i'. Default: 'i'.
+  *
+  *  outputs       :
+  *    satrec      - structure containing all the sgp4 satellite information
+  *
+  *  coupling      :
+  *    days2mdhms  - conversion of days to month, day, hour, minute, second
+  *    jday        - convert day month year hour minute second into julian date
+  *    sgp4init    - initialize the sgp4 variables
+  * 
+  *  warning       : the epoch date in OMM format is more accurate than TLE format!
+  *                  this will result in extremely close, but different 
+  *                  position/velocity values. Depending on your use case, it may
+  *                  be better to use twoline2satrec, but for the average user this
+  *                  will provide comparable results.
+  *
+  *  references    :
+  *    https://celestrak.org/NORAD/documentation/gp-data-formats.php
+  --------------------------------------------------------------------------- */
+  function json2satrec(jsonobj, opsmode = 'i') {
+    const xpdotp = 1440.0 / (2.0 * pi); // 229.1831180523293;
+    const satrec = {};
+    satrec.error = 0;
+
+    satrec.satnum = jsonobj.NORAD_CAT_ID.toString().padStart(5, '0');
+
+    const epoch = new Date(jsonobj.EPOCH + 'Z');
+    const year = epoch.getUTCFullYear();
+
+    satrec.epochyr = Number(year.toString().slice(-2));
+    satrec.epochdays =
+      (epoch - new Date(Date.UTC(year, 0, 1, 0, 0, 0))) / (86400 * 1000) + 1;
+
+    satrec.ndot = jsonobj.MEAN_MOTION_DOT;
+    satrec.nddot = jsonobj.MEAN_MOTION_DDOT;
+    satrec.bstar = jsonobj.BSTAR;
+
+    satrec.inclo = jsonobj.INCLINATION * deg2rad;
+    satrec.nodeo = jsonobj.RA_OF_ASC_NODE * deg2rad;
+    satrec.ecco = jsonobj.ECCENTRICITY;
+    satrec.argpo = jsonobj.ARG_OF_PERICENTER * deg2rad;
+    satrec.mo = jsonobj.MEAN_ANOMALY * deg2rad;
+    satrec.no = jsonobj.MEAN_MOTION / xpdotp;
+
+    // ----------------------------------------------------------------
+    // find sgp4epoch time of element set
+    // remember that sgp4 uses units of days from 0 jan 1950 (sgp4epoch)
+    // and minutes from the epoch (time)
+    // ----------------------------------------------------------------
+    const mdhmsResult = days2mdhms(year, satrec.epochdays);
+
+    const { mon, day, hr, minute, sec } = mdhmsResult;
+    satrec.jdsatepoch = jday(year, mon, day, hr, minute, sec);
+
+    //  ---------------- initialize the orbit at sgp4epoch -------------------
+    sgp4init(satrec, {
+      opsmode,
+      satn: satrec.satnum,
+      epoch: satrec.jdsatepoch - 2433281.5,
+      xbstar: satrec.bstar,
+      xecco: satrec.ecco,
+      xargpo: satrec.argpo,
+      xinclo: satrec.inclo,
+      xmo: satrec.mo,
+      xno: satrec.no,
+      xnodeo: satrec.nodeo,
+    });
+
+    return satrec;
+  }
+
+  // AF: added this, so we can work with CelesTrak JSON data.
+  function object2satrec(obj) {
+      var opsmode = 'i';
+      var xpdotp = 1440.0 / (2.0 * pi); // 229.1831180523293;
+      var satrec = {};
+      satrec.error = 0;
+      
+      satrec.satnum = '' + obj.NORAD_CAT_ID + '';
+      var epoch = new Date(obj.EPOCH + 'Z');
+      satrec.jdsatepoch = jday(epoch);
+      satrec.ndot = obj.MEAN_MOTION_DOT;
+      satrec.nddot = obj.MEAN_MOTION_DDOT;
+      satrec.bstar = obj.BSTAR;
+      satrec.inclo = obj.INCLINATION;
+      satrec.nodeo = obj.RA_OF_ASC_NODE;
+      satrec.ecco = obj.ECCENTRICITY;
+      satrec.argpo = obj.ARG_OF_PERICENTER;
+      satrec.mo = obj.MEAN_ANOMALY;
+      satrec.no = obj.MEAN_MOTION;
+
+      satrec.no /= xpdotp; //   rad/min
+
+      satrec.inclo *= deg2rad;
+      satrec.nodeo *= deg2rad;
+      satrec.argpo *= deg2rad;
+      satrec.mo *= deg2rad;
+
+      //  ---------------- initialize the orbit at sgp4epoch -------------------
+      sgp4init(satrec, {
+        opsmode: opsmode,
+        satn: satrec.satnum,
+        epoch: satrec.jdsatepoch - 2433281.5,
+        xbstar: satrec.bstar,
+        xecco: satrec.ecco,
+        xargpo: satrec.argpo,
+        xinclo: satrec.inclo,
+        xmo: satrec.mo,
+        xno: satrec.no,
+        xnodeo: satrec.nodeo
+      });
+      return satrec;
+    }
+
+  /* -----------------------------------------------------------------------------
    *
    *                           function twoline2rv
    *
@@ -3040,6 +3175,8 @@
     propagate: propagate,
     sgp4: sgp4,
     twoline2satrec: twoline2satrec,
+    object2satrec: object2satrec,
+    json2satrec: json2satrec,
     gstime: gstime,
     jday: jday,
     invjday: invjday,
