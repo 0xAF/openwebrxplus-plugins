@@ -8,7 +8,7 @@
  * License: MIT
  * Copyright (c) 2024 Stanislav Lechev [0xAF], LZ2SLL
  * 
- * TODO maybe:
+ * TODO:
  * - Option to integrate sat bookmarks
  * - Associate the bookmarks with modulation and SatID so it can be easily tracked, once bookmark is clicked.
  * - Scan the LocalStorage and remove old groups.
@@ -76,7 +76,7 @@ Plugins.doppler.init = async function () {
                 <label style="">
                   Above <input id="satellite-tab-content-${i}-elevation" style="width: 8%" type="number" value="20" onchange="Plugins.doppler.selectChange(${i})" title="Find satellites above X degrees elevation"> °
                 </label>
-                <div id="satellite-tab-content-${i}-refresh" class="openwebrx-button" style="float: right;" onclick="Plugins.doppler.toggleRefresh(${i})" title="Refresh every 10sec">
+                <div id="satellite-tab-content-${i}-refresh" class="openwebrx-button" style="float: right;" onclick="Plugins.doppler.toggleRefresh(${i})" title="Refresh every 5sec">
                   <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"
                       stroke-linejoin="round" d="M18.6091 5.89092L15.5 9H21.5V3L18.6091 5.89092ZM18.6091 5.89092C16.965 4.1131 14.6125 3 12 3C7.36745 3 3.55237 6.50005 3.05493 11M5.39092 18.1091L2.5 21V15H8.5L5.39092 18.1091ZM5.39092 18.1091C7.03504 19.8869 9.38753 21 12 21C16.6326 21 20.4476 17.5 20.9451 13"/>
@@ -354,9 +354,10 @@ Plugins.doppler.toggleRefresh = function (id) {
   if (Plugins.doppler.scanRunning === undefined) {
     refresh.css({ animationName: 'openwebrx-scan-animation', animationDuration: '1s', animationIterationCount: 'infinite', filter: 'none'});
     Plugins.doppler.scanRunning = id;
+    Plugins.doppler.selectChange(id);
     Plugins.doppler.scanIntervalId = setInterval(() => {
-      Plugins.doppler.selectChange(id);
-    }, 10000);
+      Plugins.doppler.selectChange(Plugins.doppler.scanRunning);
+    }, 5000);
   } else {
     if (Plugins.doppler.scanRunning !== id) { // another scan is running
       Plugins.doppler.toggleRefresh(Plugins.doppler.scanRunning);
@@ -369,6 +370,7 @@ Plugins.doppler.toggleRefresh = function (id) {
   }
 }
 
+// cSpell:disable
 // Groups: https://celestrak.org/NORAD/elements/index.php?FORMAT=json
 Plugins.doppler.satelliteGroups = {
   'HAM': { // our custom set
@@ -445,6 +447,4 @@ Plugins.doppler.satelliteGroups = {
     'Other Satellites': 'other',
   },
 };
-
-
-
+// cSpell:enable
