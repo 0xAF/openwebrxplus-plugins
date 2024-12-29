@@ -11,6 +11,7 @@
  * TODO maybe:
  * - Option to integrate sat bookmarks
  * - Associate the bookmarks with modulation and SatID so it can be easily tracked, once bookmark is clicked.
+ * - Scan the LocalStorage and remove old groups.
  */
 
 
@@ -186,6 +187,10 @@ Plugins.doppler.start_tracker = function (obj) {
   // var satrec = satellite.twoline2satrec(line1, line2);
   // var satrec = satellite.object2satrec(obj);
   var satrec = satellite.json2satrec(obj);
+  if (satrec.error>0) {
+    Plugins.doppler.stop_tracker("Bad SAT Data");
+    return;
+  };
   var asl = $('.webrx-rx-desc').text().match(/ASL:\s*(\d+)\s*m/);
   asl = (asl && asl[1] && parseInt(asl[1]) > 0) ? parseInt(asl[1]) / 1000 : 0;
   var receiverPos = Utils.getReceiverPos();
@@ -270,7 +275,7 @@ Plugins.doppler.selectChange = async function (id) {
   for (let i = 0; i < store.data.length; i++) {
     if (observerGd === null) {
       store.data[i].next_pass = 'Receiver position unknown.';
-      continue;
+      break;
     }
 
     // lets find if the sat will be visible in the next hour
@@ -278,10 +283,15 @@ Plugins.doppler.selectChange = async function (id) {
     let curDate = new Date();
     // let satrec = satellite.object2satrec(store.data[i]);
     let satrec = satellite.json2satrec(store.data[i]);
-
     for (let m = 0; m < 120; m++) {
       // check every minute for the next hour
       var positionAndVelocity = satellite.propagate(satrec, curDate);
+      if (satrec.error > 0) {
+        console.error("Cant propagate. Bad satrec for " + store.data[i].OBJECT_NAME);
+        console.log(store.data[i]);
+        console.log(satrec);
+        break;
+      }
       var gmst = satellite.gstime(curDate);
       // var gmst = satellite.gstime(new Date());
       var positionEci = positionAndVelocity.position;
@@ -319,7 +329,7 @@ Plugins.doppler.selectChange = async function (id) {
     tableRows += `
     <tr onclick="Plugins.doppler.selectSatellite(${s.NORAD_CAT_ID}, '${groupName}')">
       <td align="left">${s.NORAD_CAT_ID}</td>
-      <td align="center">${s.OBJECT_NAME}</td>
+      <td align="center" style="max-width:160px; width: 160px;">${s.OBJECT_NAME}</td>
       <td align="center">${Math.round(s.elevation)}°</td>
       <td align="center">${Math.round(s.azimuth)}°</td>
       <td align="center">${Math.round(s.distance)}km</td>
