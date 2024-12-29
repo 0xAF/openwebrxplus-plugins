@@ -4,9 +4,10 @@ title: "OpenWebRX+ Receiver Plugin: Doppler"
 permalink: /receiver/doppler
 ---
 
-This `receiver` plugin will track the Doppler shift frequency of a chosen satellite. Useful for SSTV.
+This `receiver` plugin will track the Doppler shift frequency of a chosen satellite. Useful for SSTV/Packet.
 
-This plugin is based on the [work](https://github.com/studentkra/OpenWebRX-Doppler) of [Sergey Osipov](https://github.com/studentkra) and uses [this TLE API](https://tle.ivanstanojevic.me/).
+This plugin started as a port of [work](https://github.com/studentkra/OpenWebRX-Doppler) by [Sergey Osipov](https://github.com/studentkra).  
+Then I switched to [CelesTrak JSON API](https://celestrak.org/) and created Satellite Finder modal window.
 
 ## Preview
 
@@ -14,11 +15,10 @@ This plugin is based on the [work](https://github.com/studentkra/OpenWebRX-Doppl
 
 ## Usage
 
- 1. Click on the "Find SAT" button and find a satellite to track.
- 2. Enter SatID
- 3. Click TRACK.
+ 1. Open the Satellite finder window to choose a satellite or enter the SatID if you know it.
+ 2. Click TRACK.
 
-To find the SatID, click the "Find SAT" button and you will be sent to a webpage with satellites to choose from. Once you find your satellite, click on it and you will be presented with some extra information where you can see the SatID.
+The Satellite Finder window will help you find a satellite and will give useful information on each satellite.
 ![doppler1](doppler/doppler1.png "FindSat")
 
 ## Load
