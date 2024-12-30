@@ -28,7 +28,7 @@ Learn how to [install and load the plugins](#load-plugins).
 |[antenna_switcher](receiver/antenna_switcher)|antenna switching functionality for Raspberry Pi devices ([LZ2DMV](#contributors))|
 |[tune_checkbox](receiver/tune_checkbox)|make the 'Hold mouse wheel down to tune' setting enabled by default ([LZ2DMV](#contributors))|
 |[frequency_far_jump](receiver/frequency_far_jump)|jump to a frequency outside of the current profile, by typing it in the receiver's frequency dial ([LZ2DMV](#contributors))|
-|[keyboard_shortcuts](receiver/keyboard_shortcuts)|add keyboard shortcuts to the receiver|
+|[~~keyboard_shortcuts~~](receiver/keyboard_shortcuts)|(**deprecated**) add keyboard shortcuts to the receiver|
 |[colorful_spectrum](receiver/colorful_spectrum)|colorize the spectrum analyzer|
 |[connect_notify](receiver/connect_notify)|send/receive notifications on user connect/disconnect|
 |[sort_profiles](receiver/sort_profiles)|sort profiles by __NAME__|
@@ -42,7 +42,7 @@ Learn how to [install and load the plugins](#load-plugins).
 
 | Name | Description |
 | :------ | :---------- |
-|[layer_qth_maidenhead](map/layer_qth_maidenhead)|add Maidenhead (QTH) grid to the map|
+|[~~layer_qth_maidenhead~~](map/layer_qth_maidenhead)|(**deprecated**) add Maidenhead (QTH) grid to the map|
 
 ---
 
