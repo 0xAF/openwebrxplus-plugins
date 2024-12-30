@@ -13,7 +13,7 @@ The plugin depends on [notify](https://0xaf.github.io/openwebrxplus-plugins/rece
 
 ## Preview
 
-![connect](connect_notify.png "Preview")
+![connect](connect_notify/connect_notify.png "Preview")
 
 ## Load
 

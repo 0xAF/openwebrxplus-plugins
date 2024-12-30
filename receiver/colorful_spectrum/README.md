@@ -8,7 +8,7 @@ This `receiver` plugin will colorify your spectrum analyzer.
 
 ## Preview
 
-![spectrum](colorful_spectrum.png "Preview")
+![spectrum](colorful_spectrum/colorful_spectrum.png "Preview")
 
 ## Load
 
