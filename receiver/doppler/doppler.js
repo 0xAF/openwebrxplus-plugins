@@ -204,10 +204,10 @@ Plugins.doppler.start_tracker = function (obj) {
   var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
   var startFreq = demodulator.get_offset_frequency() + center_freq;
   Plugins.doppler.intervalId = setInterval(() => {
+    var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
     newFreq = Plugins.doppler.getDoppler(satrec, asl, receiverPos.lat, receiverPos.lon, startFreq);
-    // newFreq2 = AF_GetDoppler(satrec2, asl, receiverPos.lat, receiverPos.lon, startFreq);
-    // console.log(`TLE: ${newFreq}, JSON: ${newFreq2}, diff: ${newFreq2 - newFreq}`);
     demodulator.set_offset_frequency(newFreq - center_freq);
+    console.debug(`Doppler Freq: ${newFreq}`);
   }, 1000);
 }
 
