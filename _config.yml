@@ -23,7 +23,7 @@ author:
   email: af@0xaf.org
   name: Stanislav Lechev - 0xAF - LZ2SLL
 description: >- # this means to ignore newlines until "baseurl:"
-  Plugins collection for OpenWebRX+
+  Plugins collection for OpenWebRX+<br>
 baseurl: "/openwebrxplus-plugins" # the subpath of your site, e.g. /blog
 url: "https://0xaf.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 #domain: 0xaf.github.io
@@ -52,10 +52,13 @@ header_pages:
 minima:
   #skin: solarized
   skin: auto
-
-social_links:
-  - { platform: github,         user_url: "https://github.com/0xAF" }
-  - { platform: telegram,       user_url: "https://t.me/LZ2SLL_Stanislav_0xAF" }
+  social_links:
+    - title: Plugins repository at GitHub
+      icon: github
+      url: "https://github.com/0xAF/openwebrxplus-plugins"
+    - title: Author Telegram
+      icon: telegram
+      url: "https://t.me/LZ2SLL_Stanislav_0xAF"
 
 # Exclude from processing.
 # The following items will not be processed, by default.
