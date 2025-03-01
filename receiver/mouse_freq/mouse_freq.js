@@ -10,8 +10,6 @@
 // no css for this plugin
 Plugins.mouse_freq.no_css = true;
 
-// Plugins.screen_reader.log_messages = true;
-
 // Initialize the plugin
 Plugins.mouse_freq.init = async function () {
 
@@ -22,7 +20,7 @@ Plugins.mouse_freq.init = async function () {
 
     // check again if it was loaded successfully
     if (!Plugins.isLoaded('utils', 0.2)) {
-      console.error('screen_reader plugin depends on "utils >= 0.2".');
+      console.error('mouse_freq plugin depends on "utils >= 0.2".');
       return false;
     } else {
       Plugins._debug('Plugin "utils" has been loaded as dependency.');
@@ -53,13 +51,6 @@ Plugins.mouse_freq.init = async function () {
       $("#mouse-freq").hide();
     });
   });
-
-
-  // $(document).on('server:clients:after', function (e, data) {
-  // });
-
-  // $(window).bind('beforeunload', function () {
-  // });
 
   return true;
 }
