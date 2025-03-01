@@ -14,13 +14,13 @@ Plugins.mouse_freq.no_css = true;
 Plugins.mouse_freq.init = async function () {
 
   // Check if utils plugin is loaded
-  if (!Plugins.isLoaded('utils', 0.2)) {
+  if (!Plugins.isLoaded('utils')) {
     // try to load the utils plugin
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 
     // check again if it was loaded successfully
-    if (!Plugins.isLoaded('utils', 0.2)) {
-      console.error('mouse_freq plugin depends on "utils >= 0.2".');
+    if (!Plugins.isLoaded('utils')) {
+      console.error('mouse_freq plugin depends on "utils".');
       return false;
     } else {
       Plugins._debug('Plugin "utils" has been loaded as dependency.');
