@@ -12,6 +12,7 @@
  * - Option to integrate sat bookmarks
  * - Associate the bookmarks with modulation and SatID so it can be easily tracked, once bookmark is clicked.
  * - Scan the LocalStorage and remove old groups.
+ * - perhaps another row to show the sat name and use the current sat name button for prediction when the sat will be visible.
  */
 
 
