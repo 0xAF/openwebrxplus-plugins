@@ -10,7 +10,7 @@ This `receiver` plugin will:
 * Add invisible div for screen readers
 * Catch events and write to the div, so the screen reader will speak the content.
 
-The plugin depends on [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils) v0.2 plugin.
+The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils) v0.2 plugin.
 
 ## Preview
 

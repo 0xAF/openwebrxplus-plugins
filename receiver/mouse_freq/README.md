@@ -10,7 +10,7 @@ This `receiver` plugin will:
 
 (I saw this on https://rikmotik.ru and decided to make a plugin.)
 
-The plugin depends on [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils) v0.2 plugin.
+The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/receiver/utils) v0.2 plugin.
 
 ## Preview
 
