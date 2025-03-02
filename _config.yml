@@ -23,7 +23,7 @@ author:
   email: af@0xaf.org
   name: Stanislav Lechev - 0xAF - LZ2SLL
 description: >- # this means to ignore newlines until "baseurl:"
-  Plugins collection for OpenWebRX+<br>
+  Plugins collection for OpenWebRX+
 baseurl: "/openwebrxplus-plugins" # the subpath of your site, e.g. /blog
 url: "https://0xaf.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 #domain: 0xaf.github.io
