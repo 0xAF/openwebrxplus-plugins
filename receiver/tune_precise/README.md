@@ -4,7 +4,7 @@ title: "OpenWebRX+ Receiver Plugin: Tune Precise"
 permalink: /receiver/tune_precise
 ---
 
-This plugin is an implementation of a feature we saw on [rikmotik.ru](https://rikmotik.ru/) for precise frequency tuning without a mouse scroll, but using buttons instead.
+This plugin is an implementation of a feature we saw on rikmotik.ru for precise frequency tuning without a mouse scroll, but using buttons instead.
 
 It adds six buttons in your receiver's panel to precisely tune the frequency up and down with different steps.
 
