@@ -1,93 +1,57 @@
+/*
+ * Plugin: Tune Precise - add buttons to precisely tune the frequency
+ *
+ * License: MIT
+ * Copyright (c) 2025 Dimitar Milkov, LZ2DMV
+ * Copyright (c) 2025 Stanislav Lechev, LZ2SLL
+ */
+
 Plugins.tune_precise.no_css = true;
 
 Plugins.tune_precise.init = async function () {
-    $(".webrx-mouse-freq").after(`
-        <div id="id-step-freq" style="padding-bottom: 4px; padding-top: 4px;">
-            <img style="padding-right: 2px;" id="id-step-0" 
-                src="/static/plugins/receiver/tune_precise/gfx/openwebrx-stepdn-20.png" 
-                onclick="window.freqstep(0)" title="-1kHz">
-            <img style="padding-right: 2px;" id="id-step-1" 
-                src="/static/plugins/receiver/tune_precise/gfx/openwebrx-stepdn-18.png" 
-                onclick="window.freqstep(1)" title="-100Hz">
-            <img style="padding-right: 2px;" id="id-step-2" 
-                src="/static/plugins/receiver/tune_precise/gfx/openwebrx-stepdn-16.png" 
-                onclick="window.freqstep(2)" title="-10Hz">
-            <img style="padding-right: 2px; margin-left: 6px;" id="id-step-3" 
-                src="/static/plugins/receiver/tune_precise/gfx/openwebrx-stepup-16.png" 
-                onclick="window.freqstep(3)" title="+10Hz">
-            <img style="padding-right: 2px;" id="id-step-4" 
-                src="/static/plugins/receiver/tune_precise/gfx/openwebrx-stepup-18.png" 
-                onclick="window.freqstep(4)" title="+100Hz">
-            <img style="padding-right: 2px;" id="id-step-5" 
-                src="/static/plugins/receiver/tune_precise/gfx/openwebrx-stepup-20.png" 
-                onclick="window.freqstep(5)" title="+1kHz">
-        </div>   
-    `);
-
-    function toggleStepHz() {
-        if (StepHz === 1000) {
-            StepHz = 5000;
-            document.getElementById("stepchangeHz").innerHTML = "5";
-            document.getElementById("stepchangeHz").style.backgroundColor = "#04AA6D";
-        } else if (StepHz === 5000) {
-            StepHz = 9000;
-            document.getElementById("stepchangeHz").innerHTML = "9";
-            document.getElementById("stepchangeHz").style.backgroundColor = "blue";
-        } else if (StepHz === 9000) {
-            StepHz = 1000;
-            document.getElementById("stepchangeHz").innerHTML = "1";
-            document.getElementById("stepchangeHz").style.backgroundColor = "red";
-        }
+  function renderIcon(icon, size) {
+    if (icon > 0) {
+      return `<svg width="${size}px" height="${size}px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path opacity="0.1" d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" fill="#ffffff"/>
+        <path d="M9 12H15" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 9L12 15" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#ffffff" stroke-width="2"/>
+      </svg>`;
+    } else {
+      return `<svg width="${size}px" height="${size}px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path opacity="0.1" d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" fill="#ffffff"/>
+        <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#ffffff" stroke-width="2"/>
+        <path d="M9 12H15" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
     }
+  }
 
-    window.freqstep = function (step) {
-        let stepValue = 0;
+  $(".webrx-mouse-freq").after(`
+    <div id="id-step-freq" style="padding-bottom: 4px; padding-top: 4px; display: flex; justify-content: space-evenly; align-items: center;">
+      <div class="tune-precise-step" data-step="-1000" title="-1kHz ">${renderIcon(-1, 24)}</div>
+      <div class="tune-precise-step" data-step="-100"  title="-100Hz">${renderIcon(-1, 22)}</div>
+      <div class="tune-precise-step" data-step="-10"   title="-10Hz ">${renderIcon(-1, 20)}</div>
+      <div class="tune-precise-step" data-step="+10"   title="+10Hz ">${renderIcon(+1, 20)}</div>
+      <div class="tune-precise-step" data-step="+100"  title="+100Hz">${renderIcon(+1, 22)}</div>
+      <div class="tune-precise-step" data-step="+1000" title="+1kHz ">${renderIcon(+1, 24)}</div>
+    </div>   
+  `);
+  $('.tune-precise-step')
+    .css({
+      cursor: 'pointer',
+      filter: 'brightness(0.8)'
+    }).hover(
+      function () { $(this).css({ filter: "drop-shadow(0px 0px 2px rgb(255,255,255)) brightness(1)" }); },
+      function () { $(this).css({ filter: "brightness(0.8)" }); }
+    ).click(function (e) {
+      const step = parseInt($(this).data('step'), 10);
+      const demodulator = $("#openwebrx-panel-receiver").demodulatorPanel().getDemodulator();
+      const freqCurrent = parseInt(demodulator.get_offset_frequency() + center_freq, 10);
+      let freqNew = Math.round( (freqCurrent + step) / step ) * step; // round the frequency to the nearest whole number
+      if (freqNew !== freqCurrent) demodulator.set_offset_frequency(freqNew - center_freq);
+    });
 
-        switch (step) {
-            case 0: stepValue = -1000; break;
-            case 1: stepValue = -100; break;
-            case 2: stepValue = -10; break;
-            case 3: stepValue = 10; break;
-            case 4: stepValue = 100; break;
-            case 5: stepValue = 1000; break;
-            default: stepValue = 0;
-        }
+  $('#openwebrx-panel-receiver').css({ userSelect: 'none' }); // disable auto-select of the text fields when user clicks multiple time in the receiver panel (ie. the freq buttons)
 
-        let offsetFreq = $("#openwebrx-panel-receiver").demodulatorPanel()
-            .getDemodulator().get_offset_frequency();
-        let absoluteFreq = offsetFreq + center_freq;
-        let newFreq = 0;
-
-        if (Math.abs(stepValue) > 100) {
-            let remainder = absoluteFreq - 1000 * Math.trunc(absoluteFreq / 1000);
-            if (remainder > 0) {
-                newFreq = stepValue < 0 ? offsetFreq - remainder : offsetFreq + (1000 - remainder);
-            } else {
-                newFreq = 1000 * Math.round((offsetFreq + stepValue) / 1000);
-            }
-        } else {
-            newFreq = offsetFreq + stepValue;
-        }
-
-        if (newFreq !== offsetFreq) {
-            $("#openwebrx-panel-receiver").demodulatorPanel()
-                .getDemodulator().set_offset_frequency(newFreq);
-            absoluteFreq = newFreq + center_freq;
-            let visibleRange = get_visible_freq_range();
-
-            if (stepValue > 0) {
-                let rightShift = visibleRange.end - visibleRange.center;
-                if ((absoluteFreq - visibleRange.center) / rightShift > 0.7 && canRight()) {
-                    // Can move right
-                }
-            } else {
-                let leftShift = visibleRange.center - visibleRange.start;
-                if ((visibleRange.center - absoluteFreq) / leftShift > 0.7 && canLeft()) {
-                    // Can move left
-                }
-            }
-        }
-    };
-
-    return true;
+  return true;
 };
