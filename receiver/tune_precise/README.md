@@ -10,7 +10,7 @@ It adds six buttons in your receiver's panel to precisely tune the frequency up 
 
 ## Preview
 
-![tune_precise](tune_precise/tune_precise.png "Preview")
+![tune_precise](tune_precise/tune_precise.jpg "Preview")
 
 ## Load
 
