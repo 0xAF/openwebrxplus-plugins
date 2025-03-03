@@ -29,7 +29,7 @@ You should provide 3 steps in JS array, starting from the biggest one.
 All steps should be provided in Hz.
 
 ```js
-Plugins.tune_precise_steps = [12500, 5000, 1000];
+Plugins.tune_precise_steps = [12500, 5000, 1000]; // 12.5kHz, 5kHz, 1kHz
 Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/tune_precise/tune_precise.js');
 ```
 
