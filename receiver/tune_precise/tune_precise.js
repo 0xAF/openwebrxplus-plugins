@@ -28,7 +28,7 @@ Plugins.tune_precise.init = async function () {
   }
 
   $(".webrx-mouse-freq").after(`
-    <div id="id-step-freq" style="padding-bottom: 4px; padding-top: 4px; display: flex; justify-content: flex-start; gap: 10px; align-items: center;">
+    <div id="id-step-freq" style="padding-bottom: 4px; padding-top: 4px; display: flex; justify-content: space-between; align-items: center;">
       <div class="tune-precise-step" data-step="-1000" title="-1kHz ">${renderIcon(-1, 22)}</div>
       <div class="tune-precise-step" data-step="-100"  title="-100Hz">${renderIcon(-1, 20)}</div>
       <div class="tune-precise-step" data-step="-10"   title="-10Hz ">${renderIcon(-1, 18)}</div>
