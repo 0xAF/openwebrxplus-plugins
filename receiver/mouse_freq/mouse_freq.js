@@ -41,13 +41,15 @@ Plugins.mouse_freq.init = async function () {
       backgroundColor: "rgba(0,0,0, .5)"
     }).appendTo("body");
 
-  $(document).on('event:owrx_initialized', function (e, data) {
-    $("#webrx-canvas-container").mousemove(function (pos) {
-      $('#mouse-freq').show().text($(".webrx-mouse-freq").text()).css({
-        'left': (pos.pageX + 15) + 'px',
-        'top': (pos.pageY - 5) + 'px'
-      });
-    }).mouseleave(function () {
+  $(document).on('event:owrx_initialized', function (event, data) {
+    $("#webrx-canvas-container").mousemove(function (e) {
+      if (!e.buttons) // no mouse button pressed, so it is not dragging, we can display
+        $('#mouse-freq').show().text($(".webrx-mouse-freq").text()).css({
+          'left': (e.pageX + 15) + 'px',
+          'top': (e.pageY - 5) + 'px'
+        });
+    })
+    .on("mousedown mouseleave", function() { // hide when mouse button is pressed or mouse leaves the canvas
       $("#mouse-freq").hide();
     });
   });
