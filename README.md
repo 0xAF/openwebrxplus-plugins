@@ -21,6 +21,7 @@ Learn how to [install and load the plugins](#load-plugins).
 
 | Name | Description |
 | :------ | :---------- |
+|[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of the bookmarks with right mouse button|
 |[tune_precise](receiver/tune_precise)|Add buttons to precisely tune the frequency ([LZ2DMV](#contributors))|
 |[mouse_freq](receiver/mouse_freq)|Show freq under cursor next to the cursor|
 |[doppler](receiver/doppler)|Track Doppler shift/effect of satellites (based on Sergey Osipov's work)|
