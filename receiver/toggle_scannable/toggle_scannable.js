@@ -30,22 +30,6 @@ Plugins.toggle_scannable.init = async function () {
       },
       bookmarks // this is the object, where the replace_bookmarks() function should be found
     );
-
-
-
-    Plugins.utils.wrap_func(
-      'start', // function to wrap
-      function (orig, thisArg, args) { // before callback
-        console.log(bookmarks.bookmarks);
-        return true; // execute original function
-      },
-      function (res) { // after callback
-        // Plugins.toggle_scannable.rework_bookmarks();
-        return undefined; // this will return original value from the original function
-      },
-      scanner // this is the object, where the replace_bookmarks() function should be found
-    );
-
   });
 
   return true;
@@ -71,8 +55,6 @@ Plugins.toggle_scannable.rework_bookmarks = function () {
           scanner.stop();
           scanner.start();
         }
-        console.log("data:", data);
-        console.log("bookmarks:", bookmarks.bookmarks);
         return false; // prevent default context menu
       });
   });
