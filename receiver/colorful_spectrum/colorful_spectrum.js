@@ -11,13 +11,13 @@ Plugins.colorful_spectrum.no_css = true;
 Plugins.colorful_spectrum.init = async function () {
 
   // Check if utils plugin is loaded
-  if (!Plugins.isLoaded('utils', 0.1)) {
+  if (!Plugins.isLoaded('utils', 0.4)) {
     // try to load the utils plugin
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 
     // check again if it was loaded successfully
-    if (!Plugins.isLoaded('utils', 0.1)) {
-      console.error('colorful_spectrum plugin depends on "utils >= 0.1".');
+    if (!Plugins.isLoaded('utils', 0.4)) {
+      console.error('colorful_spectrum plugin depends on "utils >= 0.4".');
       return false;
     } else {
       Plugins._debug('Plugin "utils" has been loaded as dependency.');
@@ -25,7 +25,7 @@ Plugins.colorful_spectrum.init = async function () {
   }
 
   // wait for OWRX to initialize
-  $(document).on('event:owrx_initialized', function () {
+  Plugins.utils.on_ready(function () {
     Plugins.utils.wrap_func(
       'draw',
       function (orig, thisArg, args) {

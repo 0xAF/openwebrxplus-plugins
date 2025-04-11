@@ -17,13 +17,13 @@ Plugins.screen_reader.no_css = true;
 Plugins.screen_reader.init = async function () {
 
   // Check if utils plugin is loaded
-  if (!Plugins.isLoaded('utils', 0.2)) {
+  if (!Plugins.isLoaded('utils', 0.4)) {
     // try to load the utils plugin
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 
     // check again if it was loaded successfully
-    if (!Plugins.isLoaded('utils', 0.2)) {
-      console.error('screen_reader plugin depends on "utils >= 0.2".');
+    if (!Plugins.isLoaded('utils', 0.4)) {
+      console.error('screen_reader plugin depends on "utils >= 0.4".');
       return false;
     } else {
       Plugins._debug('Plugin "utils" has been loaded as dependency.');
@@ -50,7 +50,7 @@ Plugins.screen_reader.init = async function () {
   // $(document).on('event:profile_changed', function (e, data) {
   //   Plugins.screen_reader.speak("Profile " + data);
   // });
-  $(document).on('event:owrx_initialized', function (e, data) {
+  Plugins.utils.on_ready(function (e, data) {
 
     $(document).on('server:config:after', function (e, data) {
       if (data.profile_id && data.sdr_id) { // profile was changed

@@ -28,7 +28,8 @@ Plugins.example.init = function () {
   });
 
   // Another events:
-  // event:owrx_initialized - called when OWRX is initialized
+  // OBSOLATE - event:owrx_initialized - called when OWRX is initialized
+  // better use Plugins.utils.on_ready() method
 
   // Server events are triggered when server sends data over the WS
   // All server events have suffix ':before' or ':after', based on the original function call.
@@ -108,7 +109,8 @@ Plugins.example.init = function () {
   // We will wrap the bookmarks.replace_bookmarks() function, once OWRX is initialized.
   // We cannot wrap the replace_bookmarks() function before the bookmarks object is created.
   // So we wait for OWRX to initialize and then wrap the function.
-  $(document).on('event:owrx_initialized', function () {
+  // OBSOLATE - $(document).on('event:owrx_initialized', function () {
+  Plugins.utils.on_ready(function () {
 
     // Call the wrap method of utils plugin
     Plugins.utils.wrap_func(

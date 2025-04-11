@@ -12,12 +12,12 @@
 // Initialize the plugin
 Plugins.toggle_scannable.init = async function () {
   // Check if utils plugin is loaded
-  if (!Plugins.isLoaded('utils', 0.3)) {
-    console.error('ToggleScannable plugin depends on "utils >= 0.3".');
+  if (!Plugins.isLoaded('utils', 0.4)) {
+    console.error('ToggleScannable plugin depends on "utils >= 0.4".');
     return false;
   }
 
-  $(document).on('event:owrx_initialized', function () {
+  Plugins.utils.on_ready(function () {
     // Call the wrap method of utils plugin
     Plugins.utils.wrap_func(
       'replace_bookmarks', // function to wrap
@@ -30,6 +30,7 @@ Plugins.toggle_scannable.init = async function () {
       },
       bookmarks // this is the object, where the replace_bookmarks() function should be found
     );
+    Plugins.toggle_scannable.rework_bookmarks();
   });
 
   return true;

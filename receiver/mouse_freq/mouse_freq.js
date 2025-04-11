@@ -14,13 +14,13 @@ Plugins.mouse_freq.no_css = true;
 Plugins.mouse_freq.init = async function () {
 
   // Check if utils plugin is loaded
-  if (!Plugins.isLoaded('utils')) {
+  if (!Plugins.isLoaded('utils', 0.4)) {
     // try to load the utils plugin
     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 
     // check again if it was loaded successfully
-    if (!Plugins.isLoaded('utils')) {
-      console.error('mouse_freq plugin depends on "utils".');
+    if (!Plugins.isLoaded('utils', 0.4)) {
+      console.error('mouse_freq plugin depends on "utils" >= 0.4.');
       return false;
     } else {
       Plugins._debug('Plugin "utils" has been loaded as dependency.');
@@ -41,7 +41,7 @@ Plugins.mouse_freq.init = async function () {
       backgroundColor: "rgba(0,0,0, .5)"
     }).appendTo("body");
 
-  $(document).on('event:owrx_initialized', function (event, data) {
+  Plugins.utils.on_ready(function () {
     $("#webrx-canvas-container").mousemove(function (e) {
       if (!e.buttons) // no mouse button pressed, so it is not dragging, we can display
         $('#mouse-freq').show().text($(".webrx-mouse-freq").text()).css({

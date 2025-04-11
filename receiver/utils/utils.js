@@ -5,7 +5,7 @@
  * and adds some events for the rest plugins.
  *
  * License: MIT
- * Copyright (c) 2023 Stanislav Lechev [0xAF], LZ2SLL
+ * Copyright (c) 2023-2025 Stanislav Lechev [0xAF], LZ2SLL
  *
  * Changes:
  * 0.1:
@@ -15,13 +15,15 @@
  *  - add _DEBUG_ALL_EVENTS
  * 0.3:
  *  - handle return value of AfterCallBack of the wrapper
+ * 0.4:
+ *  - add on_ready() method to call a callback when OWRX+ is initialized
  */
 
 // Disable CSS loading for this plugin
 Plugins.utils.no_css = true;
 
 // Utils plugin version
-Plugins.utils._version = 0.3;
+Plugins.utils._version = 0.4;
 
 /**
  * Wrap an existing function with before and after callbacks.
@@ -97,6 +99,20 @@ Plugins.utils.wrap_func = function (name, before_cb, after_cb, obj = window) {
   obj[name] = proxy;
 }
 
+Plugins.utils.on_ready = function (callback) {
+  if (typeof callback === 'function') {
+    if (document.owrx_initialized) {
+      // console.debug('Utils: calling init callback..');
+      callback();
+    } else {
+      // console.debug('Utils: waiting for OWRX+ to be initialized..');
+      setTimeout(() => Plugins.utils.on_ready(callback), 50);
+    }
+  } else {
+    console.error("Plugins.utils.on_init() expects a function as a parameter.");
+  }
+}
+
 // Init utils plugin
 Plugins.utils.init = function () {
   var send_events_for = {};
@@ -157,9 +173,10 @@ Plugins.utils.init = function () {
   var interval = setInterval(function () {
     if (typeof (clock) === 'undefined') return;
     clearInterval(interval);
+    // console.debug('Utils: inform other plugins that OWRX+ is initialized..');
     $(document).trigger('event:owrx_initialized');
     document.owrx_initialized = true;
-  }, 10);
+  }, 100);
 
   return true;
 }
