@@ -47,6 +47,15 @@ Learn how to [install and load the plugins](#load-plugins).
 | :------ | :---------- |
 |[~~layer_qth_maidenhead~~](map/layer_qth_maidenhead)|(**deprecated**) add Maidenhead (QTH) grid to the map|
 
+### Thirdparty Plugins
+
+Plugins maintained by other people around:
+
+| Name | Description |
+| :------ | :---------- |
+|[owrxantswitcher](https://github.com/jrghnng/owrxantswitcher)|switch antenna ports using a WebAPI on the server to do the actual coax switching.|
+|[owrx-search-bookmarks](https://github.com/ysamouhos/owrx-search-bookmarks)|Search all owrx bookmarks and click to tune|
+
 ---
 
 ### Load Plugins
