@@ -1,25 +1,40 @@
 // Receiver plugins initialization.
-// everything after '//' is a comment.
+// everything starting with '//' is a comment.
 
-// uncomment the next line to enable plugin debugging in browser console.
+// uncomment to enable plugin debugging.
 // Plugins._enable_debug = true;
 
-// base URL for receiver plugins
-const rp_url = 'https://0xaf.github.io/openwebrxplus-plugins/receiver';
+// Setup some plugins
+// Plugins.screen_reader.log_messages = true;
+// Plugins.tune_precise_steps = [12500, 5000, 10];
+
+const PluginsToLoad = [
+	'colorful_spectrum',
+	'connect_notify',
+	'frequency_far_jump',
+	'screen_reader',
+	'screenshot',
+	'magic_key',
+	'doppler',
+	'mouse_freq',
+	'tune_precise',
+	'toggle_scannable',
+];
 
 // First load the utils, needed for some plugins
-Plugins.load(rp_url + '/utils/utils.js').then(async function () {
+Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js').then(async function () {
+	// Plugins.utils._DEBUG_ALL_EVENTS = true;
 
-  // you can load a local plugins if you have one
-  //Plugins.load('example');
+	// load a local plugins if you have one
+	//Plugins.load('example');
 
-  // Load the notification plugin, used by some plugins. await to ensure it is loaded before the rest.
-  await Plugins.load(rp_url + '/notify/notify.js');
+	// Load the notification plugin, used by some plugins. await to ensure it is loaded before the rest.
+	await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
 
-  // load remote plugins
-  // Plugins.load(rp_url + '/keyboard_shortcuts/keyboard_shortcuts.js');
-  Plugins.load(rp_url + '/colorful_spectrum/colorful_spectrum.js');
-  Plugins.load(rp_url + '/connect_notify/connect_notify.js');
-  // Plugins.load(rp_url + '/sort_profiles/sort_profiles.js');
-
+	// load remote plugins
+	for (const pluginName of PluginsToLoad) {
+		Plugins.load(`https://0xaf.github.io/openwebrxplus-plugins/receiver/${pluginName}/${pluginName}.js`);
+	}
 });
+
+// vim: ft=javascript

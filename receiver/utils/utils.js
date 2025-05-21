@@ -17,13 +17,16 @@
  *  - handle return value of AfterCallBack of the wrapper
  * 0.4:
  *  - add on_ready() method to call a callback when OWRX+ is initialized
+ * 0.5:
+ *  - add deepMerge() method to deeply merge two objects (used mostly to merge defaults with user provided options)
+ *  - add fillTemplate() method to fill a template with variables
  */
 
 // Disable CSS loading for this plugin
 Plugins.utils.no_css = true;
 
 // Utils plugin version
-Plugins.utils._version = 0.4;
+Plugins.utils._version = 0.5;
 
 /**
  * Wrap an existing function with before and after callbacks.
@@ -113,6 +116,28 @@ Plugins.utils.on_ready = function (callback) {
   }
 }
 
+Plugins.utils.deepMerge = function (target, source) {
+  if (typeof target !== 'object' || target === null) target = {};
+  if (typeof source !== 'object' || source === null) return target;
+
+  for (const key in source) {
+    if (source.hasOwnProperty(key)) {
+      if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+        target[key] = Plugins.utils.deepMerge(target[key], source[key]);
+      } else {
+        target[key] = source[key];
+      }
+    }
+  }
+  return target;
+};
+
+Plugins.utils.fillTemplate = function (template, variables) {
+  return template.replace(/{(\w+)}/g, function (match, key) {
+    return typeof variables[key] !== 'undefined' ? variables[key] : match;
+  });
+};
+
 // Init utils plugin
 Plugins.utils.init = function () {
   var send_events_for = {};
@@ -136,7 +161,7 @@ Plugins.utils.init = function () {
           if (Plugins.utils._DEBUG_ALL_EVENTS && json.type !== 'smeter')
             console.debug("server:" + json.type + ":before", [json['value']]);
           $(document).trigger('server:' + json.type + ":before", [json['value']]);
-        } catch (e) {}
+        } catch (e) { }
       }
 
       // we handle original function here
