@@ -55,3 +55,7 @@ Things like which GPIO pins to raise high when the corresponding button from the
 ```sh
 sudo ${EDITOR-nano} /opt/antenna_switcher/antenna_switcher.cfg
 ```
+
+## Using the plugin
+
+**You should open `http://1.2.3.4/` (nginx server) and NOT use the `:8073` (openwebrx) port in the URL. (Obviously you should replace 1.2.3.4 with the IP address of your OWRX receiver)**
