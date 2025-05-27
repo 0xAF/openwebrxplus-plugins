@@ -20,13 +20,15 @@
  * 0.5:
  *  - add deepMerge() method to deeply merge two objects (used mostly to merge defaults with user provided options)
  *  - add fillTemplate() method to fill a template with variables
+ * 0.6:
+ *  - add findCommonPrefix() method to find the common prefix of an array of strings
  */
 
 // Disable CSS loading for this plugin
 Plugins.utils.no_css = true;
 
 // Utils plugin version
-Plugins.utils._version = 0.5;
+Plugins.utils._version = 0.6;
 
 /**
  * Wrap an existing function with before and after callbacks.
@@ -138,6 +140,18 @@ Plugins.utils.fillTemplate = function (template, variables) {
   });
 };
 
+Plugins.utils.findCommonPrefix = function (arr) {
+   if (!arr.length) return '';
+    let low = 0, high = Math.min(...arr.map(s => s.length)); // use the min length of the strings
+    while (low < high) {
+        const mid = Math.ceil((low + high) / 2); // find the middle point
+        const prefix = arr[0].slice(0, mid); // get the string up to middle
+        if (arr.every(s => s.startsWith(prefix))) low = mid; // if the string is found in each element in the array, move the low to the current middle and try again
+        else high = mid - 1; // if there is a string that does not match, move the high to the current middle - 1 and try again
+    }
+    return arr[0].slice(0, low).trim(); // return the common prefix
+};
+
 // Init utils plugin
 Plugins.utils.init = function () {
   var send_events_for = {};
@@ -155,11 +169,14 @@ Plugins.utils.init = function () {
   send_events_for['on_ws_recv'] = {
     // if we use handler, it will replace the before_cb
     handler: function (orig, thisArg, args) {
+      function debug(msg, type, data) {
+        if (Plugins.utils._DEBUG_ALL_EVENTS && type !== 'smeter' && type !== 'temperature' && type !== 'cpuusage')
+          console.debug(msg, data);
+      }
       if (typeof (args[0].data) === 'string' && args[0].data.substr(0, 16) !== "CLIENT DE SERVER") {
         try {
           var json = JSON.parse(args[0].data);
-          if (Plugins.utils._DEBUG_ALL_EVENTS && json.type !== 'smeter')
-            console.debug("server:" + json.type + ":before", [json['value']]);
+          debug("server:" + json.type + ":before", json.type, [json['value']]);
           $(document).trigger('server:' + json.type + ":before", [json['value']]);
         } catch (e) { }
       }
@@ -168,8 +185,7 @@ Plugins.utils.init = function () {
       orig.apply(thisArg, args);
 
       if (typeof (json) === 'object') {
-        if (Plugins.utils._DEBUG_ALL_EVENTS && json.type !== 'smeter')
-          console.debug("server:" + json.type + ":after", [json['value']]);
+        debug("server:" + json.type + ":after", json.type, [json['value']]);
         $(document).trigger('server:' + json.type + ":after", [json['value']]);
       }
 
