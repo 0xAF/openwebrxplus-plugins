@@ -21,6 +21,7 @@ Learn how to [install and load the plugins](#load-plugins).
 
 | Name | Description |
 | :------ | :---------- |
+|[search_bookmarks](receiver/search_bookmarks)|Search all owrx bookmarks and click to tune ([Yannis](#contributors))|
 |[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of the bookmarks with right mouse button|
 |[tune_precise](receiver/tune_precise)|Add buttons to precisely tune the frequency ([LZ2DMV](#contributors))|
 |[mouse_freq](receiver/mouse_freq)|Show freq under cursor next to the cursor|
@@ -54,7 +55,6 @@ Plugins maintained by other people around:
 | Name | Description |
 | :------ | :---------- |
 |[owrxantswitcher](https://github.com/jrghnng/owrxantswitcher)|switch antenna ports using a WebAPI on the server to do the actual coax switching.|
-|[owrx-search-bookmarks](https://github.com/ysamouhos/owrx-search-bookmarks)|Search all owrx bookmarks and click to tune|
 
 ---
 
@@ -117,3 +117,4 @@ For support, you can find me (`LZ2SLL`) in the [OWRX+ Telegram Chat](https://t.m
 ### Contributors
 
 * [LZ2DMV](https://github.com/LZ2DMV)
+* [Yannis](https://github.com/ysamouhos)
