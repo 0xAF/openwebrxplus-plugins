@@ -18,3 +18,8 @@ Please note this is still work in progress.
 # Known issues
 1. Jumping to the bookmark does not switch receiver profile. (or rather, it switches but the change is not visible on the receiver panel)
 2. There is no way yet to select specific receiver profile if multiple profiles exist. Mostly needed if multiple receivers exist.
+
+# Contact @ysamouhos on Telegram or Github
+
+# Screenshot
+![image](https://github.com/user-attachments/assets/3b58fcf5-2b26-4f0d-8a72-f868f1c0eb52)
