@@ -12,21 +12,23 @@ permalink: /
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
-- [Plugin List](#plugin-list)
-  - [Receiver Plugins](#receiver-plugins)
-  - [Map Plugins](#map-plugins)
-  - [Thirdparty Plugins](#thirdparty-plugins)
-- [Installation & Loading Plugins](#installation--loading-plugins)
-  - [Example setup](#example-setup)
-- [Raspberry Pi & Docker Notes](#raspberry-pi--docker-notes)
-- [Developing Plugins](#developing-plugins)
-  - [Hosting on GitHub](#hosting-on-github)
-- [Contributing](#contributing)
-- [Support](#support)
-- [FAQ](#faq)
-- [Contributors](#contributors)
-- [License](#license)
+- [OpenWebRX+ Plugins](#openwebrx-plugins)
+  - [Table of Contents](#table-of-contents)
+  - [Project Overview](#project-overview)
+  - [Plugin List](#plugin-list)
+    - [Receiver Plugins](#receiver-plugins)
+    - [Map Plugins](#map-plugins)
+    - [Thirdparty Plugins](#thirdparty-plugins)
+  - [Installation \& Loading Plugins](#installation--loading-plugins)
+    - [Example setup for receiver plugins](#example-setup-for-receiver-plugins)
+  - [Raspberry Pi \& Docker Notes](#raspberry-pi--docker-notes)
+  - [Developing Plugins](#developing-plugins)
+    - [Hosting on GitHub](#hosting-on-github)
+  - [Contributing](#contributing)
+  - [Support](#support)
+  - [FAQ](#faq)
+  - [Contributors](#contributors)
+  - [License](#license)
 
 ## Project Overview
 
@@ -88,13 +90,13 @@ Each plugin is documented in its own folder.
    - `/opt/openwebrx/htdocs`
    - `/usr/lib/python3/dist-packages/htdocs`
 
-3. **Create the plugins folder if it doesn't exist**  
+3. **Create the plugins folders if they doesn't exist**  
 
    ```sh
-   mkdir -p /path/to/htdocs/plugins/receiver
+   mkdir -p /path/to/htdocs/plugins/{receiver,map}
    ```
 
-4. **Create or edit the `init.js` file**  
+4. **Create or edit the `init.js` file inside the coresponding plugin type folder (receiver or map)**  
    Use the provided templates:
    - [receiver/init.js.sample](receiver/init.js.sample)
    - [map/init.js.sample](map/init.js.sample)
@@ -106,7 +108,7 @@ Each plugin is documented in its own folder.
    Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/tune_precise/tune_precise.js');
    ```
 
-### Example setup
+### Example setup for receiver plugins
 
 ```bash
 OWRX_FOLDER=$(dirname `find / -name openwebrx.js`)
@@ -140,7 +142,7 @@ If you want to create new plugins:
 3. Develop plugins locally in `$OWRX_FOLDER/plugins/{type}/your_plugin/`.
 4. Load local plugins by folder name:  
    `Plugins.load('your_plugin');`
-5. Load remote plugins by URL:  
+5. Load remote plugins by URL (example for map plugin):  
    `Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/map/layer_qth_maidenhead/layer_qth_maidenhead.js');`
 
 ### Hosting on GitHub
