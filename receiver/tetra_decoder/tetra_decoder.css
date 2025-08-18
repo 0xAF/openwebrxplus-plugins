@@ -1,0 +1,777 @@
+/*
+ * TETRA Decoder Plugin Styles
+ * 
+ * Comprehensive styling for the TETRA decoder plugin UI components
+ * including controls, quality indicators, and message display.
+ */
+
+/* Control Row */
+.tetra-control-row {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin: 8px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Main control panel */
+#tetra-decoder-controls {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border: 1px solid #4a6741;
+    border-radius: 6px;
+    padding: 8px;
+    margin: 5px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Buttons */
+.tetra-btn, .openwebrx-button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #444;
+    color: #fff;
+    border: 1px solid #666;
+}
+
+.tetra-btn:hover, .openwebrx-button:hover {
+    background: #555;
+    border-color: #777;
+    transform: translateY(-1px);
+}
+
+.tetra-btn:active, .openwebrx-button:active {
+    transform: translateY(0);
+}
+
+.tetra-btn-enable {
+    background: linear-gradient(135deg, #00ff88, #00cc6a);
+    color: #000;
+    border-color: #00ff88;
+}
+
+.tetra-btn-enable:hover {
+    background: linear-gradient(135deg, #00cc6a, #00aa55);
+}
+
+.tetra-btn-decode {
+    background: linear-gradient(135deg, #4a9eff, #357abd);
+    color: white;
+    border-color: #4a9eff;
+}
+
+.tetra-btn-decode:hover {
+    background: linear-gradient(135deg, #357abd, #2a5f8f);
+}
+
+.tetra-btn-decode:disabled {
+    background: #555;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+    border-color: #555;
+}
+
+.tetra-btn-clear {
+    background: linear-gradient(135deg, #ff4757, #c44569);
+    color: white;
+    border-color: #ff4757;
+}
+
+.tetra-btn-clear:hover {
+    background: linear-gradient(135deg, #c44569, #a5344a);
+}
+
+/* TETRA buttons */
+.tetra-btn-enable,
+.tetra-btn-decode {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    border: 1px solid #229954;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.tetra-btn-enable:hover,
+.tetra-btn-decode:hover {
+    background: linear-gradient(135deg, #229954 0%, #27ae60 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.tetra-btn-active {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+    border-color: #a93226 !important;
+}
+
+.tetra-btn-decoding {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important;
+    border-color: #d68910 !important;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.tetra-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+    100% { opacity: 1; }
+}
+
+/* Quality indicator */
+.tetra-quality-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid #555;
+}
+
+.tetra-quality-label {
+    color: #ecf0f1;
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 45px;
+}
+
+.tetra-quality-bar {
+    width: 80px;
+    height: 12px;
+    background: #2c3e50;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #34495e;
+    position: relative;
+}
+
+.tetra-quality-fill {
+    height: 100%;
+    transition: width 0.5s ease, background-color 0.3s ease;
+    border-radius: 5px;
+}
+
+.tetra-quality-fill.quality-poor {
+    background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.tetra-quality-fill.quality-fair {
+    background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%);
+}
+
+.tetra-quality-fill.quality-good {
+    background: linear-gradient(90deg, #f1c40f 0%, #f39c12 100%);
+}
+
+.tetra-quality-fill.quality-excellent {
+    background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.tetra-quality-text {
+    color: #ecf0f1;
+    font-size: 11px;
+    font-weight: bold;
+    min-width: 30px;
+    text-align: right;
+}
+
+/* Status Indicator */
+.tetra-status {
+    background: #333;
+    color: #00ff88;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid #00ff88;
+    animation: pulse 2s infinite;
+}
+
+/* Status indicator */
+.tetra-status-indicator {
+    background: #7f8c8d;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid #95a5a6;
+    transition: all 0.3s ease;
+}
+
+.tetra-status-indicator.tetra-status-enabled {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    border-color: #2471a3;
+}
+
+.tetra-status-indicator.tetra-status-decoding {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+    border-color: #ba4a00;
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 5px rgba(230, 126, 34, 0.5); }
+    to { box-shadow: 0 0 15px rgba(230, 126, 34, 0.8); }
+}
+
+/* Quality Panel */
+.tetra-quality-panel {
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 8px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.tetra-quality-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #ccc;
+}
+
+.tetra-quality-value {
+    color: #00ff88;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.tetra-quality-bar {
+    width: 100%;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.tetra-quality-fill {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 4px;
+}
+
+.tetra-quality-fill.quality-poor {
+    background: linear-gradient(90deg, #ff4757, #c44569);
+}
+
+.tetra-quality-fill.quality-fair {
+    background: linear-gradient(90deg, #ffa502, #ff7675);
+}
+
+.tetra-quality-fill.quality-good {
+    background: linear-gradient(90deg, #2ed573, #1e90ff);
+}
+
+.tetra-quality-fill.quality-excellent {
+    background: linear-gradient(90deg, #00ff88, #00cc6a);
+}
+
+.tetra-quality-indicators {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.tetra-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.tetra-indicator-label {
+    font-size: 10px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tetra-indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #333;
+    border: 1px solid #555;
+    transition: all 0.3s ease;
+}
+
+.tetra-indicator-dot.indicator-off {
+    background: #333;
+    border-color: #555;
+}
+
+.tetra-indicator-dot.indicator-weak {
+    background: #ffa502;
+    border-color: #ffa502;
+    box-shadow: 0 0 6px rgba(255, 165, 2, 0.5);
+}
+
+.tetra-indicator-dot.indicator-strong {
+    background: #00ff88;
+    border-color: #00ff88;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Data Panel */
+.tetra-data-panel {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    margin: 8px 0;
+    max-height: 400px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Data panel */
+.tetra-decoder-panel {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border: 1px solid #4a6741;
+    border-radius: 6px;
+    margin: 10px 0;
+    padding: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.tetra-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tetra-title {
+    color: #00ff88;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.tetra-panel-header {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    padding: 12px 16px;
+    border-bottom: 1px solid #4a6741;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tetra-panel-header h3 {
+    margin: 0;
+    color: #ecf0f1;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.tetra-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.tetra-stat {
+    color: #bdc3c7;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.tetra-stat span {
+    color: #3498db;
+    font-weight: bold;
+}
+
+/* Controls section */
+.tetra-controls {
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid #4a6741;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.tetra-small-btn {
+    background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+    border: 1px solid #6c7b7d;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s ease;
+}
+
+.tetra-small-btn:hover {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    transform: translateY(-1px);
+}
+
+.tetra-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #bdc3c7;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.tetra-checkbox input[type="checkbox"] {
+    accent-color: #3498db;
+}
+
+/* Messages container */
+.tetra-messages-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 8px;
+    background: #1a252f;
+}
+
+.tetra-messages-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tetra-messages-container::-webkit-scrollbar-track {
+    background: #2c3e50;
+    border-radius: 4px;
+}
+
+.tetra-messages-container::-webkit-scrollbar-thumb {
+    background: #4a6741;
+    border-radius: 4px;
+}
+
+.tetra-messages-container::-webkit-scrollbar-thumb:hover {
+    background: #5a7a51;
+}
+
+/* Individual messages */
+.tetra-message {
+    background: rgba(52, 73, 94, 0.8);
+    border: 1px solid #4a6741;
+    border-radius: 4px;
+    margin: 4px 0;
+    padding: 8px;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.tetra-message:hover {
+    background: rgba(52, 73, 94, 1);
+    border-color: #5a7a51;
+}
+
+.tetra-message.tetra-message-new {
+    background: rgba(76, 175, 80, 0.2);
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.tetra-message.emergency {
+    border-left: 4px solid #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.tetra-message.priority {
+    border-left: 4px solid #f39c12;
+    background: rgba(243, 156, 18, 0.1);
+}
+
+.tetra-message.info {
+    border-left: 4px solid #3498db;
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.tetra-message.voice_call {
+    border-left: 4px solid #2196F3;
+}
+
+.tetra-message.data_message {
+    border-left: 4px solid #FF9800;
+}
+
+.tetra-message.group_call {
+    border-left: 4px solid #9C27B0;
+}
+
+.tetra-message.location_update {
+    border-left: 4px solid #00BCD4;
+}
+
+.tetra-message-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 4px;
+    font-weight: bold;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.tetra-timestamp {
+    color: #95a5a6;
+    font-size: 11px;
+    font-family: monospace;
+    min-width: 70px;
+}
+
+.tetra-message-type {
+    background: #3498db;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.tetra-message-type.emergency {
+    background: #e74c3c;
+}
+
+.tetra-message-type.priority {
+    background: #f39c12;
+}
+
+.tetra-message-quality {
+    color: #888;
+    font-size: 9px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.tetra-encrypted {
+    color: #FFC107;
+    font-size: 10px;
+    margin: 0 2px;
+}
+
+.tetra-message-info {
+    color: #aaa;
+    font-size: 10px;
+    margin-bottom: 4px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tetra-priority {
+    background: #e67e22;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.tetra-message-content {
+    color: #ecf0f1;
+    font-size: 13px;
+    line-height: 1.4;
+    font-family: 'Courier New', monospace;
+    word-break: break-word;
+    font-weight: normal;
+}
+
+.tetra-message-details {
+    color: #bdc3c7;
+    font-size: 11px;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(189, 195, 199, 0.2);
+    font-style: italic;
+}
+
+/* Notification styles */
+.tetra-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border-left: 4px solid #4CAF50;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    max-width: 350px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    animation: slideInRight 0.3s ease;
+}
+
+.tetra-notification-success {
+    border-left-color: #4CAF50;
+}
+
+.tetra-notification-info {
+    border-left-color: #2196F3;
+}
+
+.tetra-notification-warning {
+    border-left-color: #FF9800;
+}
+
+.tetra-notification-error {
+    border-left-color: #f44336;
+}
+
+.tetra-notification-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.tetra-notification-text {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.tetra-notification-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.tetra-notification-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #tetra-decoder-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .tetra-quality-indicator {
+        justify-content: center;
+    }
+    
+    .tetra-stats {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .tetra-controls {
+        flex-wrap: wrap;
+    }
+    
+    .tetra-notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+}
+
+/* Animation for new messages */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.tetra-message {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Loading indicator */
+.tetra-loading {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #3498db;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Disabled state */
+.tetra-btn-enable:disabled,
+.tetra-btn-decode:disabled {
+    background: #7f8c8d !important;
+    border-color: #95a5a6 !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.tetra-btn-enable:disabled:hover,
+.tetra-btn-decode:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
