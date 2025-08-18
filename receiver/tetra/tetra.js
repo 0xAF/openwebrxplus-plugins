@@ -24,7 +24,7 @@ Plugins.tetra.init = function () {
   // Add TETRA mode to the available modes
   Plugins.tetra.addTetraMode();
   
-  // Create UI for TETRA data
+  // Create UI for TETRA data and buttons
   Plugins.tetra.createUI();
 
   // Listen for when OpenWebRX is initialized
@@ -34,26 +34,41 @@ Plugins.tetra.init = function () {
     // Ensure UI is created after initialization
     Plugins.tetra.createUI();
     
-    // Add click handler for TETRA mode button if it exists
-    $('.openwebrx-button-dig[data-modulation="tetra"]').addClass('tetra-mode-button');
+    // Force a re-render of the demodulator panel to show our new mode
+    if (typeof UI !== 'undefined' && UI.getDemodulatorPanel) {
+      UI.getDemodulatorPanel().render();
+    }
   });
   
   // Listen for demodulator changes
-  $(document).on('event:demodulator_change', function() {
-    // Check if TETRA is the current modulation
-    if (demodulators && demodulators[0] && demodulators[0].getModulation() === 'tetra') {
-      console.log('TETRA mode activated');
-      // Show TETRA container
-      $('#tetra-container').show();
-      // Add active class to TETRA button
-      $('.tetra-mode-button').addClass('tetra-mode-active');
-    } else {
-      // Hide TETRA container when not in TETRA mode
-      $('#tetra-container').hide();
-      // Remove active class from TETRA button
-      $('.tetra-mode-button').removeClass('tetra-mode-active');
-    }
+$(document).on('event:demodulator_change', function(e, demodulator) {
+  // Check if TETRA is the current modulation
+  if (demodulator && demodulator.getModulation() === 'tetra') {
+    console.log('TETRA mode activated');
+    // Show TETRA container
+    $('#tetra-container').show();
+    // Add active class to TETRA button
+    $('#openwebrx-button-tetra').addClass('highlighted');
+  } else {
+    // Hide TETRA container when not in TETRA mode
+    $('#tetra-container').hide();
+    // Remove active class from TETRA button
+    $('#openwebrx-button-tetra').removeClass('highlighted');
+  }
+});
+
+// TETRA button click handling is now managed by DemodulatorPanel automatically
+
+  // Listen for panel rendered events to ensure our UI elements are created
+  $(document).on('event:panel_rendered', function() {
+    // Ensure our UI elements are created after panel renders
+    setTimeout(function() {
+      Plugins.tetra.createUI();
+    }, 100);
   });
+
+  // Trigger a custom event that other plugins can listen for
+  $(document).trigger('event:tetra_initialized');
 
   return true;
 };
@@ -75,31 +90,68 @@ Plugins.tetra.addTetraMode = function () {
     return true;
   }
 
-  // Create TETRA mode
-  const tetraMode = new Mode(
-    'tetra',           // modulation
-    'TETRA',           // name
-    'digimode',        // type
-    true,              // squelch
-    new Bandpass(      // bandpass
-      -4000,           // low_cut
-      4000,            // high_cut
-      5                // transition_width
-    ),
-    8000,              // ifRate
-    'nfm'              // underlying modulation
-  );
+  // Create TETRA mode object in the format expected by Modes.setModes
+  const tetraMode = {
+    modulation: 'tetra',
+    name: 'TETRA',
+    type: 'analog',
+    squelch: true,
+    bandpass: {
+      low_cut: -4000,
+      high_cut: 4000
+    },
+    ifRate: 8000,
+    underlying: ['nfm'],
+    secondaryFft: true
+  };
 
   // Add TETRA mode to the available modes
   const newModes = [...currentModes, tetraMode];
   Modes.setModes(newModes);
   
+  // Patch the DemodulatorPanel.prototype.render method to trigger an event when rendering is complete
+  if (!Plugins.tetra.rendererPatched && typeof DemodulatorPanel !== 'undefined') {
+    Plugins.tetra.rendererPatched = true;
+    Plugins.utils.wrap_func(
+      'DemodulatorPanel.prototype.render',
+      function(orig, thisArg, args) {
+        return true; // Allow original function to execute
+      },
+      function(res) {
+        // After rendering is complete, trigger our custom event
+        $(document).trigger('event:panel_rendered');
+        return res;
+      }
+    );
+  }
+  
   console.log('TETRA mode added to available modes');
   return true;
 };
 
-// Create UI for TETRA data display
+// Create UI for TETRA data display and control buttons
 Plugins.tetra.createUI = function() {
+  // Create TETRA control buttons row if it doesn't exist
+  if ($('#tetra-row').length === 0) {
+    // Add TETRA control row after the modes panel, similar to doppler plugin
+    $('.openwebrx-modes').after(`
+      <div id="tetra-row" class="openwebrx-panel-line openwebrx-panel-flex-line">
+        <div id="tetra-enable" class="openwebrx-button">Enable TETRA</div>
+        <div id="tetra-decode" class="openwebrx-button">Start Decode</div>
+        <div id="tetra-status" class="openwebrx-button" style="background-color: #666;">TETRA Ready</div>
+      </div>
+    `);
+    
+    // Add click handlers for TETRA buttons
+    $('#tetra-enable').click(function() {
+      Plugins.tetra.enableTetraMode();
+    });
+    
+    $('#tetra-decode').click(function() {
+      Plugins.tetra.toggleDecode();
+    });
+  }
+  
   // Create container for TETRA data if it doesn't exist
   if ($('#tetra-container').length === 0) {
     // Add container to the secondary demod panel
@@ -158,7 +210,47 @@ Plugins.utils.wrap_func(
   }
 );
 
+// TETRA control functions
+Plugins.tetra.enableTetraMode = function() {
+  // Switch to TETRA demodulation mode
+  if (typeof demodulators !== 'undefined' && demodulators[0]) {
+    demodulators[0].setModulation('tetra');
+    $('#tetra-status').text('TETRA Active').css('background-color', '#4CAF50');
+    console.log('TETRA mode enabled');
+  }
+};
+
+Plugins.tetra.decoding = false;
+Plugins.tetra.toggleDecode = function() {
+  if (!Plugins.tetra.decoding) {
+    // Start decoding
+    Plugins.tetra.decoding = true;
+    $('#tetra-decode').text('Stop Decode').css('background-color', '#f44336');
+    $('#tetra-status').text('Decoding...').css('background-color', '#FF9800');
+    console.log('TETRA decoding started');
+    
+    // Show TETRA container
+    $('#tetra-container').show();
+  } else {
+    // Stop decoding
+    Plugins.tetra.decoding = false;
+    $('#tetra-decode').text('Start Decode').css('background-color', '');
+    $('#tetra-status').text('TETRA Ready').css('background-color', '#666');
+    console.log('TETRA decoding stopped');
+    
+    // Hide TETRA container
+    $('#tetra-container').hide();
+  }
+};
+
 // Register event listener for TETRA data
 $(document).on('server:tetra:before', function (e, data) {
   Plugins.tetra.handleDemodulation(data);
+});
+
+// Update status when TETRA mode is selected
+$(document).on('event:demodulator_change', function(e, demodulator) {
+  if (demodulator && demodulator.getModulation() === 'tetra') {
+    $('#tetra-status').text('TETRA Active').css('background-color', '#4CAF50');
+  }
 });
