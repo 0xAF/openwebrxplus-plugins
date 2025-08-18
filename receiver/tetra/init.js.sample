@@ -1,0 +1,16 @@
+// Sample init.js for loading the TETRA plugin
+
+// First load the utils plugin, which is required by the TETRA plugin
+Plugins.load('utils').then(async function () {
+  // Then load the TETRA plugin
+  Plugins.load('tetra');
+});
+
+// Alternatively, if loading from a remote URL:
+/*
+const rp_url = 'https://your-plugin-server.com/plugins/receiver';
+
+Plugins.load(rp_url + '/utils/utils.js').then(async function () {
+  Plugins.load(rp_url + '/tetra/tetra.js');
+});
+*/

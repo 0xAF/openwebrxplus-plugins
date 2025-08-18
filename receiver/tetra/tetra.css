@@ -1,0 +1,35 @@
+/*
+ * TETRA demodulation plugin CSS for OpenWebRx+
+ */
+
+/* Styling for TETRA data display */
+.tetra-data-container {
+  margin: 10px 0;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.tetra-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #4CAF50;
+}
+
+.tetra-message {
+  margin: 3px 0;
+  padding: 2px 5px;
+  border-left: 3px solid #2196F3;
+}
+
+.tetra-info {
+  color: #FFC107;
+  font-style: italic;
+}
+
+/* Highlight for TETRA mode button when active */
+.tetra-mode-active {
+  background-color: rgba(33, 150, 243, 0.3) !important;
+  border-color: #2196F3 !important;
+}

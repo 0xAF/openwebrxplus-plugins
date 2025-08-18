@@ -1,0 +1,15 @@
+{
+  "name": "tetra",
+  "version": "1.0.0",
+  "description": "TETRA demodulation plugin for OpenWebRX+",
+  "author": "OpenWebRX+ Community",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "utils": ">=0.1.0"
+  },
+  "openwebrx": {
+    "pluginType": "receiver",
+    "displayName": "TETRA Demodulation",
+    "minVersion": "1.0.0"
+  }
+}

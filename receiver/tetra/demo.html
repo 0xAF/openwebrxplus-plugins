@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TETRA Plugin Demo</title>
+  <link rel="stylesheet" href="tetra.css">
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .demo-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #2d2d2d;
+      border-radius: 8px;
+    }
+    .demo-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .demo-controls {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .demo-button {
+      background-color: #3a3a3a;
+      border: 1px solid #505050;
+      color: #e0e0e0;
+      padding: 8px 16px;
+      margin: 0 5px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .demo-button:hover {
+      background-color: #505050;
+    }
+    .demo-button.active {
+      background-color: rgba(33, 150, 243, 0.3);
+      border-color: #2196F3;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <div class="demo-header">
+      <h1>TETRA Plugin Demo</h1>
+      <p>This demonstrates how the TETRA plugin would appear in OpenWebRX+</p>
+    </div>
+    
+    <div class="demo-controls">
+      <button class="demo-button">AM</button>
+      <button class="demo-button">FM</button>
+      <button class="demo-button">NFM</button>
+      <button class="demo-button active tetra-mode-button">TETRA</button>
+      <button class="demo-button">DMR</button>
+    </div>
+    
+    <div class="tetra-data-container">
+      <div class="tetra-header">TETRA Demodulation</div>
+      <div id="tetra-messages">
+        <div class="tetra-message">TETRA MCC: 262, MNC: 1, LA: 1, Cell ID: 100</div>
+        <div class="tetra-message">Received SYNC PDU</div>
+        <div class="tetra-message">Logical channel: AACH</div>
+        <div class="tetra-message">Downlink frequency: 393.0 MHz</div>
+        <div class="tetra-message">Signal quality: 3.5</div>
+      </div>
+      <div id="tetra-info" class="tetra-info">TETRA signal detected - 12:34:56</div>
+    </div>
+  </div>
+
+  <script>
+    // Simple demo script to simulate TETRA data reception
+    document.addEventListener('DOMContentLoaded', function() {
+      const buttons = document.querySelectorAll('.demo-button');
+      buttons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Remove active class from all buttons
+          buttons.forEach(btn => btn.classList.remove('active'));
+          // Add active class to clicked button
+          this.classList.add('active');
+          
+          // Show/hide TETRA container based on selection
+          const tetraContainer = document.querySelector('.tetra-data-container');
+          if (this.textContent === 'TETRA') {
+            tetraContainer.style.display = 'block';
+          } else {
+            tetraContainer.style.display = 'none';
+          }
+        });
+      });
+      
+      // Simulate receiving new TETRA messages
+      const messages = [
+        'New SYSINFO PDU received',
+        'Traffic channel allocation: 393.125 MHz',
+        'Group call initiated, GSSI: 12345',
+        'Encryption enabled, TEI: 0x1A2B3C',
+        'Handover preparation to cell ID: 101'
+      ];
+      
+      let index = 0;
+      setInterval(() => {
+        const messagesContainer = document.getElementById('tetra-messages');
+        const newMessage = document.createElement('div');
+        newMessage.className = 'tetra-message';
+        newMessage.textContent = messages[index];
+        messagesContainer.appendChild(newMessage);
+        
+        // Update time
+        document.getElementById('tetra-info').textContent = 
+          'TETRA signal detected - ' + new Date().toLocaleTimeString();
+        
+        // Remove oldest message if more than 5
+        if (messagesContainer.children.length > 5) {
+          messagesContainer.removeChild(messagesContainer.children[0]);
+        }
+        
+        index = (index + 1) % messages.length;
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
