@@ -1,0 +1,9 @@
+/* CSS for SelCall STQC plugin */
+
+/* Style for STQC decoded information */
+.stqc-info {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+/* You can add more styles here if needed */
