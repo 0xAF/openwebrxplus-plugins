@@ -1,0 +1,237 @@
+/*
+ * Weather Overlay Plugin Styles
+ * Provides styling for the weather control panel and layer controls
+ */
+
+.weather-control {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+  margin: 10px;
+  min-width: 200px;
+  max-width: 250px;
+}
+
+.weather-panel {
+  font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+
+.weather-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 4px 4px 0 0;
+}
+
+.weather-title {
+  font-weight: bold;
+  color: #495057;
+  font-size: 13px;
+}
+
+.weather-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #6c757d;
+  padding: 2px 4px;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+
+.weather-toggle:hover {
+  background-color: #e9ecef;
+}
+
+.weather-layers {
+  padding: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.weather-layer-item {
+  display: block;
+  margin-bottom: 8px;
+  padding: 6px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.weather-layer-item:hover {
+  background-color: #f8f9fa;
+}
+
+.weather-layer-item input[type="checkbox"] {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.weather-layer-item span {
+  display: inline-block;
+  width: 80px;
+  vertical-align: middle;
+  font-weight: 500;
+  color: #495057;
+}
+
+.opacity-slider {
+  width: 60px;
+  height: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #ddd;
+  border-radius: 2px;
+  outline: none;
+}
+
+.opacity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #007bff;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.opacity-slider::-webkit-slider-thumb:hover {
+  background: #0056b3;
+}
+
+.opacity-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #007bff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.opacity-slider::-moz-range-thumb:hover {
+  background: #0056b3;
+}
+
+.weather-info {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.weather-info small {
+  color: #6c757d;
+  font-size: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .weather-control {
+    min-width: 180px;
+    max-width: 200px;
+    margin: 5px;
+  }
+  
+  .weather-layer-item span {
+    width: 70px;
+    font-size: 11px;
+  }
+  
+  .opacity-slider {
+    width: 50px;
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .weather-control {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+  
+  .weather-header {
+    background: #4a5568;
+    border-bottom-color: #718096;
+  }
+  
+  .weather-title {
+    color: #e2e8f0;
+  }
+  
+  .weather-toggle {
+    color: #a0aec0;
+  }
+  
+  .weather-toggle:hover {
+    background-color: #4a5568;
+  }
+  
+  .weather-layer-item:hover {
+    background-color: #4a5568;
+  }
+  
+  .weather-layer-item span {
+    color: #e2e8f0;
+  }
+  
+  .weather-info {
+    border-top-color: #718096;
+  }
+  
+  .weather-info small {
+    color: #a0aec0;
+  }
+  
+  .opacity-slider {
+    background: #4a5568;
+  }
+}
+
+/* Animation for panel toggle */
+.weather-layers {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* Leaflet control integration */
+.leaflet-control-container .weather-control {
+  margin: 0;
+}
+
+.leaflet-bar .weather-panel {
+  border-radius: 4px;
+}
+
+/* Ensure proper z-index */
+.weather-control {
+  z-index: 1000;
+  position: relative;
+}
+
+/* Loading state */
+.weather-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.weather-loading::after {
+  content: "Loading...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 2px;
+  font-size: 10px;
+  color: #666;
+}

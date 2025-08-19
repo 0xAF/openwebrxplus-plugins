@@ -1,0 +1,169 @@
+/*
+ * Weather Overlay Plugin Configuration Sample
+ * 
+ * Copy this file to 'config.js' and modify the settings as needed.
+ * This file allows you to customize the weather overlay plugin behavior
+ * without modifying the main plugin files.
+ */
+
+// Weather Overlay Plugin Custom Configuration
+(function() {
+  'use strict';
+  
+  // Wait for the plugin to be available
+  var configInterval = setInterval(function() {
+    if (typeof Plugins !== 'undefined' && Plugins.weather_overlay) {
+      clearInterval(configInterval);
+      
+      // Custom configuration object
+      var customConfig = {
+        
+        // ===========================================
+        // API CONFIGURATION
+        // ===========================================
+        
+        // Your OpenWeatherMap API key
+        // Get one free at: https://openweathermap.org/api
+        apiKey: '0b25112f2f9db10b5f55114e9b465de1',
+        
+        // ===========================================
+        // LAYER DEFAULTS
+        // ===========================================
+        
+        defaultLayers: {
+          // Precipitation layer (rain, snow)
+          precipitation: {
+            enabled: true,    // Start with precipitation enabled
+            opacity: 0.7      // Slightly more opaque
+          },
+          
+          // Cloud coverage layer
+          clouds: {
+            enabled: false,   // Disabled by default
+            opacity: 0.4
+          },
+          
+          // Temperature layer
+          temperature: {
+            enabled: false,   // Disabled by default
+            opacity: 0.5
+          },
+          
+          // Wind speed layer
+          wind: {
+            enabled: false,   // Disabled by default
+            opacity: 0.6
+          },
+          
+          // Atmospheric pressure layer
+          pressure: {
+            enabled: false,   // Disabled by default
+            opacity: 0.4
+          }
+        },
+        
+        // ===========================================
+        // UI CONFIGURATION
+        // ===========================================
+        
+        // Control panel position on map
+        // Options: 'topleft', 'topright', 'bottomleft', 'bottomright'
+        controlPosition: 'topright',
+        
+        // Whether the control panel can be collapsed
+        collapsible: true,
+        
+        // Start with panel collapsed (if collapsible is true)
+        startCollapsed: false,
+        
+        // ===========================================
+        // PERFORMANCE SETTINGS
+        // ===========================================
+        
+        // Maximum zoom level for weather tiles
+        maxZoom: 18,
+        
+        // Minimum zoom level for weather tiles
+        minZoom: 1,
+        
+        // Attribution text
+        attribution: '© OpenWeatherMap',
+        
+        // ===========================================
+        // ADVANCED SETTINGS
+        // ===========================================
+        
+        // Custom tile URL template (advanced users only)
+        // Leave empty to use default OpenWeatherMap URLs
+        customTileUrl: '',
+        
+        // Tile update interval in milliseconds (0 = no auto-update)
+        updateInterval: 0,
+        
+        // Enable/disable debug logging
+        debug: false,
+        
+        // Custom layer definitions (advanced)
+        // Add your own weather layers here
+        customLayers: {
+          // Example custom layer:
+          // 'custom_layer': {
+          //   name: 'Custom Weather Layer',
+          //   layer: 'custom_layer_id',
+          //   opacity: 0.5,
+          //   enabled: false,
+          //   url: 'https://your-tile-server.com/{layer}/{z}/{x}/{y}.png'
+          // }
+        }
+      };
+      
+      // Apply the custom configuration
+      if (typeof Plugins.weather_overlay.updateConfig === 'function') {
+        Plugins.weather_overlay.updateConfig(customConfig);
+        
+        if (customConfig.debug) {
+          console.log('Weather Overlay: Custom configuration applied', customConfig);
+        }
+      }
+    }
+  }, 100);
+  
+  // Clear interval after 10 seconds to prevent infinite checking
+  setTimeout(function() {
+    clearInterval(configInterval);
+  }, 10000);
+  
+})();
+
+// ===========================================
+// USAGE EXAMPLES
+// ===========================================
+
+/*
+
+// Example 1: Enable precipitation by default
+defaultLayers: {
+  precipitation: { enabled: true, opacity: 0.8 }
+}
+
+// Example 2: Use your own API key
+apiKey: 'abcdef123456789'
+
+// Example 3: Position control on bottom left
+controlPosition: 'bottomleft'
+
+// Example 4: Start with collapsed panel
+startCollapsed: true
+
+// Example 5: Add custom weather layer
+customLayers: {
+  'radar': {
+    name: 'Weather Radar',
+    layer: 'radar',
+    opacity: 0.6,
+    enabled: false,
+    url: 'https://your-radar-tiles.com/{z}/{x}/{y}.png'
+  }
+}
+
+*/

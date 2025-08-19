@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Overlay Plugin Test</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    
+    <!-- Weather Overlay CSS -->
+    <link rel="stylesheet" href="weather_overlay.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        
+        .test-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .test-info h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .test-info p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .status {
+            padding: 5px;
+            border-radius: 3px;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <h3>🌤️ Weather Overlay Test</h3>
+        <p>This page tests the weather overlay plugin functionality.</p>
+        <div id="status-container">
+            <div class="status warning">Initializing...</div>
+        </div>
+        <p><strong>Instructions:</strong></p>
+        <ul style="font-size: 11px; margin: 5px 0; padding-left: 15px;">
+            <li>Look for weather control panel (top-right)</li>
+            <li>Toggle weather layers on/off</li>
+            <li>Adjust opacity with sliders</li>
+            <li>Check browser console for errors</li>
+        </ul>
+    </div>
+    
+    <div id="map"></div>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
+    
+    <script>
+        // Mock OpenWebRX environment
+        window.Plugins = {
+            _debug: true
+        };
+        
+        // Mock localStorage functions (similar to OpenWebRX)
+        window.LS = {
+            save: function(key, value) {
+                localStorage.setItem(key, JSON.stringify(value));
+            },
+            load: function(key) {
+                var item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : null;
+            },
+            loadBool: function(key) {
+                var item = this.load(key);
+                return item === true || item === 'true';
+            }
+        };
+        
+        // Mock mapExtraLayers (OpenWebRX map layers)
+        window.mapExtraLayers = [];
+        
+        // Status tracking
+        var testStatus = {
+            leafletLoaded: false,
+            pluginLoaded: false,
+            pluginInitialized: false,
+            weatherControlVisible: false,
+            errors: []
+        };
+        
+        function updateStatus() {
+            var container = document.getElementById('status-container');
+            var html = '';
+            
+            if (testStatus.leafletLoaded) {
+                html += '<div class="status success">✓ Leaflet loaded</div>';
+            }
+            
+            if (testStatus.pluginLoaded) {
+                html += '<div class="status success">✓ Plugin loaded</div>';
+            }
+            
+            if (testStatus.pluginInitialized) {
+                html += '<div class="status success">✓ Plugin initialized</div>';
+            }
+            
+            if (testStatus.weatherControlVisible) {
+                html += '<div class="status success">✓ Weather control visible</div>';
+            }
+            
+            if (testStatus.errors.length > 0) {
+                testStatus.errors.forEach(function(error) {
+                    html += '<div class="status error">✗ ' + error + '</div>';
+                });
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        // Initialize map
+        var map;
+        
+        $(document).ready(function() {
+            try {
+                // Create map centered on a default location
+                map = L.map('map').setView([40.7128, -74.0060], 8); // New York
+                
+                // Add OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                
+                testStatus.leafletLoaded = true;
+                updateStatus();
+                
+                console.log('Test: Map initialized successfully');
+                
+                // Load weather overlay plugin
+                $.getScript('weather_overlay.js')
+                    .done(function() {
+                        testStatus.pluginLoaded = true;
+                        updateStatus();
+                        console.log('Test: Weather overlay plugin loaded');
+                        
+                        // Initialize plugin
+                        if (typeof Plugins.weather_overlay.init === 'function') {
+                            Plugins.weather_overlay.init().then(function(success) {
+                                if (success) {
+                                    testStatus.pluginInitialized = true;
+                                    updateStatus();
+                                    console.log('Test: Plugin initialized successfully');
+                                    
+                                    // Check for weather control after a short delay
+                                    setTimeout(function() {
+                                        var weatherControl = document.querySelector('.weather-control');
+                                        if (weatherControl) {
+                                            testStatus.weatherControlVisible = true;
+                                            updateStatus();
+                                            console.log('Test: Weather control is visible');
+                                        } else {
+                                            testStatus.errors.push('Weather control not found');
+                                            updateStatus();
+                                        }
+                                    }, 1000);
+                                } else {
+                                    testStatus.errors.push('Plugin initialization failed');
+                                    updateStatus();
+                                }
+                            }).catch(function(error) {
+                                testStatus.errors.push('Plugin init error: ' + error.message);
+                                updateStatus();
+                                console.error('Test: Plugin initialization error', error);
+                            });
+                        } else {
+                            testStatus.errors.push('Plugin init function not found');
+                            updateStatus();
+                        }
+                    })
+                    .fail(function(jqxhr, settings, exception) {
+                        testStatus.errors.push('Failed to load plugin: ' + exception);
+                        updateStatus();
+                        console.error('Test: Failed to load weather overlay plugin', exception);
+                    });
+                    
+            } catch (error) {
+                testStatus.errors.push('Map initialization error: ' + error.message);
+                updateStatus();
+                console.error('Test: Map initialization error', error);
+            }
+        });
+        
+        // Global error handler
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            testStatus.errors.push('JS Error: ' + msg);
+            updateStatus();
+            console.error('Test: JavaScript error', msg, error);
+            return false;
+        };
+        
+        // Console override to capture plugin debug messages
+        var originalLog = console.log;
+        console.log = function() {
+            originalLog.apply(console, arguments);
+            // You can add additional logging here if needed
+        };
+        
+    </script>
+</body>
+</html>
