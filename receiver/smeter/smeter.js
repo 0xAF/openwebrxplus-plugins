@@ -1,4 +1,12 @@
-// static/js/smeter_plugin.js
+/*
+* Plugin: smeter - Replaces the original S-meter with a new one.
+*
+*
+* License: MIT
+* Copyright (c) 2025 DL1HQH
+*/
+
+// smeter_plugin.js
 
 // Create namespace for the plugin to avoid conflicts
 Plugins.smeter = {
