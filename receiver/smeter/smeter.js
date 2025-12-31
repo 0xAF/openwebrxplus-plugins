@@ -6,14 +6,21 @@
  * Copyright (c) 2025 DL1HQH
  */
 
-// smeter_plugin.js
-
 // Create namespace for the plugin to avoid conflicts
 Plugins.smeter = {
+    no_css: true,  // do not load CSS for this plugin
     calibration_offset_hf: 0,  // Calibration for HF (<30MHz)
     calibration_offset_vhf: 0, // Calibration for VHF/UHF (>30MHz)
+    hide_original: false,      // Set to true to hide the original S-meter
 
     init: function() {
+        // Load configuration from config.js (if available)
+        if (typeof Plugins.smeter_config !== 'undefined') {
+            for (var key in Plugins.smeter_config) {
+                this[key] = Plugins.smeter_config[key];
+            }
+        }
+
         this.createUI();
 
         // Starts the update loop (e.g. every 100ms)
@@ -76,8 +83,10 @@ Plugins.smeter = {
         }
 
         // Hide original S-meter (bar and dB text)
-        $('#openwebrx-smeter').hide();
-        $('#openwebrx-smeter-db').hide();
+        if (this.hide_original) {
+            $('#openwebrx-smeter').hide();
+            $('#openwebrx-smeter-db').hide();
+        }
     },
 
     update: function() {
@@ -86,45 +95,11 @@ Plugins.smeter = {
 
         // 1. Primary Source: Check global variable (OpenWebRX Standard/Plus)
         if (dbm <= -900) {
-            if (typeof window.smeter_level !== 'undefined' && window.smeter_level > 0) dbm = 10 * Math.log10(window.smeter_level); // OpenWebRX Standard (Linear)
-            else if (typeof window.openwebrx !== 'undefined' && window.openwebrx.state && typeof window.openwebrx.state.s_meter_level !== 'undefined') dbm = window.openwebrx.state.s_meter_level;
-        }
-
-        // 2. Fallback: Check demodulator object (often the most reliable source)
-        if (dbm <= -900 && typeof window.demodulator !== 'undefined' && typeof window.demodulator.get_signal_level === 'function') {
-            var dLevel = window.demodulator.get_signal_level();
-            // Plausibility check: Only accept if value is realistic
-            if (dLevel > -180) dbm = dLevel;
-        }
-
-        // 3. Fallback: DOM Scraping (Try to read the value from the existing UI)
-        if (dbm <= -900) {
-            // Try specific ID used in this version
-            var selectors = ['#openwebrx-smeter-db'];
-            for (var i = 0; i < selectors.length; i++) {
-                var domElem = $(selectors[i]);
-                if (domElem.length) {
-                    var text = domElem.text();
-                    // 1. Attempt: Search for number before "dBm"
-                    var match = text.match(/([-\d.]+)\s*dBm/);
-                    var val = match ? parseFloat(match[1]) : NaN;
-                    
-                    // 2. Attempt: Search for negative number (dBm is usually negative)
-                    if (isNaN(val)) {
-                        var nums = text.match(/-?\d+(\.\d+)?/g);
-                        if (nums) {
-                            for (var k=0; k<nums.length; k++) {
-                                var n = parseFloat(nums[k]);
-                                if (n < 0 && n > -200) val = n;
-                            }
-                        }
-                    }
-
-                    if (!isNaN(val)) {
-                        dbm = val;
-                        break;
-                    }
-                }
+            if (typeof window.smeter_level !== 'undefined' && window.smeter_level > 0) {
+                dbm = 10 * Math.log10(window.smeter_level); // OpenWebRX Standard (Linear)
+            }
+            else if (typeof window.openwebrx !== 'undefined' && window.openwebrx.state && typeof window.openwebrx.state.s_meter_level !== 'undefined') {
+                dbm = window.openwebrx.state.s_meter_level;
             }
         }
 
