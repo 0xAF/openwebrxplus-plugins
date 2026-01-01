@@ -9,17 +9,15 @@
 // Create namespace for the plugin to avoid conflicts
 Plugins.smeter = {
     no_css: true,  // do not load CSS for this plugin
-    calibration_offset_hf: 0,  // Calibration for HF (<30MHz)
-    calibration_offset_vhf: 0, // Calibration for VHF/UHF (>30MHz)
+    calibration_offset_hf: 0,  // Calibration for HF (<30MHz) in dB
+    calibration_offset_vhf: 0, // Calibration for VHF/UHF (>30MHz) in dB
     hide_original: false,      // Set to true to hide the original S-meter
+    show_text: true,           // Set to false to hide the text below the S-meter
+    ui: {},                    // Cache for DOM elements
 
     init: function() {
-        // Load configuration from config.js (if available)
-        if (typeof Plugins.smeter_config !== 'undefined') {
-            for (var key in Plugins.smeter_config) {
-                this[key] = Plugins.smeter_config[key];
-            }
-        }
+        // Load configuration dynamically (like in visiblesat.js)
+        this.loadConfig();
 
         this.createUI();
 
@@ -27,6 +25,34 @@ Plugins.smeter = {
         setInterval(this.update.bind(this), 100);
 
         return true; // Important: Return value for the plugin loader
+    },
+
+    loadConfig: function() {
+        // Helper to find the path of this script
+        var getPluginPath = function() {
+            var scripts = document.getElementsByTagName('script');
+            for (var i = 0; i < scripts.length; i++) {
+                if (scripts[i].src && scripts[i].src.indexOf('smeter.js') !== -1) {
+                    return scripts[i].src.substring(0, scripts[i].src.lastIndexOf('/'));
+                }
+            }
+            return 'plugins/receiver/smeter'; // Fallback
+        };
+
+        var path = getPluginPath();
+        var script = document.createElement('script');
+        script.src = path + '/config.js?_=' + Date.now(); // Cache busting
+        
+        var self = this;
+        script.onload = function() {
+            if (typeof window.smeter_config_global !== 'undefined') {
+                var config = window.smeter_config_global;
+                for (var key in config) {
+                    self[key] = config[key];
+                }
+            }
+        };
+        document.head.appendChild(script);
     },
 
     createUI: function() {
@@ -64,7 +90,7 @@ Plugins.smeter = {
                     <div id="smeter-bar-white" style="position: absolute; left: 0; top: 0; height: 100%; background: #fff; width: 0%; transition: width 0.1s;"></div>
                     <div id="smeter-bar-red" style="position: absolute; left: ${s9Pos}%; top: 0; height: 100%; background: #f44; width: 0%; transition: width 0.1s;"></div>
                 </div>
-                <div id="smeter-text" style="display: none;"></div>
+                <div id="smeter-text" style="font-size: 12px; margin-top: 2px; text-align: center;"></div>
             </div>
         `;
 
@@ -82,14 +108,41 @@ Plugins.smeter = {
             $('#smeter-panel').css({'position': 'absolute', 'top': '10px', 'left': '10px', 'width': '300px', 'z-index': 9999});
         }
 
+        // Cache UI elements to avoid repeated DOM queries in the update loop
+        this.ui.barWhite = $('#smeter-bar-white');
+        this.ui.barRed = $('#smeter-bar-red');
+        this.ui.text = $('#smeter-text');
+
         // Hide original S-meter (bar and dB text)
         if (this.hide_original) {
-            $('#openwebrx-smeter').hide();
-            $('#openwebrx-smeter-db').hide();
+            if ($('#smeter-hide-css').length === 0) {
+                $('head').append('<style id="smeter-hide-css">#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container { display: none !important; }</style>');
+            }
+        } else {
+            $('#smeter-hide-css').remove();
+            $('#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container').css('display', '');
         }
     },
 
     update: function() {
+        // Enforce hiding or showing based on config
+        if (this.hide_original) {
+            if ($('#smeter-hide-css').length === 0) {
+                $('head').append('<style id="smeter-hide-css">#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container { display: none !important; }</style>');
+            }
+        } else {
+            if ($('#smeter-hide-css').length > 0) {
+                $('#smeter-hide-css').remove();
+                $('#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container').css('display', '');
+            }
+        }
+
+        // Handle text visibility
+        if (this.show_text) {
+            this.ui.text.show();
+        } else {
+            this.ui.text.hide();
+        }
 
         var dbm = -999;
 
@@ -118,9 +171,9 @@ Plugins.smeter = {
     render: function(dbm) {
         // If we still have the start value, show "WAIT"
         if (dbm <= -900) {
-            $('#smeter-text').text("WAIT...");
-            $('#smeter-bar-white').css('width', '0%');
-            $('#smeter-bar-red').css('width', '0%');
+            this.ui.text.text("WAIT...");
+            this.ui.barWhite.css('width', '0%');
+            this.ui.barRed.css('width', '0%');
             return;
         }
 
@@ -164,8 +217,8 @@ Plugins.smeter = {
         var whiteW = Math.min(widthPercent, s9Percent);
         var redW = (widthPercent > s9Percent) ? (widthPercent - s9Percent) : 0;
 
-        $('#smeter-bar-white').css('width', whiteW + '%');
-        $('#smeter-bar-red').css('width', redW + '%');
-        $('#smeter-text').text(sText + ' (' + dbm.toFixed(1) + ' dBm)');
+        this.ui.barWhite.css('width', whiteW + '%');
+        this.ui.barRed.css('width', redW + '%');
+        this.ui.text.text(sText + ' (' + dbm.toFixed(1) + ' dBm)');
     }
 };
