@@ -16,7 +16,7 @@ Plugins.smeter = {
     ui: {},                    // Cache for DOM elements
 
     init: function() {
-        // Load configuration dynamically (like in visiblesat.js)
+        // Load configuration dynamically
         this.loadConfig();
 
         this.createUI();
@@ -28,31 +28,13 @@ Plugins.smeter = {
     },
 
     loadConfig: function() {
-        // Helper to find the path of this script
-        var getPluginPath = function() {
-            var scripts = document.getElementsByTagName('script');
-            for (var i = 0; i < scripts.length; i++) {
-                if (scripts[i].src && scripts[i].src.indexOf('smeter.js') !== -1) {
-                    return scripts[i].src.substring(0, scripts[i].src.lastIndexOf('/'));
-                }
+        // Check for global configuration immediately (e.g. defined in init.js)
+        if (typeof window.smeter_config_global !== 'undefined') {
+            var config = window.smeter_config_global;
+            for (var key in config) {
+                this[key] = config[key];
             }
-            return 'plugins/receiver/smeter'; // Fallback
-        };
-
-        var path = getPluginPath();
-        var script = document.createElement('script');
-        script.src = path + '/config.js?_=' + Date.now(); // Cache busting
-        
-        var self = this;
-        script.onload = function() {
-            if (typeof window.smeter_config_global !== 'undefined') {
-                var config = window.smeter_config_global;
-                for (var key in config) {
-                    self[key] = config[key];
-                }
-            }
-        };
-        document.head.appendChild(script);
+        }
     },
 
     createUI: function() {
@@ -101,11 +83,6 @@ Plugins.smeter = {
             // target.append(html) -> Adds it at the BOTTOM of the panel
             // target.prepend(html) -> Adds it at the TOP of the panel
             target.append(html); // append adds it at the end (bottom)
-        } else {
-            // Fallback: Append to body if container is missing
-            $('body').append(html);
-            // ADJUST POSITION HERE (for fallback): change top/left/right/bottom values
-            $('#smeter-panel').css({'position': 'absolute', 'top': '10px', 'left': '10px', 'width': '300px', 'z-index': 9999});
         }
 
         // Cache UI elements to avoid repeated DOM queries in the update loop
@@ -113,19 +90,14 @@ Plugins.smeter = {
         this.ui.barRed = $('#smeter-bar-red');
         this.ui.text = $('#smeter-text');
 
-        // Hide original S-meter (bar and dB text)
-        if (this.hide_original) {
-            if ($('#smeter-hide-css').length === 0) {
-                $('head').append('<style id="smeter-hide-css">#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container { display: none !important; }</style>');
-            }
-        } else {
-            $('#smeter-hide-css').remove();
-            $('#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container').css('display', '');
+        // Apply text visibility setting once
+        if (!this.show_text) {
+            this.ui.text.hide();
         }
     },
 
     update: function() {
-        // Enforce hiding or showing based on config
+        // Enforce hiding or showing of original S-meter
         if (this.hide_original) {
             if ($('#smeter-hide-css').length === 0) {
                 $('head').append('<style id="smeter-hide-css">#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container { display: none !important; }</style>');
@@ -135,13 +107,6 @@ Plugins.smeter = {
                 $('#smeter-hide-css').remove();
                 $('#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container').css('display', '');
             }
-        }
-
-        // Handle text visibility
-        if (this.show_text) {
-            this.ui.text.show();
-        } else {
-            this.ui.text.hide();
         }
 
         var dbm = -999;
