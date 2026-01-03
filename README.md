@@ -45,6 +45,7 @@ Each plugin is documented in its own folder.
 
 | Name | Description |
 | :------ | :---------- |
+|[smeter](receiver/smeter)|Show S-Meter (needs calibration!)([Joerg](#contributors))|
 |[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
 |[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of bookmarks with right mouse button|
 |[tune_precise](receiver/tune_precise)|Add buttons for precise frequency tuning ([LZ2DMV](#contributors))|
@@ -179,6 +180,7 @@ A: Use `Plugins.load('https://.../plugin_name/plugin_name.js');` in your `init.j
 
 - [LZ2DMV](https://github.com/LZ2DMV)
 - [Yannis](https://github.com/ysamouhos)
+- [Joerg](https://github.com/joer123)
 
 ---
 
