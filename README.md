@@ -45,6 +45,7 @@ Each plugin is documented in its own folder.
 
 | Name | Description |
 | :------ | :---------- |
+|[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner)([Joerg](#contributors))|
 |[smeter](receiver/smeter)|Show S-Meter (needs calibration!)([Joerg](#contributors))|
 |[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
 |[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of bookmarks with right mouse button|
