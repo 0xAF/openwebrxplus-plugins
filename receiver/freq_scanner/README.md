@@ -8,13 +8,15 @@ This `receiver` plugin adds a versatile frequency scanner to OpenWebRX+. It scan
 
 ## Preview
 
-!Freq Scanner Preview
+![freq_scanner Preview](https://0xaf.github.io/openwebrxplus-plugins/receiver/freq_scanner/freq_scanner.jpg)
 
 ## Load
 
 Add this line in your `init.js` file:
 
 ```js
+//remote
+Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/freq_scanner/freq_scanner.js');
 // local
 Plugins.load('freq_scanner');
 ```
