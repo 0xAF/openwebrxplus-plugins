@@ -45,12 +45,14 @@ Each plugin is documented in its own folder.
   ```bash
   export OWRX_FOLDER=$(dirname "$(find / -name openwebrx.js 2>/dev/null | head -n1)")
   ```
-2. Grab the receiver starter file, edit it and make it live:
+2. Create the folders and download the `init.js` sample file:
   ```bash
-  OWRX_FOLDER=$(dirname `find / -name openwebrx.js`)
   mkdir -p "$OWRX_FOLDER/plugins/receiver"
   cd "$OWRX_FOLDER/plugins/receiver"
   wget https://0xaf.github.io/openwebrxplus-plugins/receiver/init.js.sample -O init.js
+  ```
+3. Edit the `init.js` file and load the desired plugins:
+  ```bash
   ${EDITOR-nano} init.js
   ```
 4. Keep the top two `Plugins.load` lines (utils, notify). They are shared dependencies. Add or remove names in `PluginsToLoad` to pick which plugins you want.
