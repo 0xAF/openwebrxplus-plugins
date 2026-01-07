@@ -15,7 +15,7 @@ Add this lines in your `init.js` file:
 
 ```js
 await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/sort_profiles/sort_profiles.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/sort_profiles/sort_profiles.js');
 ```
 
 ## init.js

@@ -18,10 +18,11 @@ The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/recei
 
 ## Load
 
-Add this line in your `init.js` file:
+Add these lines in your `init.js` file:
 
 ```js
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/mouse_freq/mouse_freq.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/mouse_freq/mouse_freq.js');
 ```
 
 ## init.js

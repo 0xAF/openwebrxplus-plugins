@@ -14,7 +14,7 @@ Plugins.notify.show('some notification');
 
 ## Load
 
-Add this line in your `init.js` file:
+Add this line in your `init.js` file (await so plugins depending on notify run after it is ready):
 
 ```js
 await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');

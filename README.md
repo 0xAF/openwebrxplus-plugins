@@ -3,7 +3,6 @@ layout: page
 title: OpenWebRX+ Plugins Home
 permalink: /
 ---
-
 # OpenWebRX+ Plugins
 
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -15,6 +14,7 @@ permalink: /
 - [OpenWebRX+ Plugins](#openwebrx-plugins)
   - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
+  - [Beginner Quickstart](#beginner-quickstart)
   - [Plugin List](#plugin-list)
     - [Receiver Plugins](#receiver-plugins)
     - [Map Plugins](#map-plugins)
@@ -23,6 +23,7 @@ permalink: /
     - [Example setup for receiver plugins](#example-setup-for-receiver-plugins)
   - [Raspberry Pi \& Docker Notes](#raspberry-pi--docker-notes)
   - [Developing Plugins](#developing-plugins)
+    - [Plugin Structure](#plugin-structure)
     - [Hosting on GitHub](#hosting-on-github)
   - [Contributing](#contributing)
   - [Support](#support)
@@ -38,6 +39,20 @@ This repository provides a set of plugins for OpenWebRX+, allowing users to cust
 - **Map Plugins**: Add new layers or features to the map interface.
 
 Each plugin is documented in its own folder.
+
+## Beginner Quickstart
+
+1. Find your `htdocs` folder and set a helper variable:
+  ```bash
+  export OWRX_FOLDER=$(dirname "$(find / -name openwebrx.js 2>/dev/null | head -n1)")
+  ```
+2. Grab the receiver starter file and make it live:
+  ```bash
+  mkdir -p "$OWRX_FOLDER/plugins/receiver"
+  wget https://0xaf.github.io/openwebrxplus-plugins/receiver/init.js.sample -O "$OWRX_FOLDER/plugins/receiver/init.js"
+  ```
+3. Keep the top two `Plugins.load` lines (utils, notify). They are shared dependencies. Add or remove names in `PluginsToLoad` to pick which plugins you want.
+4. Refresh the OpenWebRX+ page to see the changes. If nothing changes, restart varnish/nginx as noted below.
 
 ## Plugin List
 
@@ -103,11 +118,15 @@ Each plugin is documented in its own folder.
    - [receiver/init.js.sample](receiver/init.js.sample)
    - [map/init.js.sample](map/init.js.sample)
 
-5. **Add plugin loading lines to your `init.js` file**  
-   For example:
+5. **Add plugin loading lines to your `init.js` file** (**if you're not using the provided init.js - see below**)  
+   Use the async pattern so dependencies load first:
 
    ```js
-   Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/tune_precise/tune_precise.js');
+   (async () => {
+     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
+     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
+     await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/tune_precise/tune_precise.js');
+   })();
    ```
 
 ### Example setup for receiver plugins
@@ -146,6 +165,14 @@ If you want to create new plugins:
    `Plugins.load('your_plugin');`
 5. Load remote plugins by URL (example for map plugin):  
    `Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/map/layer_qth_maidenhead/layer_qth_maidenhead.js');`
+
+### Plugin Structure
+
+- Each plugin lives in `plugins/{receiver|map}/plugin_name/` and has a matching JS entry file `plugin_name.js`.
+- `Plugins.<name>.init()` must return `true` on success; return `false` (or nothing truthy) to abort when a prerequisite is missing.
+- Set `_version` (for dependency checks) and `no_css = true` if you do not want the loader to fetch `plugin_name.css` automatically.
+- By default, the loader tries to load a sibling CSS file after the JS. If you ship CSS, leave `no_css` unset.
+- Load dependencies explicitly with `await Plugins.load('dependency')` before loading plugins that need them.
 
 ### Hosting on GitHub
 

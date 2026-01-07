@@ -17,9 +17,8 @@ The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/recei
 Add this lines in your `init.js` file:
 
 ```js
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js').then(async function () {
-  Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/frequency_far_jump/frequency_far_jump.js');
-});
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/frequency_far_jump/frequency_far_jump.js');
 ```
 
 ## init.js

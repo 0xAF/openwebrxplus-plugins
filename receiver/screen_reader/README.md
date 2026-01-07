@@ -18,10 +18,11 @@ The plugin depends on [utils](https://0xaf.github.io/openwebrxplus-plugins/recei
 
 ## Load
 
-Add this line in your `init.js` file:
+Add these lines in your `init.js` file:
 
 ```js
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/screen_reader/screen_reader.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/screen_reader/screen_reader.js');
 Plugins.screen_reader.log_messages = true; // if you want to log the messages to the chat window.
 ```
 

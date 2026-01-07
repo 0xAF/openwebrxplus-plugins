@@ -9,12 +9,11 @@ This plugin is a dependency for almost all plugins.
 
 ## Load
 
-Add this lines in your `init.js` file:
+Add this lines in your `init.js` file (await ensures it finishes before dependents):
 
 ```js
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js').then(async function () {
-  // load the rest of your plugins here
-});
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
+// load the rest of your plugins here
 ```
 
 ## init.js

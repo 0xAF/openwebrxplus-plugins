@@ -17,11 +17,11 @@ The plugin depends on [notify](https://0xaf.github.io/openwebrxplus-plugins/rece
 
 ## Load
 
-Add this line in your `init.js` file:
+Add these lines in your `init.js` file:
 
 ```js
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/connect_notify/connect_notify.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/connect_notify/connect_notify.js');
 ```
 
 ## init.js

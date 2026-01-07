@@ -19,11 +19,11 @@ To show help screen, press `?`.
 
 ## Load
 
-Add this line in your `init.js` file:
+Add these lines in your `init.js` file:
 
 ```js
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/keyboard_shortcuts/keyboard_shortcuts.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/keyboard_shortcuts/keyboard_shortcuts.js');
 ```
 
 ## init.js

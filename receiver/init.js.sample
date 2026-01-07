@@ -1,13 +1,15 @@
-// Receiver plugins initialization.
-// everything starting with '//' is a comment.
+// Receiver plugins initialization for OpenWebRX+.
+// Copy this file to /path/to/htdocs/plugins/receiver/init.js to use it.
+// Everything starting with '//' is a comment.
 
 // uncomment to enable plugin debugging.
 // Plugins._enable_debug = true;
 
-// Setup some plugins
+// Optional per-plugin settings before load
 // Plugins.screen_reader.log_messages = true;
 // Plugins.tune_precise_steps = [12500, 5000, 10];
 
+// List the plugins you want to load (folder names). Order matters if plugins depend on each other.
 const PluginsToLoad = [
 	'colorful_spectrum',
 	'connect_notify',
@@ -21,20 +23,20 @@ const PluginsToLoad = [
 	'toggle_scannable',
 ];
 
-// First load the utils, needed for some plugins
-Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js').then(async function () {
+// Load dependencies first, then plugins (await enforces order).
+// Change the base URL if you mirror these plugins elsewhere.
+(async () => {
+	await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 	// Plugins.utils._DEBUG_ALL_EVENTS = true;
-
-	// load a local plugins if you have one
-	//Plugins.load('example');
-
-	// Load the notification plugin, used by some plugins. await to ensure it is loaded before the rest.
 	await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
 
-	// load remote plugins
+	// Load a local plugin if you have one
+	// await Plugins.load('example');
+
+	// Load the plugins listed above from remote URL
 	for (const pluginName of PluginsToLoad) {
-		Plugins.load(`https://0xaf.github.io/openwebrxplus-plugins/receiver/${pluginName}/${pluginName}.js`);
+		await Plugins.load(`https://0xaf.github.io/openwebrxplus-plugins/receiver/${pluginName}/${pluginName}.js`);
 	}
-});
+})();
 
 // vim: ft=javascript
