@@ -19,8 +19,7 @@ permalink: /
     - [Receiver Plugins](#receiver-plugins)
     - [Map Plugins](#map-plugins)
     - [Thirdparty Plugins](#thirdparty-plugins)
-  - [Installation \& Loading Plugins](#installation--loading-plugins)
-    - [Example setup for receiver plugins](#example-setup-for-receiver-plugins)
+  - [Detailed Installation \& Loading Instructions](#detailed-installation--loading-instructions)
   - [Raspberry Pi \& Docker Notes](#raspberry-pi--docker-notes)
   - [Developing Plugins](#developing-plugins)
     - [Plugin Structure](#plugin-structure)
@@ -46,13 +45,16 @@ Each plugin is documented in its own folder.
   ```bash
   export OWRX_FOLDER=$(dirname "$(find / -name openwebrx.js 2>/dev/null | head -n1)")
   ```
-2. Grab the receiver starter file and make it live:
+2. Grab the receiver starter file, edit it and make it live:
   ```bash
+  OWRX_FOLDER=$(dirname `find / -name openwebrx.js`)
   mkdir -p "$OWRX_FOLDER/plugins/receiver"
-  wget https://0xaf.github.io/openwebrxplus-plugins/receiver/init.js.sample -O "$OWRX_FOLDER/plugins/receiver/init.js"
+  cd "$OWRX_FOLDER/plugins/receiver"
+  wget https://0xaf.github.io/openwebrxplus-plugins/receiver/init.js.sample -O init.js
+  ${EDITOR-nano} init.js
   ```
-3. Keep the top two `Plugins.load` lines (utils, notify). They are shared dependencies. Add or remove names in `PluginsToLoad` to pick which plugins you want.
-4. Refresh the OpenWebRX+ page to see the changes. If nothing changes, restart varnish/nginx as noted below.
+4. Keep the top two `Plugins.load` lines (utils, notify). They are shared dependencies. Add or remove names in `PluginsToLoad` to pick which plugins you want.
+5. Refresh the OpenWebRX+ page to see the changes. If nothing changes, restart varnish/nginx as noted below.
 
 ## Plugin List
 
@@ -94,7 +96,7 @@ Each plugin is documented in its own folder.
 | :------ | :---------- |
 |[owrxantswitcher](https://github.com/jrghnng/owrxantswitcher)|Switch antenna ports using a WebAPI on the server.|
 
-## Installation & Loading Plugins
+## Detailed Installation & Loading Instructions
 
 1. **Find your OpenWebRX+ `htdocs` folder**  
    Use the following command to locate it:
@@ -118,7 +120,7 @@ Each plugin is documented in its own folder.
    - [receiver/init.js.sample](receiver/init.js.sample)
    - [map/init.js.sample](map/init.js.sample)
 
-5. **Add plugin loading lines to your `init.js` file** (**if you're not using the provided init.js - see below**)  
+5. **Add plugin loading lines to your `init.js` file if you're not using the provided init.js - see** [Beginner Quickstart](#beginner-quickstart)  
    Use the async pattern so dependencies load first:
 
    ```js
@@ -128,18 +130,6 @@ Each plugin is documented in its own folder.
      await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/tune_precise/tune_precise.js');
    })();
    ```
-
-### Example setup for receiver plugins
-
-```bash
-OWRX_FOLDER=$(dirname `find / -name openwebrx.js`)
-mkdir -p "$OWRX_FOLDER/plugins/receiver"
-cd "$OWRX_FOLDER/plugins/receiver"
-wget https://0xaf.github.io/openwebrxplus-plugins/receiver/init.js.sample -O init.js
-${EDITOR-nano} init.js
-```
-
-See each plugin's README for specific instructions.
 
 ## Raspberry Pi & Docker Notes
 
