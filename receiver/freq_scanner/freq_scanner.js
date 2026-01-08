@@ -35,13 +35,37 @@ var scanner_state = {
     signal_start_time: 0,
     ignore_non_voice: true,
     original_center_freq: 0,
-    tuning: false
+    tuning: false,
+    show_blocked_ranges: false,
+    block_color: 'rgba(255, 0, 0, 0.3)',
+    modulation_timer: null
 };
+
+var SCANNER_COLORS = [
+    { name: 'Red', value: 'rgba(255, 0, 0, 0.3)' },
+    { name: 'Orange', value: 'rgba(255, 165, 0, 0.3)' },
+    { name: 'Yellow', value: 'rgba(255, 255, 0, 0.3)' },
+    { name: 'Green', value: 'rgba(0, 255, 0, 0.3)' },
+    { name: 'Blue', value: 'rgba(0, 0, 255, 0.3)' },
+    { name: 'Purple', value: 'rgba(128, 0, 128, 0.3)' },
+    { name: 'White', value: 'rgba(255, 255, 255, 0.3)' }
+];
 
 $(document).ready(init_freq_scanner);
 
 function init_freq_scanner() {
     load_blacklist();
+    load_settings();
+
+    // Inject CSS for long-press indicator
+    if (!document.getElementById('freq-scanner-css')) {
+        var style = document.createElement('style');
+        style.id = 'freq-scanner-css';
+        style.innerHTML = 
+            '.freq-scanner-longpress { position: relative; }' +
+            '.freq-scanner-longpress::after { content: ""; position: absolute; bottom: 2px; right: 2px; width: 0; height: 0; border-left: 6px solid transparent; border-bottom: 6px solid currentColor; opacity: 0.8; pointer-events: none; }';
+        document.head.appendChild(style);
+    }
 
     var container = document.querySelector('#openwebrx-panel-receiver');
 
@@ -49,57 +73,17 @@ function init_freq_scanner() {
     if (!document.getElementById('openwebrx-btn-freq-scanner')) {
         var btn = document.createElement('button');
         btn.id = 'openwebrx-btn-freq-scanner';
+        btn.className = 'freq-scanner-longpress';
         btn.textContent = 'Scan';
         btn.title = 'Short: Start/Stop | Long: Scan Options';
         
         btn.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 28px; font-size: 13px; font-weight: 600; border: 3px solid #FF3939; background: #FF3939; color: white; cursor: pointer; border-radius: 5px; box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
         
-        // Long-Press Logic (Menu)
-        var pressTimer;
-        var longPressTriggered = false;
-        var isCancelled = false;
-
-        var startPress = function(e) {
-            if (e.type === 'mousedown' && e.button !== 0) return; // Left click only
-            if (btn.dataset.disabled === 'true') return;
-            longPressTriggered = false;
-            isCancelled = false;
-            pressTimer = setTimeout(function() {
-                longPressTriggered = true;
-                pressTimer = null;
-                var rect = btn.getBoundingClientRect();
-                show_scan_menu(rect);
-            }, 800); // 800ms press for menu
-        };
-
-        var endPress = function(e) {
-            if (pressTimer) {
-                clearTimeout(pressTimer);
-                pressTimer = null;
-            }
-            if (!longPressTriggered && !isCancelled) {
-                toggle_scanner();
-            }
-        };
-
-        var cancelPress = function() {
-            if (pressTimer) {
-                clearTimeout(pressTimer);
-                pressTimer = null;
-            }
-            isCancelled = true;
-        };
-
-        btn.addEventListener('mousedown', startPress);
-        btn.addEventListener('mouseup', endPress);
-        btn.addEventListener('mouseleave', cancelPress);
-        btn.addEventListener('touchstart', startPress, {passive: true});
-        btn.addEventListener('touchend', function(e) {
-            e.preventDefault(); 
-            endPress(e);
+        setup_long_press(btn, function() {
+            toggle_scanner();
+        }, function(rect) {
+            show_scan_menu(rect);
         });
-        btn.addEventListener('touchmove', cancelPress, {passive: true});
-        btn.addEventListener('touchcancel', cancelPress, {passive: true});
         
         if (container) {
             var title = document.createElement('div');
@@ -143,15 +127,20 @@ function init_freq_scanner() {
 
             var btnBlock = document.createElement('button');
             btnBlock.id = 'openwebrx-btn-freq-block';
+            btnBlock.className = 'freq-scanner-longpress';
             btnBlock.textContent = 'Block';
-            btnBlock.title = 'Block current frequency';
+            btnBlock.title = 'Short: Block Current | Long: Block Options';
             btnBlock.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 34px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
-            btnBlock.onclick = function() { add_to_blacklist(); };
+            setup_long_press(btnBlock, function() {
+                add_to_blacklist();
+            }, function(rect) {
+                show_block_menu(rect);
+            });
 
             var btnList = document.createElement('button');
             btnList.id = 'openwebrx-btn-freq-list';
-            btnList.innerHTML = 'List &blacktriangle;';
-            btnList.title = 'Blacklist Menu';
+            btnList.innerHTML = 'Setup &blacktriangle;';
+            btnList.title = 'Scanner Setup / Blacklist';
             btnList.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 34px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
             btnList.onclick = function() { show_blacklist_menu(this.getBoundingClientRect()); };
 
@@ -187,7 +176,84 @@ function init_freq_scanner() {
     attempt_hook_openwebrx();
 
     // Polling as fallback if hooks don't work
-    setInterval(check_modulation_mode, 500);
+    if (!scanner_state.modulation_timer) {
+        scanner_state.modulation_timer = setInterval(check_modulation_mode, 500);
+    }
+    
+    init_visualizer();
+}
+
+function setup_long_press(element, onClick, onLongPress) {
+    var pressTimer;
+    var longPressTriggered = false;
+    var isCancelled = false;
+    var startX = 0;
+    var startY = 0;
+
+    var startPress = function(e) {
+        if (e.type === 'mousedown' && e.button !== 0) return; // Left click only
+        if (element.dataset.disabled === 'true') return;
+        
+        if (e.touches && e.touches.length > 0) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }
+        
+        longPressTriggered = false;
+        isCancelled = false;
+        pressTimer = setTimeout(function() {
+            longPressTriggered = true;
+            pressTimer = null;
+            var rect = element.getBoundingClientRect();
+            if (navigator.vibrate) navigator.vibrate(50);
+            onLongPress(rect);
+        }, 800); // 800ms press for menu
+    };
+
+    var endPress = function(e) {
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+        }
+        if (!longPressTriggered && !isCancelled) {
+            onClick(e);
+        }
+    };
+
+    var cancelPress = function(e) {
+        // Allow small movement on touch (jitter tolerance)
+        if (e.type === 'touchmove' && e.touches && e.touches.length > 0) {
+            var x = e.touches[0].clientX;
+            var y = e.touches[0].clientY;
+            if (Math.abs(x - startX) < 10 && Math.abs(y - startY) < 10) {
+                return;
+            }
+        }
+
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+        }
+        isCancelled = true;
+    };
+
+    element.addEventListener('mousedown', startPress);
+    element.addEventListener('mouseup', endPress);
+    element.addEventListener('mouseleave', cancelPress);
+    element.addEventListener('touchstart', startPress, {passive: true});
+    element.addEventListener('touchend', function(e) {
+        e.preventDefault(); 
+        endPress(e);
+    });
+    element.addEventListener('touchmove', cancelPress, {passive: true});
+    element.addEventListener('touchcancel', cancelPress, {passive: true});
+    
+    // Prevent native context menu on long press
+    element.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    });
 }
 
 var hook_attempts = 0;
@@ -353,6 +419,7 @@ function set_scanner_active(active) {
         }
     } else {
         stop_scanner();
+        update_visualizer();
         if (btn) {
             btn.textContent = 'Scan';
             btn.style.background = '#FF3939';
@@ -405,6 +472,7 @@ function start_scanner() {
 
     console.log('[FreqScanner] Starting scan:', scanner_state.start_freq, '-', scanner_state.end_freq);
     scan_loop();
+    update_visualizer();
 }
 
 function stop_scanner() {
@@ -721,24 +789,65 @@ function show_scan_menu(rect) {
     var curr = SCANNER_CONFIG.delay_time;
     
     var items = [
-        { text: (scanner_state.scan_mode === 'CARRIER' ? '● ' : '○ ') + 'Normal (Carrier) ' + (SCANNER_CONFIG.delay_time / 1000) + 's', action: function() { scanner_state.scan_mode = 'CARRIER'; } },
-        { text: '\u00A0\u00A0└ ' + (curr === def ? '● ' : '○ ') + 'Delay: Standard (' + (def / 1000) + 's)', action: function() { SCANNER_CONFIG.delay_time = def; } },
-        { text: '\u00A0\u00A0└ ' + ((curr === 5000 && curr !== def) ? '● ' : '○ ') + 'Delay: 5s', action: function() { SCANNER_CONFIG.delay_time = 5000; } },
-        { text: '\u00A0\u00A0└ ' + ((curr === 10000 && curr !== def) ? '● ' : '○ ') + 'Delay: 10s', action: function() { SCANNER_CONFIG.delay_time = 10000; } },
-        { text: (scanner_state.scan_mode === 'STOP' ? '● ' : '○ ') + 'Stop on Signal', action: function() { scanner_state.scan_mode = 'STOP'; } },
-        { text: (scanner_state.scan_mode === 'SAMPLE_10S' ? '● ' : '○ ') + '10s Sample', action: function() { scanner_state.scan_mode = 'SAMPLE_10S'; } },
-        { text: (scanner_state.ignore_non_voice ? '☑ ' : '☐ ') + 'Filter: Only Analog (Bookmarks)', action: function() { scanner_state.ignore_non_voice = !scanner_state.ignore_non_voice; } }
+        { text: (scanner_state.scan_mode === 'CARRIER' ? '● ' : '○ ') + 'Normal (Carrier) ' + (SCANNER_CONFIG.delay_time / 1000) + 's', action: function() { scanner_state.scan_mode = 'CARRIER'; save_settings(); } },
+        { text: '\u00A0\u00A0└ ' + (curr === def ? '● ' : '○ ') + 'Delay: Standard (' + (def / 1000) + 's)', action: function() { SCANNER_CONFIG.delay_time = def; save_settings(); } },
+        { text: '\u00A0\u00A0└ ' + ((curr === 5000 && curr !== def) ? '● ' : '○ ') + 'Delay: 5s', action: function() { SCANNER_CONFIG.delay_time = 5000; save_settings(); } },
+        { text: '\u00A0\u00A0└ ' + ((curr === 10000 && curr !== def) ? '● ' : '○ ') + 'Delay: 10s', action: function() { SCANNER_CONFIG.delay_time = 10000; save_settings(); } },
+        { text: (scanner_state.scan_mode === 'STOP' ? '● ' : '○ ') + 'Stop on Signal', action: function() { scanner_state.scan_mode = 'STOP'; save_settings(); } },
+        { text: (scanner_state.scan_mode === 'SAMPLE_10S' ? '● ' : '○ ') + '10s Sample', action: function() { scanner_state.scan_mode = 'SAMPLE_10S'; save_settings(); } },
+        { text: (scanner_state.ignore_non_voice ? '☑ ' : '☐ ') + 'Filter: Only Analog (Bookmarks)', action: function() { scanner_state.ignore_non_voice = !scanner_state.ignore_non_voice; save_settings(); } }
     ];
 
     show_floating_menu(rect, items);
 }
 
+function show_block_menu(rect) {
+    var items = [
+        { text: (scanner_state.show_blocked_ranges ? '☑ ' : '☐ ') + 'Always Show Blocked Ranges', action: function() { 
+            scanner_state.show_blocked_ranges = !scanner_state.show_blocked_ranges;
+            update_visualizer();
+            save_settings();
+        } },
+        { text: 'Color: ' + get_color_name(scanner_state.block_color), action: cycle_block_color },
+        { text: 'Clear Visible Blocked Ranges', action: clear_visible_blacklist, borderTop: true },
+        { text: 'Remove Blocked Range (Select on Waterfall)', action: start_remove_range_selection, borderTop: true },
+        { text: 'Block Range (Select on Waterfall)', action: start_block_range_selection }
+    ];
+    show_floating_menu(rect, items);
+}
+
+function get_color_name(c) {
+    for (var i = 0; i < SCANNER_COLORS.length; i++) {
+        if (SCANNER_COLORS[i].value === c) {
+            return SCANNER_COLORS[i].name;
+        }
+    }
+    return 'Custom';
+}
+
+function cycle_block_color() {
+    var idx = -1;
+    for (var i = 0; i < SCANNER_COLORS.length; i++) {
+        if (SCANNER_COLORS[i].value === scanner_state.block_color) {
+            idx = i;
+            break;
+        }
+    }
+    
+    var nextIdx = (idx + 1) % SCANNER_COLORS.length;
+    var next = SCANNER_COLORS[nextIdx].value;
+    
+    scanner_state.block_color = next;
+    save_settings();
+    update_visualizer();
+}
+
 function show_blacklist_menu(rect) {
     var items = [
-        { text: 'Release Frequency', action: remove_from_blacklist },
-        { text: 'Clear Blacklist (' + scanner_state.blacklist.length + ')', action: clear_blacklist, borderTop: true },
-        { text: 'Export Blacklist', action: export_blacklist },
-        { text: 'Import Blacklist', action: import_blacklist }
+        { text: 'Export Plugin Settings', action: export_settings },
+        { text: 'Import Plugin Settings', action: import_settings },
+        { text: 'Manage Blacklist', action: edit_blacklist },
+        { text: 'Clear Blacklist (' + scanner_state.blacklist.length + ')', action: clear_blacklist }
     ];
 
     show_floating_menu(rect, items);
@@ -753,13 +862,129 @@ function load_blacklist() {
     }
 }
 
+function save_settings() {
+    var settings = {
+        delay_time: SCANNER_CONFIG.delay_time,
+        scan_mode: scanner_state.scan_mode,
+        ignore_non_voice: scanner_state.ignore_non_voice,
+        show_blocked_ranges: scanner_state.show_blocked_ranges,
+        block_color: scanner_state.block_color
+    };
+    localStorage.setItem('freq_scanner_settings', JSON.stringify(settings));
+}
+
+function load_settings() {
+    var stored = localStorage.getItem('freq_scanner_settings');
+    if (stored) {
+        try {
+            var s = JSON.parse(stored);
+            if (typeof s.delay_time !== 'undefined') SCANNER_CONFIG.delay_time = s.delay_time;
+            if (typeof s.scan_mode !== 'undefined') scanner_state.scan_mode = s.scan_mode;
+            if (typeof s.ignore_non_voice !== 'undefined') scanner_state.ignore_non_voice = s.ignore_non_voice;
+            if (typeof s.show_blocked_ranges !== 'undefined') scanner_state.show_blocked_ranges = s.show_blocked_ranges;
+            if (typeof s.block_color !== 'undefined') scanner_state.block_color = s.block_color;
+        } catch(e) {
+            console.error('[FreqScanner] Error loading settings', e);
+        }
+    } else {
+        // Migration: Check for legacy color setting
+        var storedColor = localStorage.getItem('freq_scanner_color');
+        if (storedColor) scanner_state.block_color = storedColor;
+    }
+}
+
+function export_settings() {
+    var settings = {
+        delay_time: SCANNER_CONFIG.delay_time,
+        scan_mode: scanner_state.scan_mode,
+        ignore_non_voice: scanner_state.ignore_non_voice,
+        show_blocked_ranges: scanner_state.show_blocked_ranges,
+        block_color: scanner_state.block_color,
+        blacklist: scanner_state.blacklist
+    };
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(settings));
+    var downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "freq_scanner_settings.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+function import_settings() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                var s = JSON.parse(e.target.result);
+                
+                if (!s || typeof s !== 'object' || Array.isArray(s)) {
+                    throw new Error('Invalid format: Root must be an object.');
+                }
+                
+                var validKeys = ['delay_time', 'scan_mode', 'ignore_non_voice', 'show_blocked_ranges', 'block_color', 'blacklist'];
+                if (!validKeys.some(function(k) { return k in s; })) {
+                    throw new Error('No valid settings found. Is this a settings file?');
+                }
+
+                if (typeof s.delay_time !== 'undefined') SCANNER_CONFIG.delay_time = s.delay_time;
+                if (typeof s.scan_mode !== 'undefined') scanner_state.scan_mode = s.scan_mode;
+                if (typeof s.ignore_non_voice !== 'undefined') scanner_state.ignore_non_voice = s.ignore_non_voice;
+                if (typeof s.show_blocked_ranges !== 'undefined') scanner_state.show_blocked_ranges = s.show_blocked_ranges;
+                if (typeof s.block_color !== 'undefined') scanner_state.block_color = s.block_color;
+                
+                if (typeof s.blacklist !== 'undefined' && Array.isArray(s.blacklist)) {
+                    scanner_state.blacklist = s.blacklist;
+                    localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
+                }
+                
+                save_settings();
+                update_visualizer();
+                
+                var btn = document.getElementById('openwebrx-btn-freq-list');
+                if (btn) {
+                    var originalText = btn.innerHTML;
+                    btn.textContent = 'IMP';
+                    setTimeout(function() { btn.innerHTML = originalText; }, 1000);
+                }
+            } catch (err) {
+                console.error('[FreqScanner] Error during settings import:', err);
+                alert('Import failed: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
 function add_to_blacklist() {
+    // Check if we are in selection mode (overlay exists) -> Cancel it
+    var overlay = document.getElementById('freq-scanner-overlay');
+    if (overlay) {
+        if (overlay.cleanup) overlay.cleanup();
+        overlay.remove();
+        var btn = document.getElementById('openwebrx-btn-freq-block');
+        if (btn) {
+            btn.textContent = 'Block';
+            btn.style.color = 'white';
+        }
+        return;
+    }
+
     var freq = (typeof UI !== 'undefined' && UI.getFrequency) ? UI.getFrequency() : scanner_state.current_freq;
+    freq = Math.round(freq / 100) * 100;
     
     if (!is_blacklisted(freq)) {
         scanner_state.blacklist.push(freq);
         localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
         console.log('[FreqScanner] Frequency ignored:', freq);
+        
+        update_visualizer();
         
         // Visual feedback on button
         var btn = document.getElementById('openwebrx-btn-freq-block');
@@ -783,25 +1008,289 @@ function add_to_blacklist() {
     }
 }
 
-function remove_from_blacklist() {
-    var freq = (typeof UI !== 'undefined' && UI.getFrequency) ? UI.getFrequency() : scanner_state.current_freq;
-    var tolerance = get_tolerance();
+function start_block_range_selection() {
+    var btn = document.getElementById('openwebrx-btn-freq-block');
+    if (btn) {
+        btn.textContent = 'Select';
+        btn.style.color = 'yellow';
+    }
+
+    // Try to find the container using the ID from openwebrx.css
+    var container = document.getElementById('webrx-canvas-container');
+    // Fallback strategies to find the waterfall container
+    if (!container) container = document.getElementById('openwebrx-waterfall-container');
+    if (!container) container = document.getElementById('waterfall_container');
+    if (!container) {
+        var canvas = document.getElementById('waterfall_canvas');
+        if (canvas) container = canvas.parentElement;
+    }
     
+    if (!container) return;
+
+    // Remove existing overlay if present
+    var existing = document.getElementById('freq-scanner-overlay');
+    if (existing) {
+        if (existing.cleanup) existing.cleanup();
+        existing.remove();
+    }
+
+    var overlay = document.createElement('div');
+    overlay.id = 'freq-scanner-overlay';
+    // Use max z-index and touch-action: none to prevent scrolling/zooming gestures
+    overlay.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; cursor: crosshair; touch-action: none;';
+
+    var selection = document.createElement('div');
+    selection.style.cssText = 'position: absolute; top: 0; height: 100%; background: rgba(255, 0, 0, 0.3); border-left: 1px solid red; border-right: 1px solid red; display: none; pointer-events: none;';
+    overlay.appendChild(selection);
+
+    container.appendChild(overlay);
+
+    var startX = 0;
+    var dragging = false;
+
+    var getX = function(e) {
+        if (e.touches && e.touches.length > 0) return e.touches[0].clientX;
+        return e.clientX;
+    };
+
+    var mouseDownHandler = function(e) {
+        var rect = overlay.getBoundingClientRect();
+        startX = getX(e) - rect.left;
+        dragging = true;
+        selection.style.left = startX + 'px';
+        selection.style.width = '0px';
+        selection.style.display = 'block';
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+    };
+
+    var mouseMoveHandler = function(e) {
+        if (!dragging) return;
+        var rect = overlay.getBoundingClientRect();
+        var currentX = getX(e) - rect.left;
+        var w = Math.abs(currentX - startX);
+        var l = Math.min(startX, currentX);
+        selection.style.left = l + 'px';
+        selection.style.width = w + 'px';
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+    };
+
+    var mouseUpHandler = function(e) {
+        if (!dragging) return;
+        dragging = false;
+        
+        var rect = overlay.getBoundingClientRect();
+        var width = rect.width;
+        // Handle touchend where touches is empty, use changedTouches
+        var clientX = e.clientX;
+        if (e.changedTouches && e.changedTouches.length > 0) {
+            clientX = e.changedTouches[0].clientX;
+        }
+        
+        var currentX = clientX - rect.left;
+        
+        // Clamp to edges
+        if (currentX < 0) currentX = 0;
+        if (currentX > width) currentX = width;
+        
+        var f1 = map_x_to_freq(startX, width);
+        var f2 = map_x_to_freq(currentX, width);
+        
+        var min = Math.round(Math.min(f1, f2) / 100) * 100;
+        var max = Math.round(Math.max(f1, f2) / 100) * 100;
+        
+        // Merge overlapping ranges
+        var ranges = [];
+        var singles = [];
+        
+        scanner_state.blacklist.forEach(function(entry) {
+            if (typeof entry === 'number') {
+                singles.push(entry);
+            } else if (entry && typeof entry.start === 'number' && typeof entry.end === 'number') {
+                ranges.push(entry);
+            }
+        });
+        
+        ranges.push({start: min, end: max});
+        ranges.sort(function(a, b) { return a.start - b.start; });
+        
+        var merged = [];
+        if (ranges.length > 0) {
+            var current = ranges[0];
+            for (var i = 1; i < ranges.length; i++) {
+                var next = ranges[i];
+                if (current.end >= next.start) {
+                    current.end = Math.max(current.end, next.end);
+                } else {
+                    merged.push(current);
+                    current = next;
+                }
+            }
+            merged.push(current);
+        }
+        
+        // Filter singles covered by merged ranges
+        singles = singles.filter(function(f) {
+            return !merged.some(function(r) { return f >= r.start && f <= r.end; });
+        });
+        
+        scanner_state.blacklist = singles.concat(merged);
+        localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
+        console.log('[FreqScanner] Range blocked (merged):', min, max);
+        
+        update_visualizer();
+        
+        document.removeEventListener('mouseup', mouseUpHandler);
+        document.removeEventListener('touchend', mouseUpHandler);
+        overlay.remove();
+        
+        if (btn) {
+            btn.textContent = 'BLK';
+            setTimeout(function() {
+                btn.textContent = 'Block';
+                btn.style.color = 'white';
+            }, 1000);
+        }
+    };
+    
+    // Attach cleanup for external cancellation
+    overlay.cleanup = function() {
+        document.removeEventListener('mouseup', mouseUpHandler);
+        document.removeEventListener('touchend', mouseUpHandler);
+    };
+
+    overlay.addEventListener('mousedown', mouseDownHandler);
+    overlay.addEventListener('mousemove', mouseMoveHandler);
+    
+    // Add Touch Listeners
+    overlay.addEventListener('touchstart', mouseDownHandler, {passive: false});
+    overlay.addEventListener('touchmove', mouseMoveHandler, {passive: false});
+    
+    document.addEventListener('mouseup', mouseUpHandler);
+    document.addEventListener('touchend', mouseUpHandler);
+}
+
+function start_remove_range_selection() {
+    var btn = document.getElementById('openwebrx-btn-freq-block');
+    if (btn) {
+        btn.textContent = 'Select';
+        btn.style.color = 'yellow';
+    }
+
+    var container = document.getElementById('webrx-canvas-container');
+    if (!container) container = document.getElementById('openwebrx-waterfall-container');
+    if (!container) container = document.getElementById('waterfall_container');
+    if (!container) {
+        var canvas = document.getElementById('waterfall_canvas');
+        if (canvas) container = canvas.parentElement;
+    }
+    
+    if (!container) return;
+
+    var existing = document.getElementById('freq-scanner-overlay');
+    if (existing) {
+        if (existing.cleanup) existing.cleanup();
+        existing.remove();
+    }
+
+    var overlay = document.createElement('div');
+    overlay.id = 'freq-scanner-overlay';
+    overlay.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; cursor: crosshair; touch-action: none;';
+    
+    container.appendChild(overlay);
+
+    var clickHandler = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        var rect = overlay.getBoundingClientRect();
+        var clientX = e.clientX;
+        if (e.changedTouches && e.changedTouches.length > 0) {
+            clientX = e.changedTouches[0].clientX;
+        }
+        var x = clientX - rect.left;
+        var width = rect.width;
+
+        var freq = map_x_to_freq(x, width);
+        
+        var initial_len = scanner_state.blacklist.length;
+        var tolerance = get_tolerance();
+
+        scanner_state.blacklist = scanner_state.blacklist.filter(function(bf) {
+            if (typeof bf === 'number') {
+                return Math.abs(freq - bf) > tolerance;
+            } else if (bf && typeof bf.start === 'number' && typeof bf.end === 'number') {
+                return !(freq >= bf.start && freq <= bf.end);
+            }
+            return true;
+        });
+
+        if (scanner_state.blacklist.length < initial_len) {
+            localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
+            console.log('[FreqScanner] Removed blocked item at:', freq);
+            update_visualizer();
+            
+            if (btn) {
+                btn.textContent = 'REM';
+                setTimeout(function() {
+                    btn.textContent = 'Block';
+                    btn.style.color = 'white';
+                }, 1000);
+            }
+        } else {
+             if (btn) {
+                btn.textContent = 'Block';
+                btn.style.color = 'white';
+            }
+        }
+
+        overlay.remove();
+    };
+
+    overlay.addEventListener('mousedown', clickHandler);
+    overlay.addEventListener('touchstart', clickHandler, {passive: false});
+}
+
+function map_x_to_freq(x, width) {
+    if (typeof window.center_freq !== 'undefined' && typeof window.bandwidth !== 'undefined') {
+        var start_f = window.center_freq - (window.bandwidth / 2);
+        return start_f + (x / width) * window.bandwidth;
+    }
+    return 0;
+}
+
+function clear_visible_blacklist() {
+    if (typeof get_visible_freq_range !== 'function') return;
+    var range = get_visible_freq_range();
+    if (!range) return;
+
     var initial_len = scanner_state.blacklist.length;
-    scanner_state.blacklist = scanner_state.blacklist.filter(function(bf) {
-        return Math.abs(freq - bf) > tolerance;
-    });
     
+    scanner_state.blacklist = scanner_state.blacklist.filter(function(entry) {
+        // Keep entries that are strictly outside the visible range
+        if (typeof entry === 'number') {
+            return entry < range.start || entry > range.end;
+        } else if (entry && typeof entry.start === 'number' && typeof entry.end === 'number') {
+            // Keep if range ends before view starts OR range starts after view ends
+            return entry.end < range.start || entry.start > range.end;
+        }
+        return true;
+    });
+
     if (scanner_state.blacklist.length < initial_len) {
         localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
-        console.log('[FreqScanner] Frequency removed from blacklist:', freq);
+        console.log('[FreqScanner] Cleared visible blacklist entries.');
+        update_visualizer();
         
         var btn = document.getElementById('openwebrx-btn-freq-block');
-        if (!btn) btn = document.getElementById('openwebrx-btn-freq-scanner');
         if (btn) {
             var originalText = btn.textContent;
             var originalColor = btn.style.color;
-            btn.textContent = 'REM';
+            btn.textContent = 'CLR';
             btn.style.color = 'yellow';
             setTimeout(function() {
                 btn.textContent = originalText;
@@ -816,6 +1305,8 @@ function clear_blacklist() {
     localStorage.removeItem('freq_scanner_blacklist');
     console.log('[FreqScanner] Blacklist cleared.');
     
+    update_visualizer();
+    
     // Visual feedback on button
     var btn = document.getElementById('openwebrx-btn-freq-scanner');
     if (btn) {
@@ -827,46 +1318,94 @@ function clear_blacklist() {
     }
 }
 
-function export_blacklist() {
-    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scanner_state.blacklist));
-    var downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "freq_scanner_blacklist.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-}
+function edit_blacklist() {
+    var existing = document.getElementById('freq-scanner-edit-dialog');
+    if (existing) existing.remove();
 
-function import_blacklist() {
-    var input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = function(e) {
-        var file = e.target.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                var content = JSON.parse(e.target.result);
-                if (Array.isArray(content)) {
-                    scanner_state.blacklist = content;
-                    localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
-                    console.log('[FreqScanner] Blacklist imported:', content.length, 'entries');
-                    
-                    var btn = document.getElementById('openwebrx-btn-freq-scanner');
-                    if (btn) {
-                        var originalText = btn.textContent;
-                        btn.textContent = 'IMP';
-                        setTimeout(function() { btn.textContent = originalText; }, 1000);
-                    }
-                }
-            } catch (err) {
-                console.error('[FreqScanner] Error during import:', err);
+    var dialog = document.createElement('div');
+    dialog.id = 'freq-scanner-edit-dialog';
+    dialog.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; border: 1px solid #444; color: #eee; z-index: 10002; padding: 20px; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 450px; max-width: 95%; max-height: 80vh; display: flex; flex-direction: column; font-family: sans-serif;';
+
+    var title = document.createElement('h3');
+    title.textContent = 'Manage Blacklist';
+    title.style.marginTop = '0';
+    dialog.appendChild(title);
+
+    var listContainer = document.createElement('div');
+    listContainer.style.cssText = 'flex: 1; overflow-y: auto; margin-bottom: 10px; border: 1px solid #444; background: #333; padding: 5px; min-height: 200px;';
+    
+    // Copy current blacklist to temporary array
+    var currentList = scanner_state.blacklist.slice();
+
+    function renderList() {
+        listContainer.innerHTML = '';
+        if (currentList.length === 0) {
+            var empty = document.createElement('div');
+            empty.textContent = 'Blacklist is empty.';
+            empty.style.padding = '10px';
+            empty.style.color = '#aaa';
+            empty.style.textAlign = 'center';
+            listContainer.appendChild(empty);
+            return;
+        }
+
+        currentList.forEach(function(entry, index) {
+            var row = document.createElement('div');
+            row.style.cssText = 'display: flex; gap: 10px; margin-bottom: 5px; align-items: center; background: #444; padding: 8px; border-radius: 3px; justify-content: space-between;';
+            
+            var textDiv = document.createElement('div');
+            textDiv.style.cssText = 'font-family: monospace; font-size: 13px;';
+            
+            if (typeof entry === 'number') {
+                textDiv.textContent = 'Freq: ' + (entry / 1000) + ' kHz';
+            } else if (entry && typeof entry.start === 'number' && typeof entry.end === 'number') {
+                textDiv.textContent = 'Range: ' + (entry.start / 1000) + ' - ' + (entry.end / 1000) + ' kHz';
+            } else {
+                textDiv.textContent = 'Invalid Entry';
             }
-        };
-        reader.readAsText(file);
+
+            var btnDel = document.createElement('button');
+            btnDel.textContent = 'Delete';
+            btnDel.style.cssText = 'background: #d32f2f; color: white; border: none; cursor: pointer; padding: 5px 10px; border-radius: 3px; font-size: 12px;';
+            btnDel.onclick = function() {
+                currentList.splice(index, 1);
+                renderList();
+            };
+
+            row.appendChild(textDiv);
+            row.appendChild(btnDel);
+            listContainer.appendChild(row);
+        });
+    }
+
+    renderList();
+
+    dialog.appendChild(listContainer);
+
+    var btnContainer = document.createElement('div');
+    btnContainer.style.textAlign = 'right';
+
+    var btnCancel = document.createElement('button');
+    btnCancel.textContent = 'Cancel';
+    btnCancel.style.cssText = 'margin-right: 10px; padding: 5px 10px; background: #444; color: white; border: none; cursor: pointer; border-radius: 3px;';
+    btnCancel.onclick = function() { dialog.remove(); };
+
+    var btnSave = document.createElement('button');
+    btnSave.textContent = 'Save';
+    btnSave.style.cssText = 'padding: 5px 10px; background: #2196F3; color: white; border: none; cursor: pointer; border-radius: 3px;';
+    btnSave.onclick = function() {
+        scanner_state.blacklist = currentList;
+        localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
+        console.log('[FreqScanner] Blacklist updated manually:', currentList.length, 'entries');
+        update_visualizer();
+        dialog.remove();
     };
-    input.click();
+
+    btnContainer.appendChild(btnCancel);
+    btnContainer.appendChild(btnSave);
+    dialog.appendChild(btnContainer);
+
+    document.body.appendChild(dialog);
 }
 
 function get_tolerance() {
@@ -893,7 +1432,12 @@ function is_blacklisted(f) {
     var tolerance = get_tolerance();
     
     return scanner_state.blacklist.some(function(bf) {
-        return Math.abs(f - bf) <= tolerance;
+        if (typeof bf === 'number') {
+            return Math.abs(f - bf) <= tolerance;
+        } else if (bf && typeof bf.start === 'number' && typeof bf.end === 'number') {
+            return f >= bf.start && f <= bf.end;
+        }
+        return false;
     });
 }
 
@@ -929,15 +1473,15 @@ function is_bookmark_ignored(f) {
 
             // 1. Whitelist for voice modulations
             // Everything else (dstar, dmr, cw, digi-modes) is ignored
-            var voice_modes = ['am', 'fm', 'nfm', 'lsb', 'usb'];
+            var voice_modes = ['am', 'fm', 'nfm'];
             if (voice_modes.indexOf(mod) === -1) {
                 return true; // No voice modulation -> Ignore
             }
 
-            // 2. Heuristic: Check name for NFM/FM
+            // 2. Heuristic: Check name for NFM/FM/AM
             // If user saved "D-STAR Repeater" as NFM, but the name reveals it
-            if (mod === 'nfm' || mod === 'fm') {
-                var digital_keywords = ['dstar', 'd-star', 'dmr', 'ysf', 'c4fm', 'fusion', 'p25', 'nxdn', 'tetra', 'pocsag', 'm17'];
+            if (mod === 'nfm' || mod === 'fm' || mod === 'am') {
+                var digital_keywords = ['dstar', 'd-star', 'dmr', 'ysf', 'c4fm', 'fusion', 'p25', 'nxdn', 'tetra', 'pocsag', 'm17', 'acars', 'vdl', 'sita', 'arinc'];
                 for (var i = 0; i < digital_keywords.length; i++) {
                     if (name.indexOf(digital_keywords[i]) !== -1) {
                         return true; // Name suggests digital -> Ignore
@@ -955,3 +1499,72 @@ function is_ignored(f) {
 
 // Plugin registration
 Plugins.freq_scanner = { no_css: true };
+
+function init_visualizer() {
+    // Find the waterfall viewport (parent of the moving strip)
+    var strip = document.getElementById('webrx-canvas-container');
+    if (!strip) return;
+    var viewport = strip.parentElement;
+    
+    if (!document.getElementById('freq-scanner-visualizer')) {
+        var canvas = document.createElement('canvas');
+        canvas.id = 'freq-scanner-visualizer';
+        canvas.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;';
+        viewport.insertBefore(canvas, strip.nextSibling);
+    }
+    
+    // Hook mkscale to redraw when view changes
+    if (typeof window.mkscale === 'function' && !window.mkscale.is_scanner_hooked) {
+        var original_mkscale = window.mkscale;
+        window.mkscale = function() {
+            original_mkscale.apply(this, arguments);
+            update_visualizer();
+        };
+        window.mkscale.is_scanner_hooked = true;
+    }
+    
+    // Initial draw
+    update_visualizer();
+}
+
+function update_visualizer() {
+    var cvs = document.getElementById('freq-scanner-visualizer');
+    if (!cvs) return;
+    
+    var ctx = cvs.getContext('2d');
+    // Resize canvas to match display size (viewport)
+    var rect = cvs.getBoundingClientRect();
+    if (cvs.width !== rect.width || cvs.height !== rect.height) {
+        cvs.width = rect.width;
+        cvs.height = rect.height;
+    }
+    
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    
+    if (!scanner_state.running && !scanner_state.show_blocked_ranges) return;
+    
+    if (typeof get_visible_freq_range !== 'function') return;
+    var range = get_visible_freq_range();
+    if (!range) return;
+    
+    ctx.fillStyle = scanner_state.block_color;
+    
+    scanner_state.blacklist.forEach(function(entry) {
+        var start, end;
+        if (typeof entry === 'number') {
+            var tol = get_tolerance();
+            start = entry - tol;
+            end = entry + tol;
+        } else {
+            start = entry.start;
+            end = entry.end;
+        }
+        
+        var x1 = scale_px_from_freq(start, range);
+        var x2 = scale_px_from_freq(end, range);
+        var w = x2 - x1;
+        if (w < 1) w = 1;
+        
+        ctx.fillRect(x1, 0, w, cvs.height);
+    });
+}
