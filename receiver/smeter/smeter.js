@@ -14,6 +14,7 @@ Plugins.smeter = {
     hide_original: false,      // Set to true to hide the original S-meter
     show_text: true,           // Set to false to hide the text below the S-meter
     ui: {},                    // Cache for DOM elements
+    last_fg_color: null,       // Cache for theme color detection
 
     init: function() {
         // Load configuration dynamically
@@ -47,9 +48,9 @@ Plugins.smeter = {
             var pct = ((db + 127) / 114) * 100;
             // Label only for odd numbers (1, 3, 5, 7, 9)
             if (s % 2 !== 0) {
-                scaleHtml += '<div style="position: absolute; left: ' + pct + '%; transform: translateX(-50%); color: #fff;">' + s + '</div>';
+                scaleHtml += '<div class="smeter-tick-label" style="position: absolute; left: ' + pct + '%; transform: translateX(-50%);">' + s + '</div>';
             }
-            scaleHtml += '<div style="position: absolute; left: ' + pct + '%; bottom: -2px; width: 1px; height: 4px; background: #fff;"></div>';
+            scaleHtml += '<div class="smeter-tick-mark" style="position: absolute; left: ' + pct + '%; bottom: -2px; width: 1px; height: 4px;"></div>';
         }
 
         // dB over S9: 10, 20, 30, 40, 50, 60 (Red)
@@ -66,10 +67,11 @@ Plugins.smeter = {
         var s9Pos = ((-73 + 127) / 114) * 100;
 
         var html = `
-            <div id="smeter-panel" style="margin-bottom: 10px; padding: 5px 15px; background: #000; border: 1px solid #444; border-radius: 4px; color: #fff; font-family: sans-serif;">
+            <style id="smeter-theme-style"></style>
+            <div id="smeter-panel" style="margin-bottom: 10px; padding: 5px 15px; border: 1px solid transparent; border-radius: 4px; font-family: sans-serif;">
                 <div style="position: relative; height: 14px; font-size: 10px; margin-bottom: 2px;">${scaleHtml}</div>
-                <div style="background: #222; height: 8px; border: 1px solid #000; border-radius: 2px; overflow: hidden; position: relative;">
-                    <div id="smeter-bar-white" style="position: absolute; left: 0; top: 0; height: 100%; background: #fff; width: 0%; transition: width 0.1s;"></div>
+                <div id="smeter-bar-container" style="height: 8px; border: 1px solid rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; position: relative;">
+                    <div id="smeter-bar-white" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; transition: width 0.1s;"></div>
                     <div id="smeter-bar-red" style="position: absolute; left: ${s9Pos}%; top: 0; height: 100%; background: #f44; width: 0%; transition: width 0.1s;"></div>
                 </div>
                 <div id="smeter-text" style="font-size: 12px; margin-top: 2px; text-align: center;"></div>
@@ -96,7 +98,36 @@ Plugins.smeter = {
         }
     },
 
+    updateTheme: function() {
+        var $parent = $('#openwebrx-panel-receiver');
+        var fgColor = $parent.css('color') || '#fff';
+
+        if (this.last_fg_color === fgColor) return;
+        this.last_fg_color = fgColor;
+
+        // Detect light/dark theme based on text brightness
+        var rgb = fgColor.match(/\d+/g);
+        var isDarkTheme = true;
+        if (rgb && rgb.length === 3) {
+            var brightness = (parseInt(rgb[0])*299 + parseInt(rgb[1])*587 + parseInt(rgb[2])*114) / 1000;
+            if (brightness < 128) isDarkTheme = false;
+        }
+
+        var panelBg = isDarkTheme ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)';
+        var barContainerBg = isDarkTheme ? '#222' : '#ddd';
+
+        var css = '#smeter-panel { color: ' + fgColor + '; background: ' + panelBg + '; border-color: ' + fgColor + '; }' +
+                  '.smeter-tick-label { color: ' + fgColor + '; }' +
+                  '.smeter-tick-mark { background-color: ' + fgColor + '; }' +
+                  '#smeter-bar-container { background: ' + barContainerBg + '; border-color: ' + fgColor + '; }' +
+                  '#smeter-bar-white { background-color: ' + fgColor + '; }';
+
+        $('#smeter-theme-style').text(css);
+    },
+
     update: function() {
+        this.updateTheme();
+
         // Enforce hiding or showing of original S-meter
         if (this.hide_original) {
             if ($('#smeter-hide-css').length === 0) {
