@@ -113,11 +113,11 @@ Plugins.smeter = {
 
         // 1. Primary Source: Check global variable (OpenWebRX Standard/Plus)
         if (dbm <= -900) {
-            if (typeof window.smeter_level !== 'undefined' && window.smeter_level > 0) {
-                dbm = 10 * Math.log10(window.smeter_level); // OpenWebRX Standard (Linear)
-            }
-            else if (typeof window.openwebrx !== 'undefined' && window.openwebrx.state && typeof window.openwebrx.state.s_meter_level !== 'undefined') {
+            if (typeof window.openwebrx !== 'undefined' && window.openwebrx.state && typeof window.openwebrx.state.s_meter_level !== 'undefined') {
                 dbm = window.openwebrx.state.s_meter_level;
+            }
+            else if (typeof window.smeter_level !== 'undefined' && window.smeter_level > 0) {
+                dbm = 10 * Math.log10(window.smeter_level); // OpenWebRX Standard (Linear)
             }
         }
 
@@ -157,7 +157,7 @@ Plugins.smeter = {
         if (sVal < 0) sVal = 0;
         var sText = "S" + sVal;
         
-        if (sVal > 9) {
+        if (dbm > s9Ref) {
              var over = Math.round(dbm - s9Ref);
              sText = "S9" + (over > 0 ? "+" + over : "");
         }
