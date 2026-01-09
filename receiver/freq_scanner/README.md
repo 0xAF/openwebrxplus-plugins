@@ -27,10 +27,11 @@ A **Scanner** section is added to the receiver panel.
 
 ### Buttons
 * **Scan**: Start or Stop scanning.
-    * **Long Click (> 800ms)**: Opens the **Scan Options** menu.
+    * **Long Click (> 800ms)**: Opens the **Scan Options** menu (indicated by a triangle).
 * **Skip**: Skips the current frequency (only active when scanning).
 * **Block**: Adds the current frequency to the blacklist.
-* **List**: Opens the **Blacklist Management** menu.
+    * **Long Click (> 800ms)**: Opens the **Block Options** menu (indicated by a triangle).
+* **Setup**: Opens the **Scanner Setup & Blacklist** menu.
 
 ### Scan Options (Scan Button)
 * **Scan Modes**:
@@ -40,16 +41,24 @@ A **Scanner** section is added to the receiver panel.
 * **Delay**: Set the wait time after signal loss (Standard, 5s, 10s).
 * **Filter: Only Analog**: If enabled, the scanner automatically skips frequencies marked as digital (DMR, YSF, D-Star, etc.) in your bookmarks.
 
-### Blacklist Management (List Button)
-* **Release Frequency**: Removes the current frequency from the blacklist.
+### Block Options (Block Button)
+* **Always Show Blocked Ranges**: If enabled, blocked frequencies and ranges are visualized as colored bars on the waterfall even when the scanner is not running.
+* **Color**: Cycles through different colors for the blocked range visualization (Red, Orange, Yellow, Green, Blue, Purple, White).
+* **Clear Visible Blocked Ranges**: Removes all blacklist entries that are currently visible in the waterfall view.
+* **Remove Blocked Range**: Allows you to remove a specific blocked range or frequency by clicking on it in the waterfall.
+* **Block Range**: Allows you to select a frequency range on the waterfall to block. Click and drag to define the range.
+
+### Scanner Setup (Setup Button)
+* **Export / Import Plugin Settings**: Save or load the plugin configuration including the blacklist (JSON).
+* **Manage Blacklist**: Opens a dialog to manually manage the blacklist entries.
 * **Clear Blacklist**: Removes all blocked frequencies.
-* **Export / Import**: Save or load the blacklist (JSON).
 
 ### Interaction
 * **Squelch**: The scanner uses the current squelch level set by the slider in the OpenWebRX+ interface.
 * **Manual Tuning**: Clicking on the waterfall while scanning stops the scanner.
 * **Tuning Step**: The scanner respects the current tuning step size.
 * **Modulation**: The scanner is active only for AM and FM modes.
+* **Visualizer**: Blocked frequencies and ranges are shown as semi-transparent bars on the waterfall.
 
 ## Configuration
 
