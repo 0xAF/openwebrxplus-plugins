@@ -729,7 +729,7 @@ Plugins.smeter = {
         }
 
         // Split bar into white (up to S9) and red (above S9)
-        var whiteW = Math.min(widthPercent, s9Pos);
+        var whiteW = widthPercent;
         var redW = (widthPercent > s9Pos) ? (widthPercent - s9Pos) : 0;
 
         this.ui.barWhite.css('width', whiteW + '%');
