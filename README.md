@@ -64,7 +64,9 @@ Each plugin is documented in its own folder.
 
 | Name | Description |
 | :------ | :---------- |
-|[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner)([Joerg](#contributors))|
+|[set_waterfall_theme](receiver/set_waterfall_theme)|Set the default waterfall theme ([fustinoni-net](#contributors))|
+|[show_band_plan](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
+|[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner ([Joerg](#contributors))|
 |[smeter](receiver/smeter)|Show S-Meter (needs calibration!)([Joerg](#contributors))|
 |[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
 |[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of bookmarks with right mouse button|
@@ -97,6 +99,8 @@ Each plugin is documented in its own folder.
 | Name | Description |
 | :------ | :---------- |
 |[owrxantswitcher](https://github.com/jrghnng/owrxantswitcher)|Switch antenna ports using a WebAPI on the server.|
+|[owrx_devices_status](https://github.com/fustinoni-net/owrx_devices_status)|Extend the status panel by displaying the profile name each receiver is currently tuned to.|
+|[OWRX_Antenna_manager](https://github.com/fustinoni-net/OWRX_Antenna_manager)|A foundation for developing an antenna manager for OpenWebRX+.|
 
 ## Detailed Installation & Loading Instructions
 
@@ -201,6 +205,7 @@ A: Use `Plugins.load('https://.../plugin_name/plugin_name.js');` in your `init.j
 - [LZ2DMV](https://github.com/LZ2DMV)
 - [Yannis](https://github.com/ysamouhos)
 - [Joerg](https://github.com/joer123)
+- [fustinoni-net](https://github.com/fustinoni-net)
 
 ---
 
