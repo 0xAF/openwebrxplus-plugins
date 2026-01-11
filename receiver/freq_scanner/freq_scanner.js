@@ -283,7 +283,7 @@ function attempt_hook_openwebrx() {
                     set_scanner_active(false);
                 }
             }
-            original_setFrequency.apply(this, arguments);
+            return original_setFrequency.apply(this, arguments);
         };
         UI.setFrequency.is_scanner_hooked = true;
         hooked = true;
@@ -1509,7 +1509,7 @@ function init_visualizer() {
     if (!document.getElementById('freq-scanner-visualizer')) {
         var canvas = document.createElement('canvas');
         canvas.id = 'freq-scanner-visualizer';
-        canvas.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;';
+        canvas.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 0;';
         viewport.insertBefore(canvas, strip.nextSibling);
     }
     
