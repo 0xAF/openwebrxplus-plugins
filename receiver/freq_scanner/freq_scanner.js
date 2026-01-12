@@ -77,7 +77,7 @@ function init_freq_scanner() {
         btn.textContent = 'Scan';
         btn.title = 'Short: Start/Stop | Long: Scan Options';
         
-        btn.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 28px; font-size: 13px; font-weight: 600; border: 3px solid #FF3939; background: #FF3939; color: white; cursor: pointer; border-radius: 5px; box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+        btn.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 20px; font-size: 13px; font-weight: 600; border: 3px solid #FF3939; background: #FF3939; color: white; cursor: pointer; border-radius: 5px; box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
         
         setup_long_press(btn, function() {
             toggle_scanner();
@@ -116,7 +116,7 @@ function init_freq_scanner() {
             btnSkip.textContent = 'Skip';
             btnSkip.title = 'Skip current frequency';
             btnSkip.disabled = true;
-            btnSkip.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 34px; font-size: 13px; font-weight: 600; border: none; background: #444; color: #aaa; cursor: default; border-radius: 5px; opacity: 0.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+            btnSkip.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: none; background: #444; color: #aaa; cursor: default; border-radius: 5px; opacity: 0.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
             btnSkip.onclick = function() {
                 if (scanner_state.running) {
                     if (scanner_state.timer) clearTimeout(scanner_state.timer);
@@ -130,7 +130,7 @@ function init_freq_scanner() {
             btnBlock.className = 'freq-scanner-longpress';
             btnBlock.textContent = 'Block';
             btnBlock.title = 'Short: Block Current | Long: Block Options';
-            btnBlock.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 34px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+            btnBlock.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
             setup_long_press(btnBlock, function() {
                 add_to_blacklist();
             }, function(rect) {
@@ -141,7 +141,7 @@ function init_freq_scanner() {
             btnList.id = 'openwebrx-btn-freq-list';
             btnList.innerHTML = 'Setup &blacktriangle;';
             btnList.title = 'Scanner Setup / Blacklist';
-            btnList.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 34px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+            btnList.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
             btnList.onclick = function() { show_blacklist_menu(this.getBoundingClientRect()); };
 
             var line = document.createElement('div');
