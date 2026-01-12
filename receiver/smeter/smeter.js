@@ -269,7 +269,7 @@ Plugins.smeter = {
             var pct = ((db + 127) / 114) * 100;
             // Label only for odd numbers (1, 3, 5, 7, 9)
             if (s % 2 !== 0) {
-                scaleHtml += '<div class="smeter-tick-label" style="position: absolute; left: ' + pct + '%; transform: translateX(-50%);">' + s + '</div>';
+                scaleHtml += '<div class="smeter-tick-label" style="position: absolute; left: ' + pct + '%; transform: translateX(-50%); font-weight: bold;">' + s + '</div>';
             }
             scaleHtml += '<div class="smeter-tick-mark" style="position: absolute; left: ' + pct + '%; bottom: -2px; width: 1px; height: 4px;"></div>';
         }
@@ -280,7 +280,7 @@ Plugins.smeter = {
             var pct = ((db + 127) / 114) * 100;
             // Label only for 20, 40, 60
             if (over % 20 === 0) {
-                scaleHtml += '<div style="position: absolute; left: ' + pct + '%; transform: translateX(-50%); color: #f44;">+' + over + '</div>';
+                scaleHtml += '<div style="position: absolute; left: ' + pct + '%; transform: translateX(-50%); color: #f44; font-weight: bold;">+' + over + '</div>';
             }
             scaleHtml += '<div style="position: absolute; left: ' + pct + '%; bottom: -2px; width: 1px; height: 4px; background: #f44;"></div>';
         }
@@ -289,14 +289,14 @@ Plugins.smeter = {
 
         var html = `
             <style id="smeter-theme-style"></style>
-            <div id="smeter-panel" style="position: relative; margin-bottom: 10px; padding: 5px 15px; border: 1px solid transparent; border-radius: 4px; font-family: sans-serif; user-select: none; -webkit-user-select: none; cursor: pointer;" title="Long press for settings">
+            <div id="smeter-panel" style="position: relative; margin-bottom: 8px; padding: 5px 15px 5px 15px; border: 1px solid transparent; border-radius: 4px; font-family: sans-serif; user-select: none; -webkit-user-select: none; cursor: pointer;" title="Long press for settings">
                 <div style="position: relative; height: 14px; font-size: 10px; margin-bottom: 2px;">${scaleHtml}</div>
                 <div id="smeter-bar-container" style="height: 8px; border: 1px solid rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; position: relative;">
                     <div id="smeter-bar-white" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%;"></div>
                     <div id="smeter-bar-red" style="position: absolute; left: ${s9Pos}%; top: 0; height: 100%; background: #f44; width: 0%;"></div>
                 </div>
-                <div id="smeter-text" style="font-size: 12px; margin-top: 2px; text-align: center;"></div>
             </div>
+            <div id="smeter-text" style="position: absolute; bottom: 4px; right: 4px; width: 65px; text-align: left; font-size: 12px; font-weight: bold; color: white; pointer-events: none; z-index: 99; white-space: nowrap;"></div>
         `;
 
         // Try to embed the panel into the receiver area (#openwebrx-panel-receiver)
@@ -595,12 +595,12 @@ Plugins.smeter = {
         // Enforce hiding or showing of original S-meter
         if (this.hide_original) {
             if ($('#smeter-hide-css').length === 0) {
-                $('head').append('<style id="smeter-hide-css">#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container { display: none !important; }</style>');
+                $('head').append('<style id="smeter-hide-css">#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container { display: none !important; } #openwebrx-clock-utc { position: absolute !important; bottom: 4px !important; left: 4px !important; right: auto !important; top: auto !important; z-index: 99; font-size: 12px !important; pointer-events: none; color: white !important; font-weight: bold !important; }</style>');
             }
         } else {
             if ($('#smeter-hide-css').length > 0) {
                 $('#smeter-hide-css').remove();
-                $('#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container').css('display', '');
+                $('#openwebrx-smeter, #openwebrx-smeter-db, #openwebrx-smeter-container, #openwebrx-clock-utc').css('display', '');
             }
         }
 
