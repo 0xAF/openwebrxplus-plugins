@@ -56,121 +56,8 @@ $(document).ready(init_freq_scanner);
 function init_freq_scanner() {
     load_blacklist();
     load_settings();
-
-    // Inject CSS for long-press indicator
-    if (!document.getElementById('freq-scanner-css')) {
-        var style = document.createElement('style');
-        style.id = 'freq-scanner-css';
-        style.innerHTML = 
-            '.freq-scanner-longpress { position: relative; }' +
-            '.freq-scanner-longpress::after { content: ""; position: absolute; bottom: 2px; right: 2px; width: 0; height: 0; border-left: 6px solid transparent; border-bottom: 6px solid currentColor; opacity: 0.8; pointer-events: none; }';
-        document.head.appendChild(style);
-    }
-
-    var container = document.querySelector('#openwebrx-panel-receiver');
-
-    // Create "SCN" button if not already present
-    if (!document.getElementById('openwebrx-btn-freq-scanner')) {
-        var btn = document.createElement('button');
-        btn.id = 'openwebrx-btn-freq-scanner';
-        btn.className = 'freq-scanner-longpress';
-        btn.textContent = 'Scan';
-        btn.title = 'Short: Start/Stop | Long: Scan Options';
-        
-        btn.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 28px; font-size: 13px; font-weight: 600; border: 3px solid #FF3939; background: #FF3939; color: white; cursor: pointer; border-radius: 5px; box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
-        
-        setup_long_press(btn, function() {
-            toggle_scanner();
-        }, function(rect) {
-            show_scan_menu(rect);
-        });
-        
-        if (container) {
-            var title = document.createElement('div');
-            title.id = 'openwebrx-section-scanner';
-            title.className = 'openwebrx-section-divider';
-            title.innerHTML = '&blacktriangledown;&nbsp;Scanner';
-            title.onclick = function() {
-                if ($(section).is(':visible')) {
-                    $(section).slideUp(200);
-                    title.innerHTML = '&blacktriangle;&nbsp;Scanner';
-                    localStorage.setItem('openwebrx-section-scanner', 'false');
-                } else {
-                    $(section).slideDown(200);
-                    title.innerHTML = '&blacktriangledown;&nbsp;Scanner';
-                    localStorage.setItem('openwebrx-section-scanner', 'true');
-                }
-            };
-
-            var section = document.createElement('div');
-            section.className = 'openwebrx-section';
-
-            // Restore section state
-            if (localStorage.getItem('openwebrx-section-scanner') === 'false') {
-                section.style.display = 'none';
-                title.innerHTML = '&blacktriangle;&nbsp;Scanner';
-            }
-
-            var btnSkip = document.createElement('button');
-            btnSkip.id = 'openwebrx-btn-freq-skip';
-            btnSkip.textContent = 'Skip';
-            btnSkip.title = 'Skip current frequency';
-            btnSkip.disabled = true;
-            btnSkip.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 34px; font-size: 13px; font-weight: 600; border: none; background: #444; color: #aaa; cursor: default; border-radius: 5px; opacity: 0.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
-            btnSkip.onclick = function() {
-                if (scanner_state.running) {
-                    if (scanner_state.timer) clearTimeout(scanner_state.timer);
-                    scanner_move_next(true);
-                    scan_loop();
-                }
-            };
-
-            var btnBlock = document.createElement('button');
-            btnBlock.id = 'openwebrx-btn-freq-block';
-            btnBlock.className = 'freq-scanner-longpress';
-            btnBlock.textContent = 'Block';
-            btnBlock.title = 'Short: Block Current | Long: Block Options';
-            btnBlock.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 34px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
-            setup_long_press(btnBlock, function() {
-                add_to_blacklist();
-            }, function(rect) {
-                show_block_menu(rect);
-            });
-
-            var btnList = document.createElement('button');
-            btnList.id = 'openwebrx-btn-freq-list';
-            btnList.innerHTML = 'Setup &blacktriangle;';
-            btnList.title = 'Scanner Setup / Blacklist';
-            btnList.style.cssText = 'width: 50px; height: 34px; padding: 0; line-height: 34px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
-            btnList.onclick = function() { show_blacklist_menu(this.getBoundingClientRect()); };
-
-            var line = document.createElement('div');
-            line.className = 'openwebrx-panel-line';
-            line.style.display = 'flex';
-            line.style.justifyContent = 'center';
-            line.style.gap = '5px';
-            line.appendChild(btn);
-            line.appendChild(btnSkip);
-            line.appendChild(btnBlock);
-            line.appendChild(btnList);
-            section.appendChild(line);
-
-            // Try to insert before "Settings" section
-            var settingsDivider = document.getElementById('openwebrx-section-settings');
-
-            if (settingsDivider && settingsDivider.parentNode === container) {
-                container.insertBefore(title, settingsDivider);
-                container.insertBefore(section, settingsDivider);
-            } else {
-                container.appendChild(title);
-                container.appendChild(section);
-            }
-        } else {
-            // Fallback if panel is not found
-            btn.style.position = 'fixed';
-            document.body.appendChild(btn);
-        }
-    }
+    inject_css();
+    create_ui();
 
     // Install hook for modulation changes to show/hide button
     attempt_hook_openwebrx();
@@ -181,6 +68,181 @@ function init_freq_scanner() {
     }
     
     init_visualizer();
+}
+
+function inject_css() {
+    // Inject CSS for long-press indicator
+    if (!document.getElementById('freq-scanner-css')) {
+        var style = document.createElement('style');
+        style.id = 'freq-scanner-css';
+        style.innerHTML = 
+            '.freq-scanner-longpress { position: relative; }' +
+            '.freq-scanner-longpress::after { content: ""; position: absolute; bottom: 2px; right: 2px; width: 0; height: 0; border-left: 6px solid transparent; border-bottom: 6px solid currentColor; opacity: 0.8; pointer-events: none; }';
+        document.head.appendChild(style);
+    }
+}
+
+function create_ui() {
+    var container = document.querySelector('#openwebrx-panel-receiver');
+
+    // Create Toggle Button (SCA)
+    if (!document.getElementById('freq-scanner-toggle-btn')) {
+        var toggleBtn = document.createElement('div');
+        toggleBtn.id = 'freq-scanner-toggle-btn';
+        toggleBtn.textContent = 'SCA';
+        toggleBtn.title = 'Open Scanner Controls';
+        toggleBtn.style.cssText = 'position: absolute; bottom: 3px; left: 4px; z-index: 99; font-size: 12px; font-weight: bold; color: #aaa; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0px 4px; border-radius: 3px; border: 1px solid #666; user-select: none; line-height: 12px; transition: left 0.2s;';
+        
+        toggleBtn.onclick = function() {
+            var panel = document.getElementById('freq-scanner-floating-panel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
+            update_sca_button_state();
+        };
+        
+        if (container) container.appendChild(toggleBtn);
+
+        // Auto-positioning logic
+        var update_sca_pos = function() {
+            var btn = document.getElementById('freq-scanner-toggle-btn');
+            if (!btn) return;
+            var cont = document.querySelector('#openwebrx-panel-receiver');
+            if (!cont) return;
+            
+            var left = 4;
+            var clock = document.getElementById('openwebrx-clock-utc');
+            if (clock && clock.offsetParent) {
+                var r1 = cont.getBoundingClientRect();
+                var r2 = clock.getBoundingClientRect();
+                // Check if clock is at bottom-left (approx)
+                if (r2.bottom > r1.bottom - 40 && r2.left < r1.left + 50) {
+                    left = (r2.right - r1.left) + 8;
+                }
+            }
+            btn.style.left = left + 'px';
+        };
+        setInterval(update_sca_pos, 1000);
+        update_sca_pos();
+    }
+
+    // Create Floating Panel with Buttons
+    if (!document.getElementById('freq-scanner-floating-panel')) {
+        var panel = document.createElement('div');
+        panel.id = 'freq-scanner-floating-panel';
+        panel.style.cssText = 'display: none; position: fixed; top: 150px; left: 10px; background: rgba(30,30,30,0.95); border: 1px solid #666; border-radius: 5px; padding: 0; z-index: 10000; box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif;';
+        
+        var dragHandle = document.createElement('div');
+        dragHandle.textContent = 'Frequency Scanner';
+        dragHandle.style.cssText = 'height: 18px; line-height: 18px; font-size: 11px; color: #ddd; text-align: center; background: #444; cursor: move; border-radius: 5px 5px 0 0; width: 100%; border-bottom: 1px solid #555; user-select: none;';
+        dragHandle.title = 'Drag to move';
+        panel.appendChild(dragHandle);
+
+        var isDragging = false;
+        var dragOffsetX = 0;
+        var dragOffsetY = 0;
+
+        var startDrag = function(e) {
+            isDragging = true;
+            var clientX = e.clientX;
+            var clientY = e.clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+            dragOffsetX = clientX - panel.offsetLeft;
+            dragOffsetY = clientY - panel.offsetTop;
+            e.preventDefault();
+        };
+
+        var doDrag = function(e) {
+            if (isDragging) {
+                var clientX = e.clientX;
+                var clientY = e.clientY;
+                if (e.touches && e.touches.length > 0) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                }
+                panel.style.left = (clientX - dragOffsetX) + 'px';
+                panel.style.top = (clientY - dragOffsetY) + 'px';
+                if (e.type === 'touchmove') e.preventDefault();
+            }
+        };
+
+        var stopDrag = function() { isDragging = false; };
+
+        dragHandle.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', doDrag);
+        document.addEventListener('mouseup', stopDrag);
+
+        dragHandle.addEventListener('touchstart', startDrag, {passive: false});
+        document.addEventListener('touchmove', doDrag, {passive: false});
+        document.addEventListener('touchend', stopDrag);
+
+        var content = document.createElement('div');
+        content.style.padding = '5px';
+
+        var btnContainer = document.createElement('div');
+        btnContainer.style.cssText = 'display: flex; gap: 5px;';
+
+        var btn = document.createElement('button');
+        btn.id = 'openwebrx-btn-freq-scanner';
+        btn.className = 'freq-scanner-longpress';
+        btn.textContent = 'Scan';
+        btn.title = 'Short: Start/Stop | Long: Scan Options';
+        
+        btn.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 20px; font-size: 13px; font-weight: 600; border: 3px solid #FF3939; background: #FF3939; color: white; cursor: pointer; border-radius: 5px; box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+        
+        setup_long_press(btn, function() {
+            toggle_scanner();
+        }, function(rect) {
+            show_scan_menu(rect);
+        });
+
+        var btnSkip = document.createElement('button');
+        btnSkip.id = 'openwebrx-btn-freq-skip';
+        btnSkip.textContent = 'Skip';
+        btnSkip.title = 'Skip current frequency';
+        btnSkip.disabled = true;
+        btnSkip.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: none; background: #444; color: #aaa; cursor: default; border-radius: 5px; opacity: 0.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+        btnSkip.onclick = function() {
+            if (scanner_state.running) {
+                if (scanner_state.timer) clearTimeout(scanner_state.timer);
+                scanner_move_next(true);
+                scan_loop();
+            }
+        };
+
+        var btnBlock = document.createElement('button');
+        btnBlock.id = 'openwebrx-btn-freq-block';
+        btnBlock.className = 'freq-scanner-longpress';
+        btnBlock.textContent = 'Block';
+        btnBlock.title = 'Short: Block Current | Long: Block Options';
+        btnBlock.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+        setup_long_press(btnBlock, function() {
+            add_to_blacklist();
+        }, function(rect) {
+            show_block_menu(rect);
+        });
+
+        var btnList = document.createElement('button');
+        btnList.id = 'openwebrx-btn-freq-list';
+        btnList.innerHTML = 'Setup';
+        btnList.title = 'Scanner Setup / Blacklist';
+        btnList.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+        btnList.onclick = function() { show_blacklist_menu(this.getBoundingClientRect()); };
+
+        btnContainer.appendChild(btn);
+        btnContainer.appendChild(btnSkip);
+        btnContainer.appendChild(btnBlock);
+        btnContainer.appendChild(btnList);
+        
+        content.appendChild(btnContainer);
+        panel.appendChild(content);
+        document.body.appendChild(panel);
+    }
 }
 
 function setup_long_press(element, onClick, onLongPress) {
@@ -428,6 +490,8 @@ function set_scanner_active(active) {
         }
     }
     update_scanner_visibility(last_known_mode);
+
+    update_sca_button_state();
 }
 
 function toggle_scanner() {
@@ -1567,4 +1631,23 @@ function update_visualizer() {
         
         ctx.fillRect(x1, 0, w, cvs.height);
     });
+}
+
+function update_sca_button_state() {
+    var btn = document.getElementById('freq-scanner-toggle-btn');
+    var panel = document.getElementById('freq-scanner-floating-panel');
+    if (!btn || !panel) return;
+
+    if (panel.style.display !== 'none') {
+        btn.style.color = '#39FF14';
+        btn.style.borderColor = '#39FF14';
+    } else {
+        if (scanner_state.running) {
+            btn.style.color = 'yellow';
+            btn.style.borderColor = 'yellow';
+        } else {
+            btn.style.color = '#aaa';
+            btn.style.borderColor = '#666';
+        }
+    }
 }

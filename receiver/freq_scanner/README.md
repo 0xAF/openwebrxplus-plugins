@@ -23,9 +23,14 @@ Plugins.load('freq_scanner');
 
 ## Usage
 
-A **Scanner** section is added to the receiver panel.
+A small **SCA** button is added to the bottom left of the receiver panel. Clicking this button opens a floating, draggable window containing the scanner controls.
 
-### Buttons
+### SCA Button Status
+* **Grey**: Scanner is stopped and window is closed.
+* **Green**: Scanner window is open.
+* **Yellow**: Scanner is running in the background (window closed).
+
+### Scanner Window Buttons
 * **Scan**: Start or Stop scanning.
     * **Long Click (> 800ms)**: Opens the **Scan Options** menu (indicated by a triangle).
 * **Skip**: Skips the current frequency (only active when scanning).
