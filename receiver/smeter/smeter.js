@@ -15,6 +15,7 @@ Plugins.smeter = {
     s0_offset_vhf: 0,          // S0 offset for VHF
     hide_original: false,      // Set to true to hide the original S-meter
     show_text: true,           // Set to false to hide the text below the S-meter
+    show_dbm: false,           // Show dBm value next to bar
     use_iaru_vhf: true,        // Set to true to use IARU VHF standard (S9 = -93dBm)
     smeter_delay: 0,           // Delay in ms to sync with audio
     smoothed_dbm: -999,        // Internal state for smoothing
@@ -57,6 +58,7 @@ Plugins.smeter = {
                 if (typeof s.s0_offset_hf !== 'undefined') this.s0_offset_hf = s.s0_offset_hf;
                 if (typeof s.s0_offset_vhf !== 'undefined') this.s0_offset_vhf = s.s0_offset_vhf;
                 if (typeof s.use_iaru_vhf !== 'undefined') this.use_iaru_vhf = s.use_iaru_vhf;
+                if (typeof s.show_dbm !== 'undefined') this.show_dbm = s.show_dbm;
                 if (typeof s.smeter_delay !== 'undefined') this.smeter_delay = s.smeter_delay;
             } catch(e) {
                 console.error('[Smeter] Error loading settings', e);
@@ -71,6 +73,7 @@ Plugins.smeter = {
             s0_offset_hf: this.s0_offset_hf,
             s0_offset_vhf: this.s0_offset_vhf,
             use_iaru_vhf: this.use_iaru_vhf,
+            show_dbm: this.show_dbm,
             smeter_delay: this.smeter_delay
         };
         localStorage.setItem('smeter_settings', JSON.stringify(settings));
@@ -83,6 +86,7 @@ Plugins.smeter = {
             s0_offset_hf: this.s0_offset_hf,
             s0_offset_vhf: this.s0_offset_vhf,
             use_iaru_vhf: this.use_iaru_vhf,
+            show_dbm: this.show_dbm,
             smeter_delay: this.smeter_delay
         };
         var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(settings));
@@ -114,6 +118,7 @@ Plugins.smeter = {
                     if (typeof s.s0_offset_hf === 'number') self.s0_offset_hf = s.s0_offset_hf;
                     if (typeof s.s0_offset_vhf === 'number') self.s0_offset_vhf = s.s0_offset_vhf;
                     if (typeof s.use_iaru_vhf === 'boolean') self.use_iaru_vhf = s.use_iaru_vhf;
+                    if (typeof s.show_dbm === 'boolean') self.show_dbm = s.show_dbm;
                     if (typeof s.smeter_delay === 'number') self.smeter_delay = s.smeter_delay;
                     
                     self.saveSettings();
@@ -128,6 +133,7 @@ Plugins.smeter = {
                     $('#smeter-s0-vhf').val(self.s0_offset_vhf);
                     $('#smeter-s0-vhf-val').text((self.s0_offset_vhf > 0 ? '+' : '') + self.s0_offset_vhf + ' dB');
                     $('#smeter-iaru-check').prop('checked', self.use_iaru_vhf);
+                    $('#smeter-dbm-check').prop('checked', self.show_dbm);
                     $('#smeter-delay').val(self.smeter_delay);
                     $('#smeter-delay-val').text((self.smeter_delay > 0 ? '+' : '') + self.smeter_delay + ' ms');
                 } catch(err) {
@@ -147,6 +153,7 @@ Plugins.smeter = {
         this.s0_offset_hf = 0;
         this.s0_offset_vhf = 0;
         this.use_iaru_vhf = true;
+        this.show_dbm = false;
         this.smeter_delay = 0;
 
         // 2. Re-apply global config if present
@@ -161,6 +168,7 @@ Plugins.smeter = {
         $('#smeter-s0-hf').val(this.s0_offset_hf).trigger('input');
         $('#smeter-s0-vhf').val(this.s0_offset_vhf).trigger('input');
         $('#smeter-iaru-check').prop('checked', this.use_iaru_vhf);
+        $('#smeter-dbm-check').prop('checked', this.show_dbm);
         $('#smeter-delay').val(this.smeter_delay).trigger('input');
     },
 
@@ -289,12 +297,15 @@ Plugins.smeter = {
 
         var html = `
             <style id="smeter-theme-style"></style>
-            <div id="smeter-panel" style="position: relative; margin-bottom: 8px; padding: 5px 15px 5px 15px; border: 1px solid transparent; border-radius: 4px; font-family: sans-serif; user-select: none; -webkit-user-select: none; cursor: pointer;" title="Long press for settings">
-                <div style="position: relative; height: 14px; font-size: 10px; margin-bottom: 2px;">${scaleHtml}</div>
-                <div id="smeter-bar-container" style="height: 8px; border: 1px solid rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; position: relative;">
-                    <div id="smeter-bar-white" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%;"></div>
-                    <div id="smeter-bar-red" style="position: absolute; left: ${s9Pos}%; top: 0; height: 100%; background: #f44; width: 0%;"></div>
+            <div id="smeter-panel" style="position: relative; margin-bottom: 8px; padding: 5px 15px 5px 15px; border: 1px solid transparent; border-radius: 4px; font-family: sans-serif; user-select: none; -webkit-user-select: none; cursor: pointer; display: flex; align-items: center;" title="Long press for settings">
+                <div style="flex-grow: 1; position: relative;">
+                    <div style="position: relative; height: 14px; font-size: 10px; margin-bottom: 2px;">${scaleHtml}</div>
+                    <div id="smeter-bar-container" style="height: 8px; border: 1px solid rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; position: relative;">
+                        <div id="smeter-bar-white" style="position: absolute; left: 0; top: 0; height: 100%; width: 0%;"></div>
+                        <div id="smeter-bar-red" style="position: absolute; left: ${s9Pos}%; top: 0; height: 100%; background: #f44; width: 0%;"></div>
+                    </div>
                 </div>
+                <div id="smeter-dbm-text" style="min-width: 45px; text-align: right; font-size: 11px; font-weight: bold; margin-left: 8px; display: none;"></div>
             </div>
             <div id="smeter-text" style="position: absolute; bottom: 4px; right: 4px; width: 65px; text-align: left; font-size: 12px; font-weight: bold; color: white; pointer-events: none; z-index: 99; white-space: nowrap;"></div>
         `;
@@ -312,10 +323,14 @@ Plugins.smeter = {
         this.ui.barWhite = $('#smeter-bar-white');
         this.ui.barRed = $('#smeter-bar-red');
         this.ui.text = $('#smeter-text');
+        this.ui.dbmText = $('#smeter-dbm-text');
 
         // Apply text visibility setting once
         if (!this.show_text) {
             this.ui.text.hide();
+        }
+        if (this.show_dbm) {
+            this.ui.dbmText.show();
         }
 
         // Event listeners
@@ -495,6 +510,20 @@ Plugins.smeter = {
         checkDiv.appendChild(label);
         content.appendChild(checkDiv);
 
+        var dbmDiv = document.createElement('div');
+        dbmDiv.style.marginBottom = '5px';
+        var dbmLabel = document.createElement('label');
+        dbmLabel.style.cssText = 'cursor: pointer; display: flex; align-items: center;';
+        var dbmCheck = document.createElement('input');
+        dbmCheck.type = 'checkbox';
+        dbmCheck.id = 'smeter-dbm-check';
+        dbmCheck.checked = this.show_dbm;
+        dbmCheck.style.marginRight = '5px';
+        dbmLabel.appendChild(dbmCheck);
+        dbmLabel.appendChild(document.createTextNode('Show dBm'));
+        dbmDiv.appendChild(dbmLabel);
+        content.appendChild(dbmDiv);
+
         // Yellow slider for Time Sync at the bottom
         var delaySlider = createSlider('Sync Delay (+/-)', 'smeter-delay', this.smeter_delay, -500, 2000, 'ms');
         delaySlider.style.color = '#ffeb3b';
@@ -575,6 +604,11 @@ Plugins.smeter = {
             self.use_iaru_vhf = $(this).is(':checked');
             self.saveSettings();
         });
+        $('#smeter-dbm-check').on('change', function() {
+            self.show_dbm = $(this).is(':checked');
+            if (self.show_dbm) self.ui.dbmText.show(); else self.ui.dbmText.hide();
+            self.saveSettings();
+        });
 
         var closeHandler = function(e) {
             if (!menu.contains(e.target) && !$(e.target).closest('#smeter-panel').length) {
@@ -590,6 +624,8 @@ Plugins.smeter = {
     },
 
     update: function() {
+        if (document.hidden) return;
+
         this.updateTheme();
 
         // Enforce hiding or showing of original S-meter
@@ -665,6 +701,7 @@ Plugins.smeter = {
             this.ui.text.text("WAIT...");
             this.ui.barWhite.css('width', '0%');
             this.ui.barRed.css('width', '0%');
+            if (this.show_dbm) this.ui.dbmText.text("");
             return;
         }
 
@@ -735,5 +772,9 @@ Plugins.smeter = {
         this.ui.barWhite.css('width', whiteW + '%');
         this.ui.barRed.css('width', redW + '%');
         this.ui.text.text(sText);
+        
+        if (this.show_dbm) {
+            this.ui.dbmText.text(dbm.toFixed(1) + ' dBm');
+        }
     }
 };

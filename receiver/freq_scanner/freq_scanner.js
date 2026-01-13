@@ -193,7 +193,7 @@ function create_ui() {
         btn.textContent = 'Scan';
         btn.title = 'Short: Start/Stop | Long: Scan Options';
         
-        btn.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 20px; font-size: 13px; font-weight: 600; border: 3px solid #FF3939; background: #FF3939; color: white; cursor: pointer; border-radius: 5px; box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+        btn.style.cssText = 'width: 50px; height: 32px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: 3px solid #FF3939; background: #FF3939; color: white; cursor: pointer; border-radius: 5px; box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease; user-select: none; -webkit-user-select: none;';
         
         setup_long_press(btn, function() {
             toggle_scanner();
@@ -206,7 +206,7 @@ function create_ui() {
         btnSkip.textContent = 'Skip';
         btnSkip.title = 'Skip current frequency';
         btnSkip.disabled = true;
-        btnSkip.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: none; background: #444; color: #aaa; cursor: default; border-radius: 5px; opacity: 0.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+        btnSkip.style.cssText = 'width: 50px; height: 32px; padding: 0; line-height: 32px; font-size: 13px; font-weight: 600; border: none; background: #444; color: #aaa; cursor: default; border-radius: 5px; opacity: 0.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease; user-select: none; -webkit-user-select: none;';
         btnSkip.onclick = function() {
             if (scanner_state.running) {
                 if (scanner_state.timer) clearTimeout(scanner_state.timer);
@@ -220,7 +220,7 @@ function create_ui() {
         btnBlock.className = 'freq-scanner-longpress';
         btnBlock.textContent = 'Block';
         btnBlock.title = 'Short: Block Current | Long: Block Options';
-        btnBlock.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+        btnBlock.style.cssText = 'width: 50px; height: 32px; padding: 0; line-height: 32px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease; user-select: none; -webkit-user-select: none;';
         setup_long_press(btnBlock, function() {
             add_to_blacklist();
         }, function(rect) {
@@ -231,7 +231,7 @@ function create_ui() {
         btnList.id = 'openwebrx-btn-freq-list';
         btnList.innerHTML = 'Setup';
         btnList.title = 'Scanner Setup / Blacklist';
-        btnList.style.cssText = 'width: 50px; height: 26px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;';
+        btnList.style.cssText = 'width: 50px; height: 32px; padding: 0; line-height: 32px; font-size: 13px; font-weight: 600; border: none; background: #444; color: white; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease; user-select: none; -webkit-user-select: none;';
         btnList.onclick = function() { show_blacklist_menu(this.getBoundingClientRect()); };
 
         btnContainer.appendChild(btn);
@@ -255,12 +255,15 @@ function setup_long_press(element, onClick, onLongPress) {
     var startPress = function(e) {
         if (e.type === 'mousedown' && e.button !== 0) return; // Left click only
         if (element.dataset.disabled === 'true') return;
-        
+
         if (e.touches && e.touches.length > 0) {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
+        } else { // For mousedown
+            startX = e.clientX;
+            startY = e.clientY;
         }
-        
+
         longPressTriggered = false;
         isCancelled = false;
         pressTimer = setTimeout(function() {
@@ -292,6 +295,11 @@ function setup_long_press(element, onClick, onLongPress) {
             }
         }
 
+        // Only prevent default if the touch started on the element itself
+        if (e.target === element) {
+            e.preventDefault();
+        }
+
         if (pressTimer) {
             clearTimeout(pressTimer);
             pressTimer = null;
@@ -302,13 +310,13 @@ function setup_long_press(element, onClick, onLongPress) {
     element.addEventListener('mousedown', startPress);
     element.addEventListener('mouseup', endPress);
     element.addEventListener('mouseleave', cancelPress);
-    element.addEventListener('touchstart', startPress, {passive: true});
+    element.addEventListener('touchstart', startPress, {passive: false});
     element.addEventListener('touchend', function(e) {
-        e.preventDefault(); 
+        e.preventDefault(); // Also prevent emulated mouse events
         endPress(e);
     });
-    element.addEventListener('touchmove', cancelPress, {passive: true});
-    element.addEventListener('touchcancel', cancelPress, {passive: true});
+    element.addEventListener('touchmove', cancelPress, {passive: false});
+    element.addEventListener('touchcancel', cancelPress, {passive: false});
     
     // Prevent native context menu on long press
     element.addEventListener('contextmenu', function(e) {
@@ -807,11 +815,6 @@ function show_floating_menu(rect, items) {
     var menu = document.createElement('div');
     menu.id = 'freq-scanner-menu';
     
-    // Align right to the button
-    var right = window.innerWidth - rect.right;
-    var bottom = window.innerHeight - rect.top;
-    menu.style.cssText = 'position: fixed; right: ' + right + 'px; bottom: ' + bottom + 'px; background: #222; border: 1px solid #444; color: #eee; z-index: 10001; border-radius: 4px; padding: 0; font-family: sans-serif; font-size: 13px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); min-width: 150px;';
-
     var closeHandler;
     var closeMenu = function() {
         menu.remove();
@@ -820,6 +823,8 @@ function show_floating_menu(rect, items) {
             document.removeEventListener('touchstart', closeHandler);
         }
     };
+
+    menu.style.cssText = 'background: #222; border: 1px solid #444; color: #eee; z-index: 10001; border-radius: 4px; padding: 0; font-family: sans-serif; font-size: 13px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); min-width: 150px;';
 
     items.forEach(function(itemData) {
         var div = document.createElement('div');
@@ -835,6 +840,34 @@ function show_floating_menu(rect, items) {
         menu.appendChild(div);
     });
 
+    // Add to DOM but keep it invisible to measure
+    menu.style.visibility = 'hidden';
+    menu.style.position = 'fixed';
+    document.body.appendChild(menu);
+    var menuWidth = menu.offsetWidth;
+    var menuHeight = menu.offsetHeight;
+    
+    var left = rect.left;
+    // If menu would go off-screen to the right, align its right edge with the button's right edge
+    if (left + menuWidth > window.innerWidth - 5) {
+        left = rect.right - menuWidth;
+    }
+    // Ensure it doesn't go off-screen to the left
+    if (left < 5) {
+        left = 5;
+    }
+
+    // Now set the final position and make it visible
+    menu.style.left = left + 'px';
+
+    // Check if there is enough space upwards, otherwise open downwards
+    if (rect.top < menuHeight + 5) {
+        menu.style.top = rect.bottom + 'px';
+    } else {
+        menu.style.bottom = (window.innerHeight - rect.top) + 'px';
+    }
+    menu.style.visibility = 'visible';
+
     // Close on click outside
     closeHandler = function(e) {
         if (!menu.contains(e.target)) {
@@ -845,7 +878,6 @@ function show_floating_menu(rect, items) {
         document.addEventListener('mousedown', closeHandler); 
         document.addEventListener('touchstart', closeHandler);
     }, 10);
-    document.body.appendChild(menu);
 }
 
 function show_scan_menu(rect) {
