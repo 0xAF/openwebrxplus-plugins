@@ -8,7 +8,7 @@ This is a `receiver` plugin to compact the receiver analog modes section. It rep
 Can be useful on small screen devices.
 
 ## Preview
-![compact_analog_modes](compact_analog_modes.png "Preview")
+![compact_analog_modes](compact_analog_modes/compact_analog_modes.png "Preview")
 
 ## Load
 Add this line in your `init.js` file:
