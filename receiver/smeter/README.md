@@ -35,6 +35,7 @@ window.smeter_config_global = {
     s0_offset_vhf: 0,          // S0 Level adjustment for VHF
     hide_original: false,      // Set to true to hide the original S-meter
     show_text: true,           // Set to false to hide the text below the S-meter
+    show_dbm: false,           // Show dBm value next to bar
     use_iaru_vhf: true,        // Set to true to use IARU VHF standard (S9 = -93dBm)
     smeter_delay: 0            // Delay in ms to sync with audio
 };
@@ -47,6 +48,7 @@ window.smeter_config_global = {
 * **s0_offset_hf/vhf**: Adjusts the S0 reference level (start of the scale). Useful if the noise floor is displayed too high.
 * **hide_original**: If set to `true`, the standard OpenWebRX S-meter is hidden, and only this plugin is displayed.
 * **show_text**: If set to `false`, the text display (S-value and dBm) below the bar is hidden.
+* **show_dbm**: If set to `true`, the current signal level in dBm is displayed numerically to the right of the S-meter bar.
 * **use_iaru_vhf**: If set to `true` (default), the IARU standard for VHF (S9 = -93dBm) is used. If `false`, the HF standard (S9 = -73dBm) is used for all frequencies.
 * **smeter_delay**: Adds a delay (in milliseconds) to the S-meter display to synchronize it with the audio (useful for web SDR latencies).
 
@@ -57,6 +59,7 @@ window.smeter_config_global = {
 * **HF/VHF Calibration (S9)**: Adjusts the offset (in dB) to calibrate the S9 reference point.
 * **HF/VHF S0 Level**: Adjusts the S0 reference point. This changes the sensitivity/linearity at the lower end of the scale without affecting S9.
 * **Auto S0**: Automatically calibrates the S0 level so that the current noise floor is displayed as S2.
+* **Show dBm**: Toggles the numeric dBm display next to the bar.
 * **IARU VHF Standard**: Toggles between the IARU standard for VHF (S9 = -93dBm) and the HF standard (S9 = -73dBm). Default is enabled.
 * **Sync Delay**: Adjusts the time delay of the S-meter to match the audio output.
 * **Export/Import**: Save your settings to a JSON file or load them back.
