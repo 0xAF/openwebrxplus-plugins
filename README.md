@@ -93,6 +93,7 @@ Each plugin is documented in its own folder.
 | Name | Description |
 | :------ | :---------- |
 |[~~layer_qth_maidenhead~~](map/layer_qth_maidenhead)|(**deprecated**) Add Maidenhead (QTH) grid to the map|
+|[reduce_map_legend_sections](map/reduce_map_legend_sections)|Allow the reduction of the map legend sections ([fustinoni-net](#contributors))|
 
 ### Thirdparty Plugins
 
