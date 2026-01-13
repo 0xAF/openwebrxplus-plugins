@@ -13,7 +13,7 @@ The purpose is to minimize the space occupied by the legend, making it more usef
 
 ## Preview
 
-![reduce_map_legend_sections_preview](reduce_map_legend_sections.png "Preview")
+![reduce_map_legend_sections_preview](reduce_map_legend_sections/reduce_map_legend_sections.png "Preview")
 
 ## Load
 
