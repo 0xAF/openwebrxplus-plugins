@@ -54,6 +54,8 @@ var SCANNER_COLORS = [
 $(document).ready(init_freq_scanner);
 
 function init_freq_scanner() {
+    console.log('[freq_scanner] Plugin loaded and ready.');
+
     load_blacklist();
     load_settings();
     inject_css();
@@ -523,13 +525,11 @@ function start_scanner() {
     }
     
     if (typeof center === 'undefined') {
-        console.error('[FreqScanner] Center frequency not found.');
         stop_scanner();
         return;
     }
 
     if (typeof rate === 'undefined') {
-        console.warn('[FreqScanner] Sample rate not found, using fallback (1 MHz).');
         rate = 1000000;
     }
 
@@ -542,7 +542,6 @@ function start_scanner() {
     
     scanner_state.current_freq = scanner_state.start_freq;
 
-    console.log('[FreqScanner] Starting scan:', scanner_state.start_freq, '-', scanner_state.end_freq);
     scan_loop();
     update_visualizer();
 }
@@ -594,7 +593,6 @@ function scan_loop() {
 
     // Safety check: Center frequency changed? (e.g. by profile switch)
     if (typeof window.center_freq !== 'undefined' && scanner_state.original_center_freq && Math.abs(window.center_freq - scanner_state.original_center_freq) > 100) {
-        console.log('[FreqScanner] Center frequency changed, stopping scanner.');
         set_scanner_active(false);
         return;
     }
@@ -954,7 +952,6 @@ function load_blacklist() {
         var stored = localStorage.getItem('freq_scanner_blacklist');
         if (stored) scanner_state.blacklist = JSON.parse(stored);
     } catch(e) {
-        console.error('[FreqScanner] Error loading blacklist', e);
     }
 }
 
@@ -980,7 +977,6 @@ function load_settings() {
             if (typeof s.show_blocked_ranges !== 'undefined') scanner_state.show_blocked_ranges = s.show_blocked_ranges;
             if (typeof s.block_color !== 'undefined') scanner_state.block_color = s.block_color;
         } catch(e) {
-            console.error('[FreqScanner] Error loading settings', e);
         }
     } else {
         // Migration: Check for legacy color setting
@@ -1049,7 +1045,6 @@ function import_settings() {
                     setTimeout(function() { btn.innerHTML = originalText; }, 1000);
                 }
             } catch (err) {
-                console.error('[FreqScanner] Error during settings import:', err);
                 alert('Import failed: ' + err.message);
             }
         };
@@ -1078,7 +1073,6 @@ function add_to_blacklist() {
     if (!is_blacklisted(freq)) {
         scanner_state.blacklist.push(freq);
         localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
-        console.log('[FreqScanner] Frequency ignored:', freq);
         
         update_visualizer();
         
@@ -1235,7 +1229,6 @@ function start_block_range_selection() {
         
         scanner_state.blacklist = singles.concat(merged);
         localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
-        console.log('[FreqScanner] Range blocked (merged):', min, max);
         
         update_visualizer();
         
@@ -1327,7 +1320,6 @@ function start_remove_range_selection() {
 
         if (scanner_state.blacklist.length < initial_len) {
             localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
-            console.log('[FreqScanner] Removed blocked item at:', freq);
             update_visualizer();
             
             if (btn) {
@@ -1379,7 +1371,6 @@ function clear_visible_blacklist() {
 
     if (scanner_state.blacklist.length < initial_len) {
         localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
-        console.log('[FreqScanner] Cleared visible blacklist entries.');
         update_visualizer();
         
         var btn = document.getElementById('openwebrx-btn-freq-block');
@@ -1399,7 +1390,6 @@ function clear_visible_blacklist() {
 function clear_blacklist() {
     scanner_state.blacklist = [];
     localStorage.removeItem('freq_scanner_blacklist');
-    console.log('[FreqScanner] Blacklist cleared.');
     
     update_visualizer();
     
@@ -1492,7 +1482,6 @@ function edit_blacklist() {
     btnSave.onclick = function() {
         scanner_state.blacklist = currentList;
         localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
-        console.log('[FreqScanner] Blacklist updated manually:', currentList.length, 'entries');
         update_visualizer();
         dialog.remove();
     };
