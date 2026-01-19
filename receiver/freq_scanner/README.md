@@ -28,7 +28,7 @@ A small **SCA** button is added to the bottom left of the receiver panel. Clicki
 ### SCA Button Status
 * **Grey**: Scanner is stopped and window is closed.
 * **Green**: Scanner window is open.
-* **Yellow**: Scanner is running in the background (window closed).
+* **Yellow**: Scanner is running in the background OR "Always Show Blocked Ranges" is active (window closed).
 
 ### Scanner Window Buttons
 * **Scan**: Start or Stop scanning.
@@ -57,6 +57,8 @@ A small **SCA** button is added to the bottom left of the receiver panel. Clicki
 * **Export / Import Plugin Settings**: Save or load the plugin configuration including the blacklist (JSON).
 * **Manage Blacklist**: Opens a dialog to manually manage the blacklist entries.
 * **Clear Blacklist**: Removes all blocked frequencies.
+* **Audio Sync**: Slider to adjust the synchronization delay (bridges short signal dropouts).
+* **Bookmark Tolerance**: Slider to adjust the frequency matching tolerance for bookmarks.
 
 ### Interaction
 * **Squelch**: The scanner uses the current squelch level set by the slider in the OpenWebRX+ interface.
