@@ -18,7 +18,13 @@ var SCANNER_CONFIG = {
     delay_time: 2500,
     
     // Squelch threshold in dB (used if no system squelch status is available)
-    squelch_threshold: -45
+    squelch_threshold: -45,
+
+    // Audio sync delay in milliseconds (delays WAIT status)
+    audio_sync_delay: 1000,
+
+    // Tolerance for bookmark matching in Hz
+    bookmark_tolerance: 4000
 };
 // ---------------------
 SCANNER_CONFIG.default_delay_time = SCANNER_CONFIG.delay_time;
@@ -38,7 +44,8 @@ var scanner_state = {
     tuning: false,
     show_blocked_ranges: false,
     block_color: 'rgba(255, 0, 0, 0.3)',
-    modulation_timer: null
+    modulation_timer: null,
+    last_fg_color: null
 };
 
 var SCANNER_COLORS = [
@@ -66,10 +73,14 @@ function init_freq_scanner() {
 
     // Polling as fallback if hooks don't work
     if (!scanner_state.modulation_timer) {
-        scanner_state.modulation_timer = setInterval(check_modulation_mode, 500);
+        scanner_state.modulation_timer = setInterval(function() {
+            check_modulation_mode();
+            update_scanner_theme();
+        }, 500);
     }
     
     init_visualizer();
+    update_scanner_theme();
 }
 
 function inject_css() {
@@ -134,11 +145,12 @@ function create_ui() {
     if (!document.getElementById('freq-scanner-floating-panel')) {
         var panel = document.createElement('div');
         panel.id = 'freq-scanner-floating-panel';
-        panel.style.cssText = 'display: none; position: fixed; top: 150px; left: 10px; background: rgba(30,30,30,0.95); border: 1px solid #666; border-radius: 5px; padding: 0; z-index: 10000; box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif;';
+        panel.style.cssText = 'display: none; position: fixed; top: 150px; left: 10px; background: #000000; border: 1px solid var(--openwebrx-border-color, #666); border-radius: 5px; padding: 0; z-index: 10000; box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif; width: 225px;';
         
         var dragHandle = document.createElement('div');
+        dragHandle.id = 'freq-scanner-drag-handle';
         dragHandle.textContent = 'Frequency Scanner';
-        dragHandle.style.cssText = 'height: 18px; line-height: 18px; font-size: 11px; color: #ddd; text-align: center; background: #444; cursor: move; border-radius: 5px 5px 0 0; width: 100%; border-bottom: 1px solid #555; user-select: none;';
+        dragHandle.style.cssText = 'height: 36px; line-height: 36px; font-size: 14px; text-align: center; cursor: move; border-radius: 5px 5px 0 0; width: 100%; user-select: none; border-bottom: 1px solid #555; background: #444; color: #ddd;';
         dragHandle.title = 'Drag to move';
         panel.appendChild(dragHandle);
 
@@ -185,6 +197,12 @@ function create_ui() {
 
         var content = document.createElement('div');
         content.style.padding = '5px';
+
+        var infoDisplay = document.createElement('div');
+        infoDisplay.id = 'freq-scanner-info-display';
+        infoDisplay.style.cssText = 'width: 100%; box-sizing: border-box; min-height: 64px; display: flex; align-items: center; justify-content: center; text-align: center; color: #aaa; font-weight: bold; font-size: 16px; margin: 5px 0 15px 0; white-space: normal; word-wrap: break-word; overflow: hidden; font-family: sans-serif; border-radius: 5px; line-height: 1.2; padding: 5px 10px; border: 1px solid transparent; background-color: #000; position: relative;';
+        infoDisplay.textContent = 'Ready';
+        content.appendChild(infoDisplay);
 
         var btnContainer = document.createElement('div');
         btnContainer.style.cssText = 'display: flex; gap: 5px;';
@@ -492,6 +510,7 @@ function set_scanner_active(active) {
     } else {
         stop_scanner();
         update_visualizer();
+        update_info_display(null);
         if (btn) {
             btn.textContent = 'Scan';
             btn.style.background = '#FF3939';
@@ -631,6 +650,8 @@ function scan_loop() {
 
             // Try to center the signal
             fine_tune();
+            
+            update_info_display(scanner_state.current_freq);
 
             // --- MODE LOGIC ---
             
@@ -660,15 +681,25 @@ function scan_loop() {
         } else {
             var btn = document.getElementById('openwebrx-btn-freq-scanner');
             if (btn) btn.style.borderColor = '#39FF14';
-
+            
             // No signal: Check delay
             var delay_ms = SCANNER_CONFIG.delay_time;
+            var sync_ms = SCANNER_CONFIG.audio_sync_delay || 0;
+
             if (scanner_state.scan_mode === 'SAMPLE_10S') delay_ms = 0;
 
-            if (scanner_state.last_signal_time && (Date.now() - scanner_state.last_signal_time < delay_ms)) {
+            var time_since_loss = Date.now() - scanner_state.last_signal_time;
+
+            if (scanner_state.last_signal_time && (time_since_loss < delay_ms + sync_ms)) {
                 // We are still in the delay phase
+                if (time_since_loss < sync_ms) {
+                    update_info_display(scanner_state.current_freq);
+                } else {
+                    update_info_display('WAIT');
+                }
                 scanner_state.timer = setTimeout(scan_loop, 200);
             } else {
+                update_info_display(null);
                 // Delay expired or never had signal -> Continue
                 scanner_move_next();
                 scan_loop();
@@ -825,17 +856,76 @@ function show_floating_menu(rect, items) {
     menu.style.cssText = 'background: #222; border: 1px solid #444; color: #eee; z-index: 10001; border-radius: 4px; padding: 0; font-family: sans-serif; font-size: 13px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); min-width: 150px;';
 
     items.forEach(function(itemData) {
-        var div = document.createElement('div');
-        div.textContent = itemData.text;
-        div.style.cssText = 'padding: 8px 12px; cursor: pointer; white-space: nowrap;' + (itemData.borderTop ? ' border-top: 1px solid #444;' : '');
-        div.onmouseover = function() { this.style.background = '#444'; };
-        div.onmouseout = function() { this.style.background = 'transparent'; };
-        div.onclick = function(e) {
-            e.stopPropagation();
-            itemData.action();
-            closeMenu();
-        };
-        menu.appendChild(div);
+        if (itemData.type === 'slider') {
+            var div = document.createElement('div');
+            div.style.cssText = 'padding: 8px 12px; border-top: 1px solid #444;';
+            
+            var label = document.createElement('div');
+            label.style.fontSize = '12px';
+            label.style.marginBottom = '4px';
+            label.style.color = '#aaa';
+            var unit = itemData.unit || '';
+            label.textContent = itemData.label + ': ' + itemData.value + ' ' + unit;
+            
+            var input = document.createElement('input');
+            input.type = 'range';
+            input.min = itemData.min;
+            input.max = itemData.max;
+            input.step = itemData.step;
+            input.value = itemData.value;
+            input.style.width = '100%';
+            input.style.cursor = 'pointer';
+            input.style.accentColor = '#2196F3';
+            
+            input.oninput = function(e) {
+                label.textContent = itemData.label + ': ' + this.value + ' ' + unit;
+                itemData.onChange(this.value);
+            };
+            
+            div.onclick = function(e) { e.stopPropagation(); };
+            div.appendChild(label);
+            div.appendChild(input);
+            menu.appendChild(div);
+        } else if (itemData.type === 'color_picker') {
+            var div = document.createElement('div');
+            div.style.cssText = 'padding: 8px 12px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;';
+            
+            SCANNER_COLORS.forEach(function(c) {
+                var box = document.createElement('div');
+                var isSelected = (c.value === scanner_state.block_color);
+                var colorOpaque = c.value.replace(/[\d.]+\)$/, '1)');
+                
+                box.title = c.name;
+                box.style.cssText = 'width: 20px; height: 20px; background: ' + colorOpaque + '; border: 1px solid #555; cursor: pointer; border-radius: 3px; box-sizing: border-box;';
+                
+                if (isSelected) {
+                    box.style.borderColor = '#fff';
+                    box.style.boxShadow = '0 0 4px #fff';
+                }
+                
+                box.onclick = function(e) {
+                    e.stopPropagation();
+                    scanner_state.block_color = c.value;
+                    save_settings();
+                    update_visualizer();
+                    closeMenu();
+                };
+                div.appendChild(box);
+            });
+            menu.appendChild(div);
+        } else {
+            var div = document.createElement('div');
+            div.textContent = itemData.text;
+            div.style.cssText = 'padding: 8px 12px; cursor: pointer; white-space: nowrap;' + (itemData.borderTop ? ' border-top: 1px solid #444;' : '');
+            div.onmouseover = function() { this.style.background = '#444'; };
+            div.onmouseout = function() { this.style.background = 'transparent'; };
+            div.onclick = function(e) {
+                e.stopPropagation();
+                itemData.action();
+                closeMenu();
+            };
+            menu.appendChild(div);
+        }
     });
 
     // Add to DOM but keep it invisible to measure
@@ -897,51 +987,51 @@ function show_scan_menu(rect) {
 
 function show_block_menu(rect) {
     var items = [
-        { text: (scanner_state.show_blocked_ranges ? '☑ ' : '☐ ') + 'Always Show Blocked Ranges', action: function() { 
-            scanner_state.show_blocked_ranges = !scanner_state.show_blocked_ranges;
-            update_visualizer();
-            save_settings();
-        } },
-        { text: 'Color: ' + get_color_name(scanner_state.block_color), action: cycle_block_color },
-        { text: 'Clear Visible Blocked Ranges', action: clear_visible_blacklist, borderTop: true },
+        { text: 'Clear Visible Blocked Ranges', action: clear_visible_blacklist },
         { text: 'Remove Blocked Range (Select on Waterfall)', action: start_remove_range_selection, borderTop: true },
         { text: 'Block Range (Select on Waterfall)', action: start_block_range_selection }
     ];
     show_floating_menu(rect, items);
 }
 
-function get_color_name(c) {
-    for (var i = 0; i < SCANNER_COLORS.length; i++) {
-        if (SCANNER_COLORS[i].value === c) {
-            return SCANNER_COLORS[i].name;
-        }
-    }
-    return 'Custom';
-}
-
-function cycle_block_color() {
-    var idx = -1;
-    for (var i = 0; i < SCANNER_COLORS.length; i++) {
-        if (SCANNER_COLORS[i].value === scanner_state.block_color) {
-            idx = i;
-            break;
-        }
-    }
-    
-    var nextIdx = (idx + 1) % SCANNER_COLORS.length;
-    var next = SCANNER_COLORS[nextIdx].value;
-    
-    scanner_state.block_color = next;
-    save_settings();
-    update_visualizer();
-}
-
 function show_blacklist_menu(rect) {
     var items = [
-        { text: 'Export Plugin Settings', action: export_settings },
+        { text: (scanner_state.show_blocked_ranges ? '☑ ' : '☐ ') + 'Always Show Blocked Ranges', action: function() { 
+            scanner_state.show_blocked_ranges = !scanner_state.show_blocked_ranges;
+            update_visualizer();
+            save_settings();
+        } },
+        { type: 'color_picker' },
+        { text: 'Export Plugin Settings', action: export_settings, borderTop: true },
         { text: 'Import Plugin Settings', action: import_settings },
         { text: 'Manage Blacklist', action: edit_blacklist },
-        { text: 'Clear Blacklist (' + scanner_state.blacklist.length + ')', action: clear_blacklist }
+        { text: 'Clear Blacklist (' + scanner_state.blacklist.length + ')', action: clear_blacklist },
+        { 
+            type: 'slider', 
+            label: 'Audio Sync', 
+            value: SCANNER_CONFIG.audio_sync_delay || 0, 
+            min: 0, 
+            max: 2000, 
+            step: 100, 
+            unit: 'ms',
+            onChange: function(val) { 
+                SCANNER_CONFIG.audio_sync_delay = parseInt(val); 
+                save_settings(); 
+            } 
+        },
+        { 
+            type: 'slider', 
+            label: 'Bookmark Tolerance', 
+            value: SCANNER_CONFIG.bookmark_tolerance || 4000, 
+            min: 500, 
+            max: 15000, 
+            step: 500, 
+            unit: 'Hz',
+            onChange: function(val) { 
+                SCANNER_CONFIG.bookmark_tolerance = parseInt(val); 
+                save_settings(); 
+            } 
+        }
     ];
 
     show_floating_menu(rect, items);
@@ -958,6 +1048,8 @@ function load_blacklist() {
 function save_settings() {
     var settings = {
         delay_time: SCANNER_CONFIG.delay_time,
+        audio_sync_delay: SCANNER_CONFIG.audio_sync_delay,
+        bookmark_tolerance: SCANNER_CONFIG.bookmark_tolerance,
         scan_mode: scanner_state.scan_mode,
         ignore_non_voice: scanner_state.ignore_non_voice,
         show_blocked_ranges: scanner_state.show_blocked_ranges,
@@ -972,6 +1064,8 @@ function load_settings() {
         try {
             var s = JSON.parse(stored);
             if (typeof s.delay_time !== 'undefined') SCANNER_CONFIG.delay_time = s.delay_time;
+            if (typeof s.audio_sync_delay !== 'undefined') SCANNER_CONFIG.audio_sync_delay = s.audio_sync_delay;
+            if (typeof s.bookmark_tolerance !== 'undefined') SCANNER_CONFIG.bookmark_tolerance = s.bookmark_tolerance;
             if (typeof s.scan_mode !== 'undefined') scanner_state.scan_mode = s.scan_mode;
             if (typeof s.ignore_non_voice !== 'undefined') scanner_state.ignore_non_voice = s.ignore_non_voice;
             if (typeof s.show_blocked_ranges !== 'undefined') scanner_state.show_blocked_ranges = s.show_blocked_ranges;
@@ -988,6 +1082,8 @@ function load_settings() {
 function export_settings() {
     var settings = {
         delay_time: SCANNER_CONFIG.delay_time,
+        audio_sync_delay: SCANNER_CONFIG.audio_sync_delay,
+        bookmark_tolerance: SCANNER_CONFIG.bookmark_tolerance,
         scan_mode: scanner_state.scan_mode,
         ignore_non_voice: scanner_state.ignore_non_voice,
         show_blocked_ranges: scanner_state.show_blocked_ranges,
@@ -1019,12 +1115,14 @@ function import_settings() {
                     throw new Error('Invalid format: Root must be an object.');
                 }
                 
-                var validKeys = ['delay_time', 'scan_mode', 'ignore_non_voice', 'show_blocked_ranges', 'block_color', 'blacklist'];
+                var validKeys = ['delay_time', 'audio_sync_delay', 'bookmark_tolerance', 'scan_mode', 'ignore_non_voice', 'show_blocked_ranges', 'block_color', 'blacklist'];
                 if (!validKeys.some(function(k) { return k in s; })) {
                     throw new Error('No valid settings found. Is this a settings file?');
                 }
 
                 if (typeof s.delay_time !== 'undefined') SCANNER_CONFIG.delay_time = s.delay_time;
+                if (typeof s.audio_sync_delay !== 'undefined') SCANNER_CONFIG.audio_sync_delay = s.audio_sync_delay;
+                if (typeof s.bookmark_tolerance !== 'undefined') SCANNER_CONFIG.bookmark_tolerance = s.bookmark_tolerance;
                 if (typeof s.scan_mode !== 'undefined') scanner_state.scan_mode = s.scan_mode;
                 if (typeof s.ignore_non_voice !== 'undefined') scanner_state.ignore_non_voice = s.ignore_non_voice;
                 if (typeof s.show_blocked_ranges !== 'undefined') scanner_state.show_blocked_ranges = s.show_blocked_ranges;
@@ -1105,16 +1203,7 @@ function start_block_range_selection() {
         btn.style.color = 'yellow';
     }
 
-    // Try to find the container using the ID from openwebrx.css
-    var container = document.getElementById('webrx-canvas-container');
-    // Fallback strategies to find the waterfall container
-    if (!container) container = document.getElementById('openwebrx-waterfall-container');
-    if (!container) container = document.getElementById('waterfall_container');
-    if (!container) {
-        var canvas = document.getElementById('waterfall_canvas');
-        if (canvas) container = canvas.parentElement;
-    }
-    
+    var container = get_waterfall_container();
     if (!container) return;
 
     // Remove existing overlay if present
@@ -1269,14 +1358,7 @@ function start_remove_range_selection() {
         btn.style.color = 'yellow';
     }
 
-    var container = document.getElementById('webrx-canvas-container');
-    if (!container) container = document.getElementById('openwebrx-waterfall-container');
-    if (!container) container = document.getElementById('waterfall_container');
-    if (!container) {
-        var canvas = document.getElementById('waterfall_canvas');
-        if (canvas) container = canvas.parentElement;
-    }
-    
+    var container = get_waterfall_container();
     if (!container) return;
 
     var existing = document.getElementById('freq-scanner-overlay');
@@ -1408,17 +1490,19 @@ function edit_blacklist() {
     var existing = document.getElementById('freq-scanner-edit-dialog');
     if (existing) existing.remove();
 
+    var themeColor = scanner_state.last_theme_color || '#444';
+
     var dialog = document.createElement('div');
     dialog.id = 'freq-scanner-edit-dialog';
-    dialog.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; border: 1px solid #444; color: #eee; z-index: 10002; padding: 20px; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 450px; max-width: 95%; max-height: 80vh; display: flex; flex-direction: column; font-family: sans-serif;';
+    dialog.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #000; border: 1px solid ' + themeColor + '; color: #eee; z-index: 10002; padding: 20px; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 450px; max-width: 95%; max-height: 80vh; display: flex; flex-direction: column; font-family: sans-serif;';
 
     var title = document.createElement('h3');
     title.textContent = 'Manage Blacklist';
-    title.style.marginTop = '0';
+    title.style.cssText = 'margin: -20px -20px 15px -20px; padding: 12px 20px; background: ' + themeColor + '; color: #fff; font-size: 16px; font-weight: bold; border-bottom: 1px solid #555; border-radius: 4px 4px 0 0;';
     dialog.appendChild(title);
 
     var listContainer = document.createElement('div');
-    listContainer.style.cssText = 'flex: 1; overflow-y: auto; margin-bottom: 10px; border: 1px solid #444; background: #333; padding: 5px; min-height: 200px;';
+    listContainer.style.cssText = 'flex: 1; overflow-y: auto; margin-bottom: 10px; border: 1px solid ' + themeColor + '; background: #111; padding: 5px; min-height: 200px;';
     
     // Copy current blacklist to temporary array
     var currentList = scanner_state.blacklist.slice();
@@ -1533,20 +1617,7 @@ function is_bookmark_ignored(f) {
     // Calculate tolerance (analogous to is_blacklisted)
     var tolerance = get_tolerance() + 3000; // Increased tolerance for bookmarks (e.g. DMR/YSF edges)
 
-    var bookmarkArray = [];
-    if (typeof bookmarks !== 'undefined' && bookmarks && bookmarks.bookmarks) {
-        var b = bookmarks.bookmarks;
-        if (Array.isArray(b)) {
-            bookmarkArray = b;
-        } else if (typeof b === 'object' && b !== null) {
-            // Bookmarks are grouped by source (server, local, etc.) -> Flatten
-            Object.keys(b).forEach(function(key) {
-                if (Array.isArray(b[key])) {
-                    bookmarkArray = bookmarkArray.concat(b[key]);
-                }
-            });
-        }
-    }
+    var bookmarkArray = get_flat_bookmarks();
     
     if (bookmarkArray.length === 0) return false;
 
@@ -1582,12 +1653,39 @@ function is_ignored(f) {
     return is_blacklisted(f) || is_bookmark_ignored(f);
 }
 
+// --- HELPERS ---
+
+function get_waterfall_container() {
+    var container = document.getElementById('webrx-canvas-container');
+    if (!container) container = document.getElementById('openwebrx-waterfall-container');
+    if (!container) container = document.getElementById('waterfall_container');
+    if (!container) {
+        var canvas = document.getElementById('waterfall_canvas');
+        if (canvas) container = canvas.parentElement;
+    }
+    return container;
+}
+
+function get_flat_bookmarks() {
+    if (typeof bookmarks === 'undefined' || !bookmarks || !bookmarks.bookmarks) return [];
+    var b = bookmarks.bookmarks;
+    if (Array.isArray(b)) return b;
+    if (typeof b === 'object' && b !== null) {
+        var arr = [];
+        Object.keys(b).forEach(function(key) {
+            if (Array.isArray(b[key])) arr = arr.concat(b[key]);
+        });
+        return arr;
+    }
+    return [];
+}
+
 // Plugin registration
 Plugins.freq_scanner = { no_css: true };
 
 function init_visualizer() {
     // Find the waterfall viewport (parent of the moving strip)
-    var strip = document.getElementById('webrx-canvas-container');
+    var strip = get_waterfall_container();
     if (!strip) return;
     var viewport = strip.parentElement;
     
@@ -1663,12 +1761,140 @@ function update_sca_button_state() {
         btn.style.color = '#39FF14';
         btn.style.borderColor = '#39FF14';
     } else {
-        if (scanner_state.running) {
+        if (scanner_state.running || scanner_state.show_blocked_ranges) {
             btn.style.color = 'yellow';
             btn.style.borderColor = 'yellow';
         } else {
             btn.style.color = '#aaa';
             btn.style.borderColor = '#666';
         }
+    }
+}
+
+function find_bookmark(f) {
+    var tolerance = SCANNER_CONFIG.bookmark_tolerance || 4000; 
+    var bookmarkArray = get_flat_bookmarks();
+    
+    for (var i = 0; i < bookmarkArray.length; i++) {
+        var bm = bookmarkArray[i];
+        if (bm.frequency && Math.abs(f - bm.frequency) <= tolerance) {
+            return bm;
+        }
+    }
+    return null;
+}
+
+function update_info_display(freq) {
+    var disp = document.getElementById('freq-scanner-info-display');
+    if (!disp) return;
+
+    var themeColor = scanner_state.last_fg_color || '#00eaff';
+
+    // Reset styles
+    disp.style.backgroundColor = '#000000';
+    disp.style.boxShadow = 'none';
+    disp.style.fontSize = '16px';
+    disp.style.border = '1px solid transparent';
+
+    if (!scanner_state.running) {
+        disp.innerHTML = 'Ready';
+        disp.style.color = '#aaa';
+        return;
+    }
+
+    var displayFreq = freq;
+    var isWait = false;
+
+    if (freq === 'WAIT') {
+        displayFreq = scanner_state.current_freq;
+        isWait = true;
+    }
+
+    if (!displayFreq) {
+        if (disp.innerHTML !== 'Scanning...') {
+            disp.innerHTML = 'Scanning...';
+        }
+        disp.style.color = '#ffffff';
+        return;
+    }
+
+    var text = (displayFreq / 1000000).toFixed(5) + ' MHz';
+    var fontSize = '24px';
+
+    var bm = find_bookmark(displayFreq);
+    if (bm) {
+        text = bm.name;
+        fontSize = '14px';
+    }
+
+    if (isWait) {
+        text += '<span style="position: absolute; bottom: 1px; right: 3px; font-size: 9px; color: #fff; opacity: 0.7; line-height: 1;">wait</span>';
+    }
+
+    disp.innerHTML = text;
+    disp.style.fontSize = fontSize;
+    
+    disp.style.color = themeColor;
+    disp.style.backgroundColor = '#000000';
+    disp.style.borderColor = themeColor;
+}
+
+function update_scanner_theme() {
+    var parent = document.getElementById('openwebrx-panel-receiver');
+    if (!parent) return;
+    
+    var style = window.getComputedStyle(parent);
+    // Use backgroundColor to detect theme, as text color is usually white
+    var bg = style.backgroundColor; 
+    var parentBorderColor = style.borderTopColor || style.borderColor;
+    
+    var r = 87, g = 87, b = 87; // Default gray #575757
+    var rgb = bg.match(/\d+/g);
+    if (rgb && rgb.length >= 3) {
+        r = parseInt(rgb[0]); g = parseInt(rgb[1]); b = parseInt(rgb[2]);
+    }
+
+    var themeColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+    
+    // Calculate bright neon color for text/glow based on theme color
+    var max = Math.max(r, g, b);
+    var min = Math.min(r, g, b);
+    var delta = max - min;
+    
+    var neonColor = '#00eaff'; // Default Cyan for grayscale/default
+    
+    // If the theme has color (not grayscale)
+    if (delta > 10) {
+        var scale = 255 / (max || 1);
+        var r_b = Math.min(255, Math.floor(r * scale));
+        var g_b = Math.min(255, Math.floor(g * scale));
+        var b_b = Math.min(255, Math.floor(b * scale));
+        
+        // Make it lighter (mix with white)
+        r_b = Math.floor(r_b + (255 - r_b) * 0.5);
+        g_b = Math.floor(g_b + (255 - g_b) * 0.5);
+        b_b = Math.floor(b_b + (255 - b_b) * 0.5);
+        
+        neonColor = 'rgb(' + r_b + ',' + g_b + ',' + b_b + ')';
+    }
+    
+    scanner_state.last_fg_color = neonColor;
+    scanner_state.last_theme_color = themeColor;
+
+    var panel = document.getElementById('freq-scanner-floating-panel');
+    var handle = document.getElementById('freq-scanner-drag-handle');
+    var info = document.getElementById('freq-scanner-info-display');
+    
+    if (panel && handle) {
+        if (parentBorderColor && parentBorderColor !== 'rgba(0, 0, 0, 0)' && parentBorderColor !== 'transparent') {
+            panel.style.borderColor = parentBorderColor;
+        } else {
+            panel.style.borderColor = themeColor;
+        }
+        panel.style.backgroundColor = '#000000';
+        
+        handle.style.backgroundColor = themeColor;
+        handle.style.borderBottom = '1px solid ' + themeColor;
+        handle.style.color = '#fff';
     }
 }
