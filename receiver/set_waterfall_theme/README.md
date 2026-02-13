@@ -4,6 +4,9 @@ title: "OpenWebRX+ Receiver Plugin: Set Waterfall Theme"
 permalink: /receiver/set_waterfall_theme
 ---
 
+**OWRX+ v1.2.106 implements this feature in "General Settings → Waterfall settings". There are no reasons to use this plugin anymore.**
+
+
 This is a `receiver` plugin to set the default waterfall theme.  
 You can choose between the following standard themes:
 - default
