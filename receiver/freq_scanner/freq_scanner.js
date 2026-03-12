@@ -8,22 +8,11 @@
 
 // --- CONFIGURATION ---
 var SCANNER_CONFIG = {
-    // Fallback step size in Hz (used if no system step size is found)
     step_size: 12500,
-    
-    // Wait time on a frequency in milliseconds (Scan speed)
     dwell_time: 100,
-    
-    // Wait time after signal loss in milliseconds (Hang Time)
     delay_time: 2500,
-    
-    // Squelch threshold in dB (used if no system squelch status is available)
     squelch_threshold: -45,
-
-    // Audio sync delay in milliseconds (delays WAIT status)
     audio_sync_delay: 1000,
-
-    // Tolerance for bookmark matching in Hz
     bookmark_tolerance: 4000
 };
 // ---------------------
@@ -37,7 +26,7 @@ var scanner_state = {
     end_freq: 0,
     blacklist: [],
     last_signal_time: 0,
-    scan_mode: 'CARRIER', // 'CARRIER', 'STOP', 'SAMPLE_10S'
+    scan_mode: 'CARRIER',
     signal_start_time: 0,
     ignore_non_voice: true,
     original_center_freq: 0,
@@ -46,6 +35,18 @@ var scanner_state = {
     block_color: 'rgba(255, 0, 0, 0.3)',
     modulation_timer: null,
     last_fg_color: null
+};
+
+var scanner_ui = {
+    toggleBtn: null,
+    panel: null,
+    dragHandle: null,
+    infoDisplay: null,
+    scanBtn: null,
+    skipBtn: null,
+    blockBtn: null,
+    listBtn: null,
+    visualizer: null
 };
 
 var SCANNER_COLORS = [
@@ -68,10 +69,8 @@ function init_freq_scanner() {
     inject_css();
     create_ui();
 
-    // Install hook for modulation changes to show/hide button
     attempt_hook_openwebrx();
 
-    // Polling as fallback if hooks don't work
     if (!scanner_state.modulation_timer) {
         scanner_state.modulation_timer = setInterval(function() {
             check_modulation_mode();
@@ -84,7 +83,6 @@ function init_freq_scanner() {
 }
 
 function inject_css() {
-    // Inject CSS for long-press indicator
     if (!document.getElementById('freq-scanner-css')) {
         var style = document.createElement('style');
         style.id = 'freq-scanner-css';
@@ -98,11 +96,10 @@ function inject_css() {
 function create_ui() {
     var container = document.querySelector('#openwebrx-panel-receiver');
 
-    // Create Toggle Button (SCA)
-    if (!document.getElementById('freq-scanner-toggle-btn')) {
-        var toggleBtn = document.createElement('div');
+    if (!scanner_ui.toggleBtn) {
+        var toggleBtn = scanner_ui.toggleBtn = document.createElement('div');
         toggleBtn.id = 'freq-scanner-toggle-btn';
-        toggleBtn.textContent = 'SCA';
+        toggleBtn.textContent = 'SC';
         toggleBtn.title = 'Open Scanner Controls';
         toggleBtn.style.cssText = 'position: absolute; bottom: 3px; left: 4px; z-index: 99; font-size: 12px; font-weight: bold; color: #aaa; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0px 4px; border-radius: 3px; border: 1px solid #666; user-select: none; line-height: 12px; transition: left 0.2s;';
         
@@ -118,36 +115,45 @@ function create_ui() {
         
         if (container) container.appendChild(toggleBtn);
 
-        // Auto-positioning logic
-        var update_sca_pos = function() {
-            var btn = document.getElementById('freq-scanner-toggle-btn');
+        var update_pos = function() {
+            var btn = scanner_ui.toggleBtn;
             if (!btn) return;
             var cont = document.querySelector('#openwebrx-panel-receiver');
             if (!cont) return;
-            
+
+            var allButtons = Array.from(cont.querySelectorAll('div[id$="-toggle-btn"], div[id="openwebrx-clock-utc"]'))
+                .filter(b => b.offsetParent !== null);
+
+            allButtons.sort((a, b) => {
+                if (a.id === 'openwebrx-clock-utc') return -1;
+                if (b.id === 'openwebrx-clock-utc') return 1;
+                return a.id.localeCompare(b.id);
+            });
+
             var left = 4;
-            var clock = document.getElementById('openwebrx-clock-utc');
-            if (clock && clock.offsetParent) {
-                var r1 = cont.getBoundingClientRect();
-                var r2 = clock.getBoundingClientRect();
-                // Check if clock is at bottom-left (approx)
-                if (r2.bottom > r1.bottom - 40 && r2.left < r1.left + 50) {
-                    left = (r2.right - r1.left) + 8;
+            for (var i = 0; i < allButtons.length; i++) {
+                var currentBtn = allButtons[i];
+                if (currentBtn.id === btn.id) {
+                    break;
+                }
+                var rect = currentBtn.getBoundingClientRect();
+                if (rect.width > 0) {
+                    left += rect.width + 4;
                 }
             }
+
             btn.style.left = left + 'px';
         };
-        setInterval(update_sca_pos, 1000);
-        update_sca_pos();
+        setInterval(update_pos, 1000);
+        update_pos();
     }
 
-    // Create Floating Panel with Buttons
-    if (!document.getElementById('freq-scanner-floating-panel')) {
-        var panel = document.createElement('div');
+    if (!scanner_ui.panel) {
+        var panel = scanner_ui.panel = document.createElement('div');
         panel.id = 'freq-scanner-floating-panel';
         panel.style.cssText = 'display: none; position: fixed; top: 150px; left: 10px; background: #000000; border: 1px solid var(--openwebrx-border-color, #666); border-radius: 5px; padding: 0; z-index: 10000; box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif; width: 225px;';
         
-        var dragHandle = document.createElement('div');
+        var dragHandle = scanner_ui.dragHandle = document.createElement('div');
         dragHandle.id = 'freq-scanner-drag-handle';
         dragHandle.textContent = 'Frequency Scanner';
         dragHandle.style.cssText = 'height: 36px; line-height: 36px; font-size: 14px; text-align: center; cursor: move; border-radius: 5px 5px 0 0; width: 100%; user-select: none; border-bottom: 1px solid #555; background: #444; color: #ddd;';
@@ -198,7 +204,7 @@ function create_ui() {
         var content = document.createElement('div');
         content.style.padding = '5px';
 
-        var infoDisplay = document.createElement('div');
+        var infoDisplay = scanner_ui.infoDisplay = document.createElement('div');
         infoDisplay.id = 'freq-scanner-info-display';
         infoDisplay.style.cssText = 'width: 100%; box-sizing: border-box; min-height: 64px; display: flex; align-items: center; justify-content: center; text-align: center; color: #aaa; font-weight: bold; font-size: 16px; margin: 5px 0 15px 0; white-space: normal; word-wrap: break-word; overflow: hidden; font-family: sans-serif; border-radius: 5px; line-height: 1.2; padding: 5px 10px; border: 1px solid transparent; background-color: #000; position: relative;';
         infoDisplay.textContent = 'Ready';
@@ -207,12 +213,11 @@ function create_ui() {
         var btnContainer = document.createElement('div');
         btnContainer.style.cssText = 'display: flex; gap: 5px;';
 
-        var btn = document.createElement('button');
+        var btn = scanner_ui.scanBtn = document.createElement('button');
         btn.id = 'openwebrx-btn-freq-scanner';
         btn.className = 'freq-scanner-longpress';
         btn.textContent = 'Scan';
         btn.title = 'Short: Start/Stop | Long: Scan Options';
-        
         btn.style.cssText = 'width: 50px; height: 32px; padding: 0; line-height: 26px; font-size: 13px; font-weight: 600; border: 3px solid #FF3939; background: #FF3939; color: white; cursor: pointer; border-radius: 5px; box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease; user-select: none; -webkit-user-select: none;';
         
         setup_long_press(btn, function() {
@@ -221,7 +226,7 @@ function create_ui() {
             show_scan_menu(rect);
         });
 
-        var btnSkip = document.createElement('button');
+        var btnSkip = scanner_ui.skipBtn = document.createElement('button');
         btnSkip.id = 'openwebrx-btn-freq-skip';
         btnSkip.textContent = 'Skip';
         btnSkip.title = 'Skip current frequency';
@@ -235,7 +240,7 @@ function create_ui() {
             }
         };
 
-        var btnBlock = document.createElement('button');
+        var btnBlock = scanner_ui.blockBtn = document.createElement('button');
         btnBlock.id = 'openwebrx-btn-freq-block';
         btnBlock.className = 'freq-scanner-longpress';
         btnBlock.textContent = 'Block';
@@ -247,7 +252,7 @@ function create_ui() {
             show_block_menu(rect);
         });
 
-        var btnList = document.createElement('button');
+        var btnList = scanner_ui.listBtn = document.createElement('button');
         btnList.id = 'openwebrx-btn-freq-list';
         btnList.innerHTML = 'Setup';
         btnList.title = 'Scanner Setup / Blacklist';
@@ -273,7 +278,7 @@ function setup_long_press(element, onClick, onLongPress) {
     var startY = 0;
 
     var startPress = function(e) {
-        if (e.type === 'mousedown' && e.button !== 0) return; // Left click only
+        if (e.type === 'mousedown' && e.button !== 0) return;
         if (element.dataset.disabled === 'true') return;
 
         if (e.touches && e.touches.length > 0) {
@@ -292,7 +297,7 @@ function setup_long_press(element, onClick, onLongPress) {
             var rect = element.getBoundingClientRect();
             if (navigator.vibrate) navigator.vibrate(50);
             onLongPress(rect);
-        }, 800); // 800ms press for menu
+        }, 800);
     };
 
     var endPress = function(e) {
@@ -306,7 +311,6 @@ function setup_long_press(element, onClick, onLongPress) {
     };
 
     var cancelPress = function(e) {
-        // Allow small movement on touch (jitter tolerance)
         if (e.type === 'touchmove' && e.touches && e.touches.length > 0) {
             var x = e.touches[0].clientX;
             var y = e.touches[0].clientY;
@@ -315,7 +319,6 @@ function setup_long_press(element, onClick, onLongPress) {
             }
         }
 
-        // Only prevent default if the touch started on the element itself
         if (e.target === element) {
             e.preventDefault();
         }
@@ -332,13 +335,12 @@ function setup_long_press(element, onClick, onLongPress) {
     element.addEventListener('mouseleave', cancelPress);
     element.addEventListener('touchstart', startPress, {passive: false});
     element.addEventListener('touchend', function(e) {
-        e.preventDefault(); // Also prevent emulated mouse events
+        e.preventDefault();
         endPress(e);
     });
     element.addEventListener('touchmove', cancelPress, {passive: false});
     element.addEventListener('touchcancel', cancelPress, {passive: false});
     
-    // Prevent native context menu on long press
     element.addEventListener('contextmenu', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -350,7 +352,6 @@ var hook_attempts = 0;
 function attempt_hook_openwebrx() {
     var hooked = false;
 
-    // Hook sdr_profile_changed to stop scanner on profile switch
     if (typeof window.sdr_profile_changed === 'function' && !window.sdr_profile_changed.is_scanner_hooked) {
         var original_sdr_profile_changed = window.sdr_profile_changed;
         window.sdr_profile_changed = function() {
@@ -360,10 +361,9 @@ function attempt_hook_openwebrx() {
             return original_sdr_profile_changed.apply(this, arguments);
         };
         window.sdr_profile_changed.is_scanner_hooked = true;
-        hooked = true; // Hook successful
+        hooked = true;
     }
 
-    // Hook UI.setFrequency to detect manual tuning (e.g. waterfall click)
     if (typeof UI !== 'undefined' && typeof UI.setFrequency === 'function' && !UI.setFrequency.is_scanner_hooked) {
         var original_setFrequency = UI.setFrequency;
         UI.setFrequency = function(freq) {
@@ -381,7 +381,6 @@ function attempt_hook_openwebrx() {
     
     hook_attempts++;
     if (!hooked && hook_attempts < 20) {
-        // Retry if OpenWebRX is not loaded yet
         setTimeout(attempt_hook_openwebrx, 500);
     }
 }
@@ -390,7 +389,6 @@ var last_known_mode = '';
 function check_modulation_mode() {
     var mode = null;
     
-    // This method has proven to be the most reliable.
     if (typeof UI !== 'undefined' && UI.getDemodulator) {
         var demod = UI.getDemodulator();
         if (demod && typeof demod.get_modulation === 'function') {
@@ -405,10 +403,10 @@ function check_modulation_mode() {
 }
 
 function update_scanner_visibility(mode) {
-    var btn = document.getElementById('openwebrx-btn-freq-scanner');
-    var btnSkip = document.getElementById('openwebrx-btn-freq-skip');
-    var btnBlock = document.getElementById('openwebrx-btn-freq-block');
-    var btnList = document.getElementById('openwebrx-btn-freq-list');
+    var btn = scanner_ui.scanBtn;
+    var btnSkip = scanner_ui.skipBtn;
+    var btnBlock = scanner_ui.blockBtn;
+    var btnList = scanner_ui.listBtn;
     if (!btn) return;
 
     var m = String(mode).toLowerCase();
@@ -463,7 +461,7 @@ function update_scanner_visibility(mode) {
             toggle_scanner(); // Stops the scanner cleanly if running
         }
         btn.dataset.disabled = 'true';
-        btn.disabled = false; // Keep active for tooltip
+        btn.disabled = false;
         btn.style.pointerEvents = 'auto';
         btn.style.cursor = 'not-allowed';
         btn.style.background = '#666';
@@ -498,7 +496,7 @@ function update_scanner_visibility(mode) {
 }
 
 function set_scanner_active(active) {
-    var btn = document.getElementById('openwebrx-btn-freq-scanner');
+    var btn = scanner_ui.scanBtn;
     if (active) {
         start_scanner();
         if (btn) {
@@ -530,7 +528,6 @@ function toggle_scanner() {
 function start_scanner() {
     scanner_state.running = true;
     
-    // Determine frequency range based on current profile (visible range)
     var center;
     // Determined from openwebrx.js (global variable)
     if (typeof window.center_freq !== 'undefined') {
@@ -538,7 +535,6 @@ function start_scanner() {
     }
 
     var rate;
-    // Determined from openwebrx.js (global variable 'bandwidth')
     if (typeof window.bandwidth !== 'undefined') {
         rate = window.bandwidth;
     }
@@ -587,7 +583,6 @@ function scanner_move_next(force_min_step) {
     var step = SCANNER_CONFIG.step_size;
     if (typeof window.tuning_step !== 'undefined') step = window.tuning_step;
     
-    // Ensure minimum skip of 12.5kHz only if forced (manual skip)
     if (force_min_step && step < 12500) step = 12500;
     
     var threshold = get_squelch_threshold();
@@ -610,20 +605,17 @@ function scanner_move_next(force_min_step) {
 function scan_loop() {
     if (!scanner_state.running) return;
 
-    // Safety check: Center frequency changed? (e.g. by profile switch)
     if (typeof window.center_freq !== 'undefined' && scanner_state.original_center_freq && Math.abs(window.center_freq - scanner_state.original_center_freq) > 100) {
         set_scanner_active(false);
         return;
     }
 
-    // 1. Check if current frequency is blacklisted (e.g. just added)
     if (is_ignored(scanner_state.current_freq)) {
         scanner_move_next();
         scanner_state.timer = setTimeout(scan_loop, 5);
         return;
     }
 
-    // Set frequency
     if (typeof UI !== 'undefined' && typeof UI.setFrequency === 'function') {
         scanner_state.tuning = true;
         UI.setFrequency(scanner_state.current_freq);
@@ -634,7 +626,6 @@ function scan_loop() {
     scanner_state.timer = setTimeout(function() {
         if (!scanner_state.running) return;
 
-        // Check if squelch is open (signal present)
         var has_signal = false;
         var threshold = get_squelch_threshold();
 
@@ -648,25 +639,20 @@ function scan_loop() {
             var btn = document.getElementById('openwebrx-btn-freq-scanner');
             if (btn) btn.style.borderColor = '#FF0000';
 
-            // Try to center the signal
             fine_tune();
             
             update_info_display(scanner_state.current_freq);
 
             // --- MODE LOGIC ---
-            
-            // Mode 1: Stop on found
             if (scanner_state.scan_mode === 'STOP') {
                 set_scanner_active(false);
                 return;
             }
 
-            // Mode 3: 10s Sample
             if (scanner_state.scan_mode === 'SAMPLE_10S') {
                 if (!scanner_state.signal_start_time) {
                     scanner_state.signal_start_time = Date.now();
                 }
-                // If longer than 10s on signal -> Continue
                 if (Date.now() - scanner_state.signal_start_time > 10000) {
                     scanner_move_next();
                     scan_loop();
@@ -682,7 +668,6 @@ function scan_loop() {
             var btn = document.getElementById('openwebrx-btn-freq-scanner');
             if (btn) btn.style.borderColor = '#39FF14';
             
-            // No signal: Check delay
             var delay_ms = SCANNER_CONFIG.delay_time;
             var sync_ms = SCANNER_CONFIG.audio_sync_delay || 0;
 
@@ -691,7 +676,6 @@ function scan_loop() {
             var time_since_loss = Date.now() - scanner_state.last_signal_time;
 
             if (scanner_state.last_signal_time && (time_since_loss < delay_ms + sync_ms)) {
-                // We are still in the delay phase
                 if (time_since_loss < sync_ms) {
                     update_info_display(scanner_state.current_freq);
                 } else {
@@ -700,7 +684,6 @@ function scan_loop() {
                 scanner_state.timer = setTimeout(scan_loop, 200);
             } else {
                 update_info_display(null);
-                // Delay expired or never had signal -> Continue
                 scanner_move_next();
                 scan_loop();
             }
@@ -781,7 +764,6 @@ function find_next_peak(current_freq, step, threshold) {
     if (current_idx < 0) current_idx = 0;
     if (current_idx >= len) current_idx = len - 1;
 
-    // Skip the range of the current signal (at least 1 step)
     var skip_bins = Math.ceil((step / bw) * len);
     if (skip_bins < 1) skip_bins = 1;
 
@@ -789,14 +771,12 @@ function find_next_peak(current_freq, step, threshold) {
     var search_hz = 15000;
     var search_bins = Math.ceil((search_hz / bw) * len);
 
-    var start_idx = current_idx + skip_bins;
-    
     var find_peak_and_end = function(start_i) {
         var max_v = -1000;
         var max_i = start_i;
         var limit = Math.min(len, start_i + search_bins);
         var end_i = start_i;
-        
+
         for (var j = start_i; j < limit; j++) {
             if (data[j] < threshold) {
                 end_i = j;
@@ -810,34 +790,43 @@ function find_next_peak(current_freq, step, threshold) {
         }
         return {peak_idx: max_i, end_idx: end_i};
     };
-    
-    // 1. Search forward to the end
-    for (var i = start_idx; i < len; i++) {
-        if (data[i] >= threshold) {
-            var res = find_peak_and_end(i);
-            var f = idx_to_freq(res.peak_idx);
-            if (!is_ignored(f)) return f;
-            i = res.end_idx;
+
+    var search_range = function(loop_start, loop_end) {
+        const coarse_step = 4; // Check every 4th pixel for performance
+        for (var i = loop_start; i < loop_end; ) {
+            if (data[i] >= threshold) {
+                // Potential signal found. Find the real start by going backwards.
+                var fine_i = i;
+                while (fine_i > loop_start && data[fine_i - 1] >= threshold) {
+                    fine_i--;
+                }
+                // Now we have the start of the signal blob, find its peak and end.
+                var res = find_peak_and_end(fine_i);
+                var f = idx_to_freq(res.peak_idx);
+                if (!is_ignored(f)) return f;
+                // Jump main loop to the end of this ignored signal
+                i = res.end_idx + 1;
+            } else {
+                i += coarse_step; // No signal, jump forward
+            }
         }
-    }
-    
+        return null;
+    };
+
+    // 1. Search forward from current position to the end
+    var found_freq = search_range(current_idx + skip_bins, len);
+    if (found_freq !== null) return found_freq;
+
     // 2. Search from the beginning to the current position (Wrap-around)
-    for (var i = 0; i < current_idx; i++) {
-        if (data[i] >= threshold) {
-            var res = find_peak_and_end(i);
-            var f = idx_to_freq(res.peak_idx);
-            if (!is_ignored(f)) return f;
-            i = res.end_idx;
-        }
-    }
-    
+    found_freq = search_range(0, current_idx);
+    if (found_freq !== null) return found_freq;
+
     return null;
 }
 
 // --- BLACKLIST FUNCTIONS ---
 
 function show_floating_menu(rect, items) {
-    // Remove old menu if present
     var existing = document.getElementById('freq-scanner-menu');
     if (existing) existing.remove();
 
@@ -928,7 +917,6 @@ function show_floating_menu(rect, items) {
         }
     });
 
-    // Add to DOM but keep it invisible to measure
     menu.style.visibility = 'hidden';
     menu.style.position = 'fixed';
     document.body.appendChild(menu);
@@ -936,19 +924,15 @@ function show_floating_menu(rect, items) {
     var menuHeight = menu.offsetHeight;
     
     var left = rect.left;
-    // If menu would go off-screen to the right, align its right edge with the button's right edge
     if (left + menuWidth > window.innerWidth - 5) {
         left = rect.right - menuWidth;
     }
-    // Ensure it doesn't go off-screen to the left
     if (left < 5) {
         left = 5;
     }
 
-    // Now set the final position and make it visible
     menu.style.left = left + 'px';
 
-    // Check if there is enough space upwards, otherwise open downwards
     if (rect.top < menuHeight + 5) {
         menu.style.top = rect.bottom + 'px';
     } else {
@@ -956,7 +940,6 @@ function show_floating_menu(rect, items) {
     }
     menu.style.visibility = 'visible';
 
-    // Close on click outside
     closeHandler = function(e) {
         if (!menu.contains(e.target)) {
             closeMenu();
@@ -1152,12 +1135,11 @@ function import_settings() {
 }
 
 function add_to_blacklist() {
-    // Check if we are in selection mode (overlay exists) -> Cancel it
     var overlay = document.getElementById('freq-scanner-overlay');
     if (overlay) {
         if (overlay.cleanup) overlay.cleanup();
         overlay.remove();
-        var btn = document.getElementById('openwebrx-btn-freq-block');
+        var btn = scanner_ui.blockBtn;
         if (btn) {
             btn.textContent = 'Block';
             btn.style.color = 'white';
@@ -1175,8 +1157,7 @@ function add_to_blacklist() {
         update_visualizer();
         
         // Visual feedback on button
-        var btn = document.getElementById('openwebrx-btn-freq-block');
-        if (!btn) btn = document.getElementById('openwebrx-btn-freq-scanner');
+        var btn = scanner_ui.blockBtn || scanner_ui.scanBtn;
         if (btn) {
             var originalText = btn.textContent;
             var originalColor = btn.style.color;
@@ -1188,7 +1169,6 @@ function add_to_blacklist() {
             }, 1000);
         }
         
-        // If scanner is running, skip immediately
         if (scanner_state.running) {
              if (scanner_state.timer) clearTimeout(scanner_state.timer);
              scan_loop();
@@ -1197,7 +1177,7 @@ function add_to_blacklist() {
 }
 
 function start_block_range_selection() {
-    var btn = document.getElementById('openwebrx-btn-freq-block');
+    var btn = scanner_ui.blockBtn;
     if (btn) {
         btn.textContent = 'Select';
         btn.style.color = 'yellow';
@@ -1206,7 +1186,6 @@ function start_block_range_selection() {
     var container = get_waterfall_container();
     if (!container) return;
 
-    // Remove existing overlay if present
     var existing = document.getElementById('freq-scanner-overlay');
     if (existing) {
         if (existing.cleanup) existing.cleanup();
@@ -1215,7 +1194,6 @@ function start_block_range_selection() {
 
     var overlay = document.createElement('div');
     overlay.id = 'freq-scanner-overlay';
-    // Use max z-index and touch-action: none to prevent scrolling/zooming gestures
     overlay.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; cursor: crosshair; touch-action: none;';
 
     var selection = document.createElement('div');
@@ -1263,7 +1241,6 @@ function start_block_range_selection() {
         
         var rect = overlay.getBoundingClientRect();
         var width = rect.width;
-        // Handle touchend where touches is empty, use changedTouches
         var clientX = e.clientX;
         if (e.changedTouches && e.changedTouches.length > 0) {
             clientX = e.changedTouches[0].clientX;
@@ -1334,7 +1311,6 @@ function start_block_range_selection() {
         }
     };
     
-    // Attach cleanup for external cancellation
     overlay.cleanup = function() {
         document.removeEventListener('mouseup', mouseUpHandler);
         document.removeEventListener('touchend', mouseUpHandler);
@@ -1352,7 +1328,7 @@ function start_block_range_selection() {
 }
 
 function start_remove_range_selection() {
-    var btn = document.getElementById('openwebrx-btn-freq-block');
+    var btn = scanner_ui.blockBtn;
     if (btn) {
         btn.textContent = 'Select';
         btn.style.color = 'yellow';
@@ -1441,7 +1417,6 @@ function clear_visible_blacklist() {
     var initial_len = scanner_state.blacklist.length;
     
     scanner_state.blacklist = scanner_state.blacklist.filter(function(entry) {
-        // Keep entries that are strictly outside the visible range
         if (typeof entry === 'number') {
             return entry < range.start || entry > range.end;
         } else if (entry && typeof entry.start === 'number' && typeof entry.end === 'number') {
@@ -1455,7 +1430,7 @@ function clear_visible_blacklist() {
         localStorage.setItem('freq_scanner_blacklist', JSON.stringify(scanner_state.blacklist));
         update_visualizer();
         
-        var btn = document.getElementById('openwebrx-btn-freq-block');
+        var btn = scanner_ui.blockBtn;
         if (btn) {
             var originalText = btn.textContent;
             var originalColor = btn.style.color;
@@ -1475,8 +1450,7 @@ function clear_blacklist() {
     
     update_visualizer();
     
-    // Visual feedback on button
-    var btn = document.getElementById('openwebrx-btn-freq-scanner');
+    var btn = scanner_ui.scanBtn;
     if (btn) {
         var originalText = btn.textContent;
         btn.textContent = 'CLR';
@@ -1504,7 +1478,6 @@ function edit_blacklist() {
     var listContainer = document.createElement('div');
     listContainer.style.cssText = 'flex: 1; overflow-y: auto; margin-bottom: 10px; border: 1px solid ' + themeColor + '; background: #111; padding: 5px; min-height: 200px;';
     
-    // Copy current blacklist to temporary array
     var currentList = scanner_state.blacklist.slice();
 
     function renderList() {
@@ -1614,14 +1587,12 @@ function is_bookmark_ignored(f) {
     if (!scanner_state.ignore_non_voice) return false;
     if (typeof bookmarks === 'undefined' || !bookmarks || !bookmarks.bookmarks) return false;
 
-    // Calculate tolerance (analogous to is_blacklisted)
     var tolerance = get_tolerance() + 3000; // Increased tolerance for bookmarks (e.g. DMR/YSF edges)
 
     var bookmarkArray = get_flat_bookmarks();
     
     if (bookmarkArray.length === 0) return false;
 
-    // Check if a bookmark is nearby that is NOT AM/FM/NFM/SSB
     return bookmarkArray.some(function(b) {
         if (b.frequency && Math.abs(f - b.frequency) <= tolerance) {
             var mod = (b.modulation || b.mode || '').toLowerCase();
@@ -1684,19 +1655,17 @@ function get_flat_bookmarks() {
 Plugins.freq_scanner = { no_css: true };
 
 function init_visualizer() {
-    // Find the waterfall viewport (parent of the moving strip)
     var strip = get_waterfall_container();
     if (!strip) return;
     var viewport = strip.parentElement;
     
     if (!document.getElementById('freq-scanner-visualizer')) {
-        var canvas = document.createElement('canvas');
+        var canvas = scanner_ui.visualizer = document.createElement('canvas');
         canvas.id = 'freq-scanner-visualizer';
         canvas.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 0;';
         viewport.insertBefore(canvas, strip.nextSibling);
     }
     
-    // Hook mkscale to redraw when view changes
     if (typeof window.mkscale === 'function' && !window.mkscale.is_scanner_hooked) {
         var original_mkscale = window.mkscale;
         window.mkscale = function() {
@@ -1706,16 +1675,14 @@ function init_visualizer() {
         window.mkscale.is_scanner_hooked = true;
     }
     
-    // Initial draw
     update_visualizer();
 }
 
 function update_visualizer() {
-    var cvs = document.getElementById('freq-scanner-visualizer');
+    var cvs = scanner_ui.visualizer;
     if (!cvs) return;
     
     var ctx = cvs.getContext('2d');
-    // Resize canvas to match display size (viewport)
     var rect = cvs.getBoundingClientRect();
     if (cvs.width !== rect.width || cvs.height !== rect.height) {
         cvs.width = rect.width;
@@ -1753,8 +1720,8 @@ function update_visualizer() {
 }
 
 function update_sca_button_state() {
-    var btn = document.getElementById('freq-scanner-toggle-btn');
-    var panel = document.getElementById('freq-scanner-floating-panel');
+    var btn = scanner_ui.toggleBtn;
+    var panel = scanner_ui.panel;
     if (!btn || !panel) return;
 
     if (panel.style.display !== 'none') {
@@ -1785,7 +1752,7 @@ function find_bookmark(f) {
 }
 
 function update_info_display(freq) {
-    var disp = document.getElementById('freq-scanner-info-display');
+    var disp = scanner_ui.infoDisplay;
     if (!disp) return;
 
     var themeColor = scanner_state.last_fg_color || '#00eaff';
@@ -1843,7 +1810,7 @@ function update_scanner_theme() {
     var parent = document.getElementById('openwebrx-panel-receiver');
     if (!parent) return;
     
-    var style = window.getComputedStyle(parent);
+    var style = getComputedStyle(parent);
     // Use backgroundColor to detect theme, as text color is usually white
     var bg = style.backgroundColor; 
     var parentBorderColor = style.borderTopColor || style.borderColor;
@@ -1856,21 +1823,18 @@ function update_scanner_theme() {
 
     var themeColor = 'rgb(' + r + ',' + g + ',' + b + ')';
     
-    // Calculate bright neon color for text/glow based on theme color
     var max = Math.max(r, g, b);
     var min = Math.min(r, g, b);
     var delta = max - min;
     
     var neonColor = '#00eaff'; // Default Cyan for grayscale/default
     
-    // If the theme has color (not grayscale)
     if (delta > 10) {
         var scale = 255 / (max || 1);
         var r_b = Math.min(255, Math.floor(r * scale));
         var g_b = Math.min(255, Math.floor(g * scale));
         var b_b = Math.min(255, Math.floor(b * scale));
         
-        // Make it lighter (mix with white)
         r_b = Math.floor(r_b + (255 - r_b) * 0.5);
         g_b = Math.floor(g_b + (255 - g_b) * 0.5);
         b_b = Math.floor(b_b + (255 - b_b) * 0.5);
@@ -1881,8 +1845,8 @@ function update_scanner_theme() {
     scanner_state.last_fg_color = neonColor;
     scanner_state.last_theme_color = themeColor;
 
-    var panel = document.getElementById('freq-scanner-floating-panel');
-    var handle = document.getElementById('freq-scanner-drag-handle');
+    var panel = scanner_ui.panel;
+    var handle = scanner_ui.dragHandle;
     var info = document.getElementById('freq-scanner-info-display');
     
     if (panel && handle) {
