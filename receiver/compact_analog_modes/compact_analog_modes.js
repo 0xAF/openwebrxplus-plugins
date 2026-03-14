@@ -47,7 +47,7 @@ function doChanges() {
     // Create a new "ANALOG" button and add it after the grid
     const analogDiv = document.createElement('div');
     analogDiv.className = 'openwebrx-button openwebrx-demodulator-button openwebrx-button-dig';
-    analogDiv.textContent = 'ANALOG';
+    analogDiv.textContent = 'VOICE';
     modesGrid.insertAdjacentElement('afterend', analogDiv);
 
     // Add the dropdown menu right after the "ANALOG" button

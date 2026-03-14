@@ -65,7 +65,7 @@ Each plugin is documented in its own folder.
 | Name | Description |
 | :------ | :---------- |
 |[compact_analog_modes](receiver/compact_analog_modes)|Compact the receiver analog modes section ([fustinoni-net](#contributors))|
-|[set_waterfall_theme](receiver/set_waterfall_theme)|Set the default waterfall theme ([fustinoni-net](#contributors))|
+|[~~set_waterfall_theme~~](receiver/set_waterfall_theme)|(**deprecated**) Set the default waterfall theme ([fustinoni-net](#contributors))|
 |[show_band_plan](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
 |[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner ([Joerg](#contributors))|
 |[smeter](receiver/smeter)|Show S-Meter (needs calibration!)([Joerg](#contributors))|
