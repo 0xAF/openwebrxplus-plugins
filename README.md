@@ -75,6 +75,7 @@ Each plugin is documented in its own folder.
 |[mouse_freq](receiver/mouse_freq)|Show frequency under cursor on the waterfall|
 |[doppler](receiver/doppler)|Track Doppler shift/effect of satellites|
 |[magic_key](receiver/magic_key)|Set MagicKey without typing it in the browser's address bar|
+|[minimap](receiver/minimap)|Adds a minimap to receiver page.|
 |[screenshot](receiver/screenshot)|Take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|Provide spoken notifications for accessibility|
 |[antenna_switcher](receiver/antenna_switcher)|Antenna switching for Raspberry Pi devices ([LZ2DMV](#contributors))|
