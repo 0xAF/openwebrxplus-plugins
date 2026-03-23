@@ -4,6 +4,10 @@ UI helper toolkit for OpenWebRX+ plugins. Provides a dockable panel, settings mo
 
 **Version:** 0.2
 
+## Preview
+
+![uikit](uikit/uikit.png "Preview")
+
 ## Load
 
 Add to your `plugins/receiver/init.js`:
