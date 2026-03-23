@@ -177,7 +177,7 @@ Plugins.minimap.init = async function () {
                 '  flex: 1 1 auto;',
                 '}',
                 '#openwebrx-minimap-sidebar-row .openwebrx-button {',
-                '  width: 100%;',
+                '  width: 96%;',
                 '  text-align: center;',
                 '}',
                 '#openwebrx-minimap-toggle.active {',
