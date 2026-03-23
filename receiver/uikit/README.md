@@ -6,7 +6,7 @@ UI helper toolkit for OpenWebRX+ plugins. Provides a dockable panel, settings mo
 
 ## Preview
 
-![uikit](uikit/uikit.png "Preview")
+![uikit](uikit.png "Preview")
 
 ## Load
 
