@@ -67,6 +67,34 @@ Parses an SVG string and returns a proper SVG DOM element.
 
 ---
 
+## Button Factory
+
+### `createButton(label, opts)` → HTMLButtonElement
+
+Creates a styled button element.
+
+**opts:**
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `style` | `'default'`\|`'primary'`\|`'ghost'`\|`'danger'` | `'default'` | Button visual style |
+| `onClick` | function\|null | `null` | Click handler |
+| `className` | string | `''` | Extra CSS class(es) |
+| `title` | string\|null | `null` | Tooltip text |
+| `disabled` | bool | `false` | Initially disabled |
+
+```js
+var ok = Plugins.uikit.createButton('Save', {
+  style: 'primary',
+  onClick: function () { m.close(); }
+});
+m.footerEl.appendChild(ok);
+
+var cancel = Plugins.uikit.createButton('Cancel', { style: 'ghost' });
+```
+
+---
+
 ## Plugin Modal API
 
 ### `createModal(slug, opts)` → handle

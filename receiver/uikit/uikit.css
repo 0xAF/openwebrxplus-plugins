@@ -330,6 +330,12 @@
 	color: #d9dde6;
 }
 
+.owrx-uikit__btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
 /* Spectre-like aliases (scoped) */
 .owrx-uikit .btn {
 	display: inline-flex;

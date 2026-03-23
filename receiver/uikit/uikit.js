@@ -235,11 +235,7 @@ Plugins.uikit._buildRoot = function () {
 };
 
 Plugins.uikit._buildPanel = function () {
-	var slug = this._addTabInternal('panel', 'Panel', { order: 0, activate: true });
-	var panel = this.getTabEl(slug);
-	if (panel) {
-		panel.appendChild(this._buildEmptyState());
-	}
+	// No default tab — plugins add their own via addTab().
 };
 
 Plugins.uikit._buildSettingsModal = function () {
@@ -326,15 +322,8 @@ Plugins.uikit._buildConfirmDialog = function () {
 	var actions = document.createElement('div');
 	actions.className = 'owrx-uikit__confirm-actions';
 
-	var cancelBtn = document.createElement('button');
-	cancelBtn.type = 'button';
-	cancelBtn.className = 'owrx-uikit__btn owrx-uikit__btn--ghost';
-	cancelBtn.textContent = 'Cancel';
-
-	var confirmBtn = document.createElement('button');
-	confirmBtn.type = 'button';
-	confirmBtn.className = 'owrx-uikit__btn owrx-uikit__btn--primary';
-	confirmBtn.textContent = 'Reset';
+	var cancelBtn = this.createButton('Cancel', { style: 'ghost', onClick: this._hideConfirm.bind(this) });
+	var confirmBtn = this.createButton('Reset', { style: 'primary', onClick: this._confirmReset.bind(this) });
 
 	actions.appendChild(cancelBtn);
 	actions.appendChild(confirmBtn);
@@ -349,9 +338,6 @@ Plugins.uikit._buildConfirmDialog = function () {
 	this._ui.confirmBackdrop = backdrop;
 	this._ui.confirmCancel = cancelBtn;
 	this._ui.confirmOk = confirmBtn;
-
-	cancelBtn.addEventListener('click', this._hideConfirm.bind(this));
-	confirmBtn.addEventListener('click', this._confirmReset.bind(this));
 	backdrop.addEventListener('click', function (e) {
 		if (e.target === backdrop) Plugins.uikit._hideConfirm();
 	});
@@ -475,11 +461,7 @@ Plugins.uikit._renderSettingsUI = function (slug) {
 	var resetGroup = document.createElement('div');
 	resetGroup.className = 'owrx-uikit__settings-group';
 
-	var resetBtn = document.createElement('button');
-	resetBtn.type = 'button';
-	resetBtn.className = 'owrx-uikit__btn owrx-uikit__btn--danger';
-	resetBtn.textContent = 'Reset to defaults';
-	resetBtn.addEventListener('click', this._showConfirm.bind(this));
+	var resetBtn = this.createButton('Reset to defaults', { style: 'danger', onClick: this._showConfirm.bind(this) });
 
 	resetGroup.appendChild(resetBtn);
 
@@ -818,7 +800,11 @@ Plugins.uikit._addTabInternal = function (type, name, opts) {
 		}
 	});
 
-	if (opts.activate) {
+	// Activate if explicitly requested, or if this is the first tab (nothing active yet)
+	var hasActive = (type === 'panel')
+		? container.querySelector('.owrx-uikit__tab.is-active')
+		: container.querySelector('.owrx-uikit__tab.is-active');
+	if (opts.activate || !hasActive) {
 		if (type === 'panel') this._activateTab(slug);
 		else this._activateSettingsTab(slug);
 	}
@@ -1077,6 +1063,31 @@ Plugins.uikit._buildSvg = function (viewBox, paths, size) {
 };
 
 
+// ── Button Factory ─────────────────────────────────────────────────────────
+
+Plugins.uikit.createButton = function (label, opts) {
+	opts = opts || {};
+	var styleMap = {
+		primary: 'owrx-uikit__btn owrx-uikit__btn--primary',
+		ghost: 'owrx-uikit__btn owrx-uikit__btn--ghost',
+		danger: 'owrx-uikit__btn owrx-uikit__btn--danger'
+	};
+	var cls = styleMap[opts.style] || 'owrx-uikit__btn';
+	if (opts.className) cls += ' ' + opts.className;
+
+	var btn = document.createElement('button');
+	btn.type = 'button';
+	btn.className = cls;
+	btn.textContent = label;
+	if (opts.title) btn.title = opts.title;
+	if (opts.disabled) btn.disabled = true;
+	if (typeof opts.onClick === 'function') {
+		btn.addEventListener('click', opts.onClick);
+	}
+	return btn;
+};
+
+
 // ── Plugin Modal API ────────────────────────────────────────────────────────
 
 Plugins.uikit.createModal = function (slug, opts) {
@@ -1275,7 +1286,7 @@ Plugins.uikit._buildPluginModal = function (slug, opts) {
 
 		if (opts.closeOnBackdrop !== false) {
 			wrapEl.addEventListener('click', function (e) {
-				if (e.target === wrapEl) {
+				if (e.target === wrapEl && !entry._resizing) {
 					e.stopPropagation();
 					self.closeModal(slug);
 				}
@@ -1298,7 +1309,8 @@ Plugins.uikit._buildPluginModal = function (slug, opts) {
 		footerEl: footerEl,
 		resizeHandle: resizeHandle,
 		_lastFocus: null,
-		_escHandler: null
+		_escHandler: null,
+		_resizing: false
 	};
 
 	this._modals[slug] = entry;
@@ -1340,10 +1352,14 @@ Plugins.uikit._bindResizeHandle = function (entry) {
 	function onUp() {
 		document.removeEventListener('pointermove', onMove);
 		document.removeEventListener('pointerup', onUp);
+		// Delay clearing the flag so the click event (which fires after pointerup)
+		// is still suppressed by the backdrop handler.
+		setTimeout(function () { entry._resizing = false; }, 0);
 	}
 
 	handle.addEventListener('pointerdown', function (e) {
 		e.preventDefault();
+		entry._resizing = true;
 		startX = e.clientX;
 		startY = e.clientY;
 		var rect = modalEl.getBoundingClientRect();
@@ -1382,13 +1398,9 @@ Plugins.uikit.info = function (message, opts) {
 			modal.contentEl.appendChild(p);
 		}
 
-		var okBtn = document.createElement('button');
-		okBtn.type = 'button';
-		okBtn.className = 'owrx-uikit__btn owrx-uikit__btn--primary';
-		okBtn.textContent = opts.okLabel || 'OK';
-		okBtn.addEventListener('click', function () {
-			self.destroyModal(slug);
-			resolve();
+		var okBtn = self.createButton(opts.okLabel || 'OK', {
+			style: 'primary',
+			onClick: function () { self.destroyModal(slug); resolve(); }
 		});
 		modal.footerEl.appendChild(okBtn);
 
@@ -1420,22 +1432,14 @@ Plugins.uikit.question = function (message, opts) {
 			modal.contentEl.appendChild(message);
 		}
 
-		var cancelBtn = document.createElement('button');
-		cancelBtn.type = 'button';
-		cancelBtn.className = 'owrx-uikit__btn owrx-uikit__btn--ghost';
-		cancelBtn.textContent = opts.cancelLabel || 'Cancel';
-		cancelBtn.addEventListener('click', function () {
-			self.destroyModal(slug);
-			resolve(false);
+		var cancelBtn = self.createButton(opts.cancelLabel || 'Cancel', {
+			style: 'ghost',
+			onClick: function () { self.destroyModal(slug); resolve(false); }
 		});
 
-		var okBtn = document.createElement('button');
-		okBtn.type = 'button';
-		okBtn.className = 'owrx-uikit__btn owrx-uikit__btn--primary';
-		okBtn.textContent = opts.okLabel || 'OK';
-		okBtn.addEventListener('click', function () {
-			self.destroyModal(slug);
-			resolve(true);
+		var okBtn = self.createButton(opts.okLabel || 'OK', {
+			style: 'primary',
+			onClick: function () { self.destroyModal(slug); resolve(true); }
 		});
 
 		modal.footerEl.appendChild(cancelBtn);
