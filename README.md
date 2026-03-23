@@ -17,6 +17,8 @@ permalink: /
   - [Beginner Quickstart](#beginner-quickstart)
   - [Plugin List](#plugin-list)
     - [Receiver Plugins](#receiver-plugins)
+    - [Utility \& Example Plugins](#utility--example-plugins)
+    - [Deprecated Receiver Plugins](#deprecated-receiver-plugins)
     - [Map Plugins](#map-plugins)
     - [Thirdparty Plugins](#thirdparty-plugins)
   - [Detailed Installation \& Loading Instructions](#detailed-installation--loading-instructions)
@@ -71,31 +73,43 @@ Each plugin is documented in its own folder.
 
 | Name | Description |
 | :------ | :---------- |
+|[antenna_switcher](receiver/antenna_switcher)|Antenna switching for Raspberry Pi devices ([LZ2DMV](#contributors))|
+|[colorful_spectrum](receiver/colorful_spectrum)|Colorize the spectrum analyzer|
 |[compact_analog_modes](receiver/compact_analog_modes)|Compact the receiver analog modes section ([fustinoni-net](#contributors))|
-|[~~set_waterfall_theme~~](receiver/set_waterfall_theme)|(**deprecated**) Set the default waterfall theme ([fustinoni-net](#contributors))|
-|[show_band_plan](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
-|[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner ([Joerg](#contributors))|
-|[smeter](receiver/smeter)|Show S-Meter (needs calibration!)([Joerg](#contributors))|
-|[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
-|[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of bookmarks with right mouse button|
-|[tune_precise](receiver/tune_precise)|Add buttons for precise frequency tuning ([LZ2DMV](#contributors))|
-|[mouse_freq](receiver/mouse_freq)|Show frequency under cursor on the waterfall|
+|[connect_notify](receiver/connect_notify)|Send/receive notifications on user connect/disconnect|
 |[doppler](receiver/doppler)|Track Doppler shift/effect of satellites|
+|[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner ([Joerg](#contributors))|
+|[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
 |[magic_key](receiver/magic_key)|Set MagicKey without typing it in the browser's address bar|
-|[minimap](receiver/minimap)|Adds a minimap to receiver page. ([13MAD86](#contributors))|
+|[minimap](receiver/minimap)|Adds a minimap to receiver page ([13MAD86](#contributors))|
+|[mouse_freq](receiver/mouse_freq)|Show frequency under cursor on the waterfall|
 |[screenshot](receiver/screenshot)|Take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|Provide spoken notifications for accessibility|
-|[antenna_switcher](receiver/antenna_switcher)|Antenna switching for Raspberry Pi devices ([LZ2DMV](#contributors))|
-|[tune_checkbox](receiver/tune_checkbox)|Enable mouse-scroll to zoom by default ([LZ2DMV](#contributors))|
-|[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
-|[~~keyboard_shortcuts~~](receiver/keyboard_shortcuts)|(**deprecated**) Add keyboard shortcuts|
-|[colorful_spectrum](receiver/colorful_spectrum)|Colorize the spectrum analyzer|
-|[connect_notify](receiver/connect_notify)|Send/receive notifications on user connect/disconnect|
+|[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
+|[show_band_plan](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
+|[smeter](receiver/smeter)|Show S-Meter (needs calibration!) ([Joerg](#contributors))|
 |[sort_profiles](receiver/sort_profiles)|Sort profiles by name|
-|[utils](receiver/utils)|Utility plugin, required by many plugins|
-|[notify](receiver/notify)|Notification utility plugin|
+|[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of bookmarks with right mouse button|
+|[tune_checkbox](receiver/tune_checkbox)|Enable mouse-scroll to zoom by default ([LZ2DMV](#contributors))|
+|[tune_precise](receiver/tune_precise)|Add buttons for precise frequency tuning ([LZ2DMV](#contributors))|
+
+### Utility & Example Plugins
+
+| Name | Description |
+| :------ | :---------- |
 |[example](receiver/example)|Example plugin for developers|
 |[example_theme](receiver/example_theme)|Example theme plugin for developers|
+|[example_uikit](receiver/example_uikit)|Demo plugin showcasing all UIKit features|
+|[notify](receiver/notify)|Notification utility plugin (delegates to `uikit.toast()` when available)|
+|[uikit](receiver/uikit)|UI toolkit: dockable panel, modals, toasts, buttons, loading overlays|
+|[utils](receiver/utils)|Utility plugin, required by many plugins|
+
+### Deprecated Receiver Plugins
+
+| Name | Description |
+| :------ | :---------- |
+|[~~keyboard_shortcuts~~](receiver/keyboard_shortcuts)|Add keyboard shortcuts|
+|[~~set_waterfall_theme~~](receiver/set_waterfall_theme)|Set the default waterfall theme ([fustinoni-net](#contributors))|
 
 ### Map Plugins
 
