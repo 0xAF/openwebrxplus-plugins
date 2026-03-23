@@ -209,6 +209,7 @@ A: Use `Plugins.load('https://.../plugin_name/plugin_name.js');` in your `init.j
 - [Yannis](https://github.com/ysamouhos)
 - [Joerg](https://github.com/joer123)
 - [fustinoni-net](https://github.com/fustinoni-net)
+- [13MAD86](https://github.com/Rikku2000)
 
 ---
 
