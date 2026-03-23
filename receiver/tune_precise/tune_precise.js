@@ -12,7 +12,7 @@ Plugins.tune_precise.steps_default = [10000, 1000, 500];
 
 Plugins.tune_precise.init = async function () {
   // get user config or defaults
-  const steps = { ...Plugins.tune_precise.steps_default, ...Plugins.tune_precise_steps };
+  const steps = Plugins.tune_precise_steps ?? Plugins.tune_precise.steps_default;
 
   function renderIcon(icon, size) {
     if (icon > 0) {
@@ -55,10 +55,11 @@ Plugins.tune_precise.init = async function () {
     .css({
       cursor: 'pointer',
       filter: 'brightness(0.8)'
-    }).hover(
-      function () { $(this).css({ filter: "drop-shadow(0px 0px 2px rgb(255,255,255)) brightness(1)" }); },
-      function () { $(this).css({ filter: "brightness(0.8)" }); }
-    ).click(function (e) {
+    }).on('mouseenter', function () {
+      $(this).css({ filter: "drop-shadow(0px 0px 2px rgb(255,255,255)) brightness(1)" });
+    }).on('mouseleave', function () {
+      $(this).css({ filter: "brightness(0.8)" });
+    }).on('click', function () {
       const step = parseInt($(this).data('step'), 10);
       const demodulator = $("#openwebrx-panel-receiver").demodulatorPanel().getDemodulator();
       const freqCurrent = parseInt(demodulator.get_offset_frequency() + center_freq, 10);

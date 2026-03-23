@@ -42,21 +42,28 @@ Each plugin is documented in its own folder.
 ## Beginner Quickstart
 
 1. Find your `htdocs` folder and set a helper variable:
-  ```bash
-  export OWRX_FOLDER=$(dirname "$(find / -name openwebrx.js 2>/dev/null | head -n1)")
-  ```
-2. Create the folders and download the `init.js` sample file:
-  ```bash
-  mkdir -p "$OWRX_FOLDER/plugins/receiver"
-  cd "$OWRX_FOLDER/plugins/receiver"
-  wget https://0xaf.github.io/openwebrxplus-plugins/receiver/init.js.sample -O init.js
-  ```
-3. Edit the `init.js` file and load the desired plugins:
-  ```bash
-  ${EDITOR-nano} init.js
-  ```
-4. Keep the top two `Plugins.load` lines (utils, notify). They are shared dependencies. Add or remove names in `PluginsToLoad` to pick which plugins you want.
-5. Refresh the OpenWebRX+ page to see the changes. If nothing changes, restart varnish/nginx as noted below.
+
+   ```bash
+   export OWRX_FOLDER=$(dirname "$(find / -name openwebrx.js 2>/dev/null | head -n1)")
+   ```
+
+1. Create the folders and download the `init.js` sample file:
+
+   ```bash
+   mkdir -p "$OWRX_FOLDER/plugins/receiver"
+   cd "$OWRX_FOLDER/plugins/receiver"
+   wget https://0xaf.github.io/openwebrxplus-plugins/receiver/init.js.sample -O init.js
+   ```
+
+1. Edit the `init.js` file and load the desired plugins:
+
+   ```bash
+   ${EDITOR-nano} init.js
+   ```
+
+1. Keep the top two `Plugins.load` lines (utils, notify). They are shared dependencies. Add or remove names in `PluginsToLoad` to pick which plugins you want.
+
+1. Refresh the OpenWebRX+ page to see the changes. If nothing changes, restart varnish/nginx as noted below.
 
 ## Plugin List
 
@@ -155,23 +162,22 @@ Each plugin is documented in its own folder.
 
 ## Developing Plugins
 
-If you want to create new plugins:
+The [example plugin README](receiver/example/README.md) has a step-by-step quickstart, a minimal plugin skeleton, a table of available events, and annotated patterns for the most common tasks (event listening, function wrapping, DOM access). Start there.
 
-1. Get familiar with the OWRX+ JS codebase.
-2. Review the [example plugin](receiver/example) and [example theme plugin](receiver/example_theme).
-3. Develop plugins locally in `$OWRX_FOLDER/plugins/{type}/your_plugin/`.
-4. Load local plugins by folder name:  
-   `Plugins.load('your_plugin');`
-5. Load remote plugins by URL (example for map plugin):  
-   `Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/map/layer_qth_maidenhead/layer_qth_maidenhead.js');`
+Short summary:
+
+1. Create `$OWRX_FOLDER/plugins/receiver/my_plugin/my_plugin.js`.
+2. Load it locally by folder name: `await Plugins.load('my_plugin');`
+3. Export `Plugins.my_plugin.init()` — return `true` on success, `false` on a failed dependency check.
 
 ### Plugin Structure
 
-- Each plugin lives in `plugins/{receiver|map}/plugin_name/` and has a matching JS entry file `plugin_name.js`.
-- `Plugins.<name>.init()` must return `true` on success; return `false` (or nothing truthy) to abort when a prerequisite is missing.
-- Set `_version` (for dependency checks) and `no_css = true` if you do not want the loader to fetch `plugin_name.css` automatically.
-- By default, the loader tries to load a sibling CSS file after the JS. If you ship CSS, leave `no_css` unset.
-- Load dependencies explicitly with `await Plugins.load('dependency')` before loading plugins that need them.
+- Each plugin lives in `plugins/{receiver|map}/plugin_name/` with a matching `plugin_name.js` entry file.
+- Set `Plugins.<name>._version` so other plugins can check for it with `Plugins.isLoaded('name', version)`.
+- Set `Plugins.<name>.no_css = true` if there is no sibling CSS file; otherwise the loader fetches `plugin_name.css` automatically.
+- Declare dependencies with `await Plugins.load('dep')` before loading plugins that need them.
+- Use `Plugins.utils.wrap_func()` to intercept existing OWRX+ functions and `Plugins.utils.on_ready()` to defer work until the page is fully initialised.
+- See [uikit](receiver/uikit/README.md) for a dockable panel and settings modal you can build on.
 
 ### Hosting on GitHub
 

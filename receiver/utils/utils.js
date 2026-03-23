@@ -86,7 +86,7 @@ Plugins.utils._version = 0.6;
  */
 Plugins.utils.wrap_func = function (name, before_cb, after_cb, obj = window) {
   if (typeof (obj[name]) !== "function") {
-    console.error("Cannot wrap non existing function: '" + obj + '.' + name + "'");
+    console.error("Cannot wrap non-existing function: '" + name + "'");
     return false;
   }
 
@@ -114,7 +114,7 @@ Plugins.utils.on_ready = function (callback) {
       setTimeout(() => Plugins.utils.on_ready(callback), 50);
     }
   } else {
-    console.error("Plugins.utils.on_init() expects a function as a parameter.");
+    console.error("Plugins.utils.on_ready() expects a function as a parameter.");
   }
 }
 

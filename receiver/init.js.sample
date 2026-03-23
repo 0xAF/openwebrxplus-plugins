@@ -8,9 +8,11 @@
 // Optional per-plugin settings before load
 // Plugins.screen_reader.log_messages = true;
 // Plugins.tune_precise_steps = [12500, 5000, 10];
+// Plugins.uikit.settings = { position: 'bottom', visible: true };
 
 // List the plugins you want to load (folder names). Order matters if plugins depend on each other.
 const PluginsToLoad = [
+	'uikit',
 	'colorful_spectrum',
 	'connect_notify',
 	'frequency_far_jump',

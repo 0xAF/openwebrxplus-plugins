@@ -4,7 +4,9 @@ title: "OpenWebRX+ Receiver Plugin: Notify"
 permalink: /receiver/notify
 ---
 
-This is `utility` plugin. It provides notifications for other plugins.
+**Deprecated:** Use `Plugins.uikit.toast()` (uikit >= 0.2) instead. This plugin now delegates to `uikit.toast()` when uikit is loaded, falling back to its own display otherwise.
+
+This is a `utility` plugin. It provides notifications for other plugins.
 
 ## Usage
 
