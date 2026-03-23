@@ -18,12 +18,15 @@ Plugins.uikit.settings = Plugins.uikit.settings || {};
 Plugins.uikit._defaults = {
 	position: 'bottom',
 	visible: true,
-	mode: 'overlay'
+	mode: 'overlay',
+	opacity: 0.5
 };
 
 Plugins.uikit._state = {
 	lastTab: null,
-	lastSettingsTab: 'ui'
+	lastSettingsTab: 'ui',
+	fadeTimer: null,
+	mouseMoveHandler: null
 };
 
 Plugins.uikit._tabs = {
@@ -458,6 +461,37 @@ Plugins.uikit._renderSettingsUI = function (slug) {
 	modeGroup.appendChild(modeLabel);
 	modeGroup.appendChild(modeOptions);
 
+	var opacityGroup = document.createElement('div');
+	opacityGroup.className = 'owrx-uikit__settings-group';
+
+	var opacityLabel = document.createElement('div');
+	opacityLabel.className = 'owrx-uikit__settings-label';
+	opacityLabel.dataset.role = 'opacity-label';
+	opacityLabel.textContent = 'Opacity (overlay): ' + Math.round((this._settings.opacity || 0.5) * 100) + '%';
+
+	var opacitySlider = document.createElement('input');
+	opacitySlider.type = 'range';
+	opacitySlider.min = '0.1';
+	opacitySlider.max = '1';
+	opacitySlider.step = '0.05';
+	opacitySlider.value = this._settings.opacity || 0.5;
+	opacitySlider.dataset.role = 'opacity-slider';
+	opacitySlider.style.width = '100%';
+	opacitySlider.addEventListener('input', function (e) {
+		var val = parseFloat(e.target.value);
+		Plugins.uikit._settings.opacity = val;
+		Plugins.uikit._saveSettings();
+		opacityLabel.textContent = 'Opacity (overlay): ' + Math.round(val * 100) + '%';
+		// Reset the fade timer so the new value takes effect
+		if (Plugins.uikit._settings.mode === 'overlay') {
+			Plugins.uikit._destroyPanelFade();
+			Plugins.uikit._initPanelFade();
+		}
+	});
+
+	opacityGroup.appendChild(opacityLabel);
+	opacityGroup.appendChild(opacitySlider);
+
 	var resetGroup = document.createElement('div');
 	resetGroup.className = 'owrx-uikit__settings-group';
 
@@ -468,6 +502,7 @@ Plugins.uikit._renderSettingsUI = function (slug) {
 	section.appendChild(title);
 	section.appendChild(positionGroup);
 	section.appendChild(modeGroup);
+	section.appendChild(opacityGroup);
 	section.appendChild(visibilityGroup);
 	section.appendChild(resetGroup);
 
@@ -476,10 +511,13 @@ Plugins.uikit._renderSettingsUI = function (slug) {
 	this._ui.positionOptions = positionOptions;
 	this._ui.modeOptions = modeOptions;
 	this._ui.visibilityToggle = visibilityInput;
+	this._ui.opacitySlider = opacitySlider;
+	this._ui.opacityLabel = opacityLabel;
 
 	this._renderPositionOptions();
 	this._renderModeOptions();
 	this._renderVisibilityToggle();
+	this._renderOpacitySlider();
 };
 
 Plugins.uikit._renderPositionOptions = function () {
@@ -517,6 +555,16 @@ Plugins.uikit._renderPositionOptions = function () {
 Plugins.uikit._renderVisibilityToggle = function () {
 	var checkbox = this._ui.visibilityToggle || this._ui.modalBody.querySelector('[data-role="visibility-toggle"]');
 	if (checkbox) checkbox.checked = !!this._settings.visible;
+};
+
+Plugins.uikit._renderOpacitySlider = function () {
+	var slider = this._ui.opacitySlider || (this._ui.modalBody && this._ui.modalBody.querySelector('[data-role="opacity-slider"]'));
+	var label = this._ui.opacityLabel || (this._ui.modalBody && this._ui.modalBody.querySelector('[data-role="opacity-label"]'));
+	if (!slider) return;
+	var val = this._settings.opacity || 0.5;
+	slider.value = val;
+	slider.disabled = this._settings.mode !== 'overlay';
+	if (label) label.textContent = 'Opacity (overlay): ' + Math.round(val * 100) + '%';
 };
 
 Plugins.uikit._renderModeOptions = function () {
@@ -597,6 +645,57 @@ Plugins.uikit.setPanelMode = function (mode) {
 	this._saveSettings();
 	this._applyPanelMode();
 	this._renderModeOptions();
+	this._renderOpacitySlider();
+};
+
+Plugins.uikit.setPanelOpacity = function (value) {
+	value = Math.max(0.1, Math.min(1, parseFloat(value) || 0.5));
+	this._settings.opacity = value;
+	this._saveSettings();
+	if (this._settings.mode === 'overlay') {
+		this._destroyPanelFade();
+		this._initPanelFade();
+	}
+};
+
+Plugins.uikit._initPanelFade = function () {
+	this._destroyPanelFade();
+	if (!this._ui || !this._ui.panel) return;
+
+	var self = this;
+	this._setPanelAlpha(0.92);
+
+	this._state.mouseMoveHandler = function () {
+		self._setPanelAlpha(0.92);
+		clearTimeout(self._state.fadeTimer);
+		self._state.fadeTimer = setTimeout(function () {
+			self._setPanelAlpha(self._settings.opacity);
+		}, 2000);
+	};
+
+	document.addEventListener('mousemove', this._state.mouseMoveHandler);
+
+	// Start the initial fade timer
+	this._state.fadeTimer = setTimeout(function () {
+		self._setPanelAlpha(self._settings.opacity);
+	}, 2000);
+};
+
+Plugins.uikit._destroyPanelFade = function () {
+	if (this._state.fadeTimer) {
+		clearTimeout(this._state.fadeTimer);
+		this._state.fadeTimer = null;
+	}
+	if (this._state.mouseMoveHandler) {
+		document.removeEventListener('mousemove', this._state.mouseMoveHandler);
+		this._state.mouseMoveHandler = null;
+	}
+	this._setPanelAlpha(0.92);
+};
+
+Plugins.uikit._setPanelAlpha = function (alpha) {
+	if (!this._ui || !this._ui.panel) return;
+	this._ui.panel.style.setProperty('--uikit-panel-bg-alpha', alpha);
 };
 
 Plugins.uikit._cacheBodyPadding = function () {
@@ -720,6 +819,13 @@ Plugins.uikit._applyPanelMode = function () {
 	var bottomOffset = (mode === 'push' && visible && this._settings.position === 'bottom') ? targetBottom : '';
 	this._setBottomOffset('openwebrx-panels-container-left', bottomOffset);
 	this._setBottomOffset('openwebrx-panels-container-right', bottomOffset);
+
+	// Panel fade: overlay → auto-fade, push → always opaque
+	if (mode === 'overlay') {
+		this._initPanelFade();
+	} else {
+		this._destroyPanelFade();
+	}
 };
 
 Plugins.uikit._setBottomOffset = function (id, value) {

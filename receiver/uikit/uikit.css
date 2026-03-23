@@ -17,13 +17,15 @@
 }
 
 .owrx-uikit__panel {
-	background: rgba(17, 20, 26, 0.92);
+	--uikit-panel-bg-alpha: 0.92;
+	background: rgba(17, 20, 26, var(--uikit-panel-bg-alpha));
 	border: 1px solid rgba(255, 255, 255, 0.08);
 	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
 	backdrop-filter: blur(12px);
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+	transition: background 0.4s ease;
 }
 
 .owrx-uikit__tabs-bar {
@@ -31,10 +33,11 @@
 	align-items: center;
 	gap: 8px;
 	padding: 10px 12px 0;
-	background: rgba(17, 20, 26, 0.92);
+	background: rgba(17, 20, 26, var(--uikit-panel-bg-alpha, 0.92));
 	border-bottom: none;
 	overflow-y: hidden;
 	flex-shrink: 0;
+	transition: background 0.4s ease;
 }
 
 .owrx-uikit__tabs-scroll {
@@ -123,9 +126,10 @@
 	flex: 1;
 	min-height: 0;
 	overflow-y: auto;
-	background: rgba(17, 20, 26, 0.92);
+	background: rgba(17, 20, 26, var(--uikit-panel-bg-alpha, 0.92));
 	margin-top: 0;
 	border-top: none;
+	transition: background 0.4s ease;
 }
 
 .owrx-uikit__tab-panel {
