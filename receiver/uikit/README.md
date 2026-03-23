@@ -20,7 +20,7 @@ Plugins.uikit.settings = {
   mode: 'overlay'       // overlay | push
 };
 
-await Plugins.load('uikit');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/uikit/uikit.js');
 ```
 
 ---
@@ -298,8 +298,8 @@ All styles are scoped under `.owrx-uikit`. Button classes available for use in m
 See `receiver/example_uikit/` for a working demo that exercises every feature described above. Load it after uikit:
 
 ```js
-await Plugins.load('uikit');
-await Plugins.load('example_uikit');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/uikit/uikit.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/example_uikit/example_uikit.js');
 ```
 
 ---

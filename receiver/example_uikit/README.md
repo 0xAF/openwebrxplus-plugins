@@ -24,9 +24,11 @@ copy-paste-ready code.
 Add to your `init.js` after `uikit`:
 
 ```js
-await Plugins.load('uikit');
-await Plugins.load('example_uikit');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/uikit/uikit.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/example_uikit/example_uikit.js');
 ```
+
+Note: `example_uikit` will auto-load uikit if it's not already loaded, so the first line is optional.
 
 ## Dependencies
 
