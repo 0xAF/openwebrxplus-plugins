@@ -1,5 +1,5 @@
 /*
- * Plugin: Spectravue Style Spectrum Analyzer (with UI selection and opacity slider)
+ * Plugin: Spectravue Style Spectrum Analyzer (Stable & Uncorrupted)
  * License: MIT
  */
 
@@ -19,7 +19,6 @@ Plugins.colorful_spectrum.init = async function () {
   // --- CONFIGURATION ---
   const defaultColor = window.SpectrumDefaultColor || 'blue';
 
-  // Set default opacity from init.js, fallback to 0.0
   const defaultOpacity = window.SpectrumBackgroundOpacity !== undefined ? window.SpectrumBackgroundOpacity : 0.0;
 
   // Define custom Spectravue palettes.
@@ -96,7 +95,6 @@ Plugins.colorful_spectrum.init = async function () {
       newWrapper.style.width = '115px';
       newWrapper.style.position = 'relative';
 
-      // Setup the Select Dropdown
       let clonedSelects = newWrapper.querySelectorAll('select');
       for (let j = 1; j < clonedSelects.length; j++) {
         clonedSelects[j].remove();
@@ -109,7 +107,7 @@ Plugins.colorful_spectrum.init = async function () {
       spectrumSelect.style.width = '100%';
       spectrumSelect.style.flex = '1';
       spectrumSelect.style.display = 'inline-block';
-      spectrumSelect.style.marginLeft = '3px'; // Added spacing here
+      spectrumSelect.style.marginLeft = '3px';
 
       try {
         let origStyle = window.getComputedStyle(waterfallSelect);
@@ -140,7 +138,6 @@ Plugins.colorful_spectrum.init = async function () {
         localStorage.setItem('owrx-spectrum-color', e.target.value);
       });
 
-      // Setup the Opacity Slider
       let opacitySlider = document.createElement('input');
       opacitySlider.type = 'range';
       opacitySlider.id = 'webrx-spectrum-opacity';
@@ -150,11 +147,10 @@ Plugins.colorful_spectrum.init = async function () {
       opacitySlider.title = 'Background Darkness';
       opacitySlider.style.width = '100%';
       opacitySlider.style.flex = '1';
-      opacitySlider.style.display = 'none'; // Hidden by default
+      opacitySlider.style.display = 'none';
       opacitySlider.style.verticalAlign = 'middle';
-      opacitySlider.style.marginLeft = '3px'; // Added spacing here
+      opacitySlider.style.marginLeft = '3px';
 
-      // Load saved opacity or fallback to the init.js default
       let savedOpacity = localStorage.getItem('owrx-spectrum-opacity');
       if (savedOpacity !== null) {
         window.SpectrumBackgroundOpacity = parseFloat(savedOpacity);
@@ -171,7 +167,6 @@ Plugins.colorful_spectrum.init = async function () {
 
       newWrapper.appendChild(opacitySlider);
 
-      // Setup the Droplet Toggle Button
       let isSliderVisible = false;
       Array.from(newWrapper.children).forEach(child => {
         if (child.tagName !== 'SELECT' && child.tagName !== 'INPUT') {
@@ -224,7 +219,6 @@ Plugins.colorful_spectrum.init = async function () {
 
                               thisArg.ctx.clearRect(0, 0, spec_width, spec_height);
 
-                              // Draw the configurable dark background pulling directly from the window variable
                               const bgOpacity = window.SpectrumBackgroundOpacity !== undefined ? window.SpectrumBackgroundOpacity : 0.0;
                               if (bgOpacity > 0) {
                                 thisArg.ctx.fillStyle = `rgba(0, 0, 0, ${bgOpacity})`;
@@ -257,10 +251,22 @@ Plugins.colorful_spectrum.init = async function () {
 
                                 for (var i = 0; i <= 10; i++) {
                                   var step = i / 10;
-                                  var signal = thisArg.max - (step * (thisArg.max - thisArg.min));
-                                  var c = Waterfall.makeColor(signal);
 
-                                  var fillAlpha = 0.8 - (0.4 * step);
+                                  var signal = thisArg.max - (step * (thisArg.max - thisArg.min));
+                                  var originalC = Waterfall.makeColor(signal);
+                                  var c = [originalC[0], originalC[1], originalC[2]];
+
+                                  var fillAlpha = 0.8;
+
+                                  var blend = Math.max(0, (step - 0.6) / 0.4);
+                                  if (blend > 0) {
+                                    // Pushed these numbers down for a much darker, deeper navy blue
+                                    c[0] = Math.round(c[0] * (1 - blend) + 20 * blend);
+                                    c[1] = Math.round(c[1] * (1 - blend) + 70 * blend);
+                                    c[2] = Math.round(c[2] * (1 - blend) + 160 * blend);
+                                    fillAlpha = 0.8 + (0.15 * blend);
+                                  }
+
                                   fillGradient.addColorStop(step, "rgba(" + c[0] + ", " + c[1] + ", " + c[2] + ", " + fillAlpha + ")");
                                   strokeGradient.addColorStop(step, "rgba(" + c[0] + ", " + c[1] + ", " + c[2] + ", 1.0)");
                                 }
