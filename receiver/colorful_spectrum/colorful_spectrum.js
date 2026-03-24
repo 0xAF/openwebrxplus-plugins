@@ -1,5 +1,5 @@
 /*
- * Plugin: Spectravue Style Spectrum Analyzer (with UI selection)
+ * Plugin: Spectravue Style Spectrum Analyzer (with UI selection and opacity slider)
  * License: MIT
  */
 
@@ -18,6 +18,9 @@ Plugins.colorful_spectrum.init = async function () {
 
   // --- CONFIGURATION ---
   const defaultColor = window.SpectrumDefaultColor || 'blue';
+
+  // Set default opacity from init.js, fallback to 0.0
+  const defaultOpacity = window.SpectrumBackgroundOpacity !== undefined ? window.SpectrumBackgroundOpacity : 0.0;
 
   // Define custom Spectravue palettes.
   const colorPalettes = {
@@ -91,23 +94,9 @@ Plugins.colorful_spectrum.init = async function () {
       newWrapper.style.verticalAlign = 'middle';
       newWrapper.style.marginLeft = '8px';
       newWrapper.style.width = '115px';
+      newWrapper.style.position = 'relative';
 
-      Array.from(newWrapper.children).forEach(child => {
-        if (child.tagName !== 'SELECT') {
-          child.style.transform = 'scaleX(-1)';
-          child.style.cursor = 'pointer';
-          child.title = `Reset to ${defaultColor}`;
-
-          child.addEventListener('click', function() {
-            let spectrumSelect = document.getElementById('webrx-spectrum-color');
-            if (spectrumSelect) {
-              spectrumSelect.value = defaultColor;
-              localStorage.setItem('owrx-spectrum-color', defaultColor);
-            }
-          });
-        }
-      });
-
+      // Setup the Select Dropdown
       let clonedSelects = newWrapper.querySelectorAll('select');
       for (let j = 1; j < clonedSelects.length; j++) {
         clonedSelects[j].remove();
@@ -117,6 +106,10 @@ Plugins.colorful_spectrum.init = async function () {
       spectrumSelect.id = 'webrx-spectrum-color';
       spectrumSelect.title = 'Spectrum Fill Color';
       spectrumSelect.innerHTML = '';
+      spectrumSelect.style.width = '100%';
+      spectrumSelect.style.flex = '1';
+      spectrumSelect.style.display = 'inline-block';
+      spectrumSelect.style.marginLeft = '3px'; // Added spacing here
 
       try {
         let origStyle = window.getComputedStyle(waterfallSelect);
@@ -133,9 +126,6 @@ Plugins.colorful_spectrum.init = async function () {
         console.warn("Colorful Spectrum: Could not copy styles perfectly", e);
       }
 
-      spectrumSelect.style.width = '100%';
-      spectrumSelect.style.flex = '1';
-
       for (const key in colorPalettes) {
         let opt = document.createElement('option');
         opt.value = key;
@@ -148,6 +138,60 @@ Plugins.colorful_spectrum.init = async function () {
 
       spectrumSelect.addEventListener('change', function(e) {
         localStorage.setItem('owrx-spectrum-color', e.target.value);
+      });
+
+      // Setup the Opacity Slider
+      let opacitySlider = document.createElement('input');
+      opacitySlider.type = 'range';
+      opacitySlider.id = 'webrx-spectrum-opacity';
+      opacitySlider.min = '0';
+      opacitySlider.max = '1';
+      opacitySlider.step = '0.05';
+      opacitySlider.title = 'Background Darkness';
+      opacitySlider.style.width = '100%';
+      opacitySlider.style.flex = '1';
+      opacitySlider.style.display = 'none'; // Hidden by default
+      opacitySlider.style.verticalAlign = 'middle';
+      opacitySlider.style.marginLeft = '3px'; // Added spacing here
+
+      // Load saved opacity or fallback to the init.js default
+      let savedOpacity = localStorage.getItem('owrx-spectrum-opacity');
+      if (savedOpacity !== null) {
+        window.SpectrumBackgroundOpacity = parseFloat(savedOpacity);
+      } else {
+        window.SpectrumBackgroundOpacity = defaultOpacity;
+      }
+      opacitySlider.value = window.SpectrumBackgroundOpacity;
+
+      opacitySlider.addEventListener('input', function(e) {
+        let val = parseFloat(e.target.value);
+        window.SpectrumBackgroundOpacity = val;
+        localStorage.setItem('owrx-spectrum-opacity', val);
+      });
+
+      newWrapper.appendChild(opacitySlider);
+
+      // Setup the Droplet Toggle Button
+      let isSliderVisible = false;
+      Array.from(newWrapper.children).forEach(child => {
+        if (child.tagName !== 'SELECT' && child.tagName !== 'INPUT') {
+          child.style.transform = 'scaleX(-1)';
+          child.style.cursor = 'pointer';
+          child.title = 'Toggle Opacity Slider';
+
+          child.addEventListener('click', function() {
+            isSliderVisible = !isSliderVisible;
+            if (isSliderVisible) {
+              spectrumSelect.style.display = 'none';
+              opacitySlider.style.display = 'inline-block';
+              child.title = 'Back to Color Menu';
+            } else {
+              opacitySlider.style.display = 'none';
+              spectrumSelect.style.display = 'inline-block';
+              child.title = 'Toggle Opacity Slider';
+            }
+          });
+        }
       });
 
       wrapper.parentNode.insertBefore(newWrapper, wrapper.nextSibling);
@@ -178,10 +222,9 @@ Plugins.colorful_spectrum.init = async function () {
                               let spectrumSelectUI = document.getElementById('webrx-spectrum-color');
                               let selectedColorMode = spectrumSelectUI ? spectrumSelectUI.value : defaultColor;
 
-                              // 1. Clear the canvas first to prevent frame smearing
                               thisArg.ctx.clearRect(0, 0, spec_width, spec_height);
 
-                              // 2. Draw the configurable dark background
+                              // Draw the configurable dark background pulling directly from the window variable
                               const bgOpacity = window.SpectrumBackgroundOpacity !== undefined ? window.SpectrumBackgroundOpacity : 0.0;
                               if (bgOpacity > 0) {
                                 thisArg.ctx.fillStyle = `rgba(0, 0, 0, ${bgOpacity})`;
