@@ -19,9 +19,10 @@ Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/colorful_spe
 ```
 
 ## Configuration
-You can configure the default waterfall color by setting the parameters in your `init.js` file (before loading the plugin):
+You can configure the default waterfall color and the background opacity by setting the parameters in your `init.js` file (before loading the plugin):
 ```js
 window.SpectrumDefaultColor = 'waterfall'; //or whatever color you want
+window.SpectrumBackgroundOpacity = 0.0; // Change this number between 0.0 (clear) and 1.0 (pitch black)
 ```
 ## init.js
 

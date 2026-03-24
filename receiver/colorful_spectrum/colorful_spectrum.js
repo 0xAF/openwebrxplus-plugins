@@ -17,7 +17,6 @@ Plugins.colorful_spectrum.init = async function () {
   }
 
   // --- CONFIGURATION ---
-  // Read from the safe window variable we set in init.js
   const defaultColor = window.SpectrumDefaultColor || 'blue';
 
   // Define custom Spectravue palettes.
@@ -119,7 +118,6 @@ Plugins.colorful_spectrum.init = async function () {
       spectrumSelect.title = 'Spectrum Fill Color';
       spectrumSelect.innerHTML = '';
 
-      // Safely copy styles from original so it matches perfectly
       try {
         let origStyle = window.getComputedStyle(waterfallSelect);
         const stylesToCopy = [
@@ -180,7 +178,15 @@ Plugins.colorful_spectrum.init = async function () {
                               let spectrumSelectUI = document.getElementById('webrx-spectrum-color');
                               let selectedColorMode = spectrumSelectUI ? spectrumSelectUI.value : defaultColor;
 
+                              // 1. Clear the canvas first to prevent frame smearing
                               thisArg.ctx.clearRect(0, 0, spec_width, spec_height);
+
+                              // 2. Draw the configurable dark background
+                              const bgOpacity = window.SpectrumBackgroundOpacity !== undefined ? window.SpectrumBackgroundOpacity : 0.0;
+                              if (bgOpacity > 0) {
+                                thisArg.ctx.fillStyle = `rgba(0, 0, 0, ${bgOpacity})`;
+                                thisArg.ctx.fillRect(0, 0, spec_width, spec_height);
+                              }
 
                               thisArg.ctx.save();
                               thisArg.ctx.beginPath();
