@@ -7,3 +7,5 @@ vendor
 Gemfile.lock
 owrx.todo
 receiver/test
+.claude/
+openwebrxplus-plugins.code-workspace

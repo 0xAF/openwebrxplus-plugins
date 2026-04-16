@@ -2,7 +2,7 @@
 
 UI helper toolkit for OpenWebRX+ plugins. Provides a dockable panel, settings modal, plugin modals, toast notifications, loading overlays, and helper methods for other plugins to build UI.
 
-**Version:** 0.2
+**Version:** 0.3
 
 ## Preview
 
@@ -15,13 +15,19 @@ Add to your `plugins/receiver/init.js`:
 ```js
 Plugins.uikit = Plugins.uikit || {};
 Plugins.uikit.settings = {
-  position: 'bottom',   // top | right | bottom | left
-  visible: true,
-  mode: 'overlay'       // overlay | push
+  position:        'bottom',  // top | right | bottom | left
+  visible:         true,
+  mode:            'push',    // overlay | push
+  opacityActive:   0.45,      // panel opacity when active (0.1–1.0)
+  opacityInactive: 0.20,      // panel opacity when idle (0.1–1.0)
+  autoHide:        false,     // hide panel on inactivity instead of fading
+  autoHideDelay:   2          // idle timeout in seconds (0 = disabled, 2–10)
 };
 
 await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/uikit/uikit.js');
 ```
+
+Any key omitted falls back to its default. Settings are merged over the defaults and then over any value previously saved by the user in localStorage, so user preferences always win.
 
 ---
 
@@ -59,15 +65,40 @@ Sets panel position (`top` | `right` | `bottom` | `left`).
 
 ### `setPanelVisible(visible)`
 
-Shows or hides the panel.
+Shows or hides the panel. Persists to settings. In push mode, adjusts page layout accordingly.
 
 ### `setPanelMode(mode)`
 
-Sets panel mode (`overlay` or `push`).
+Sets panel mode (`overlay` or `push`). In push mode the panel shifts page content aside instead of floating over it.
+
+### `setPanelOpacity(value)`
+
+Sets the inactive opacity (0.1–1.0). Saves to settings and restarts the inactivity timer.
 
 ### `svgFromString(svgString)` → SVGElement | null
 
 Parses an SVG string and returns a proper SVG DOM element.
+
+---
+
+## Panel Behaviour
+
+### Overlay vs Push mode
+
+| | Overlay | Push |
+| --- | --- | --- |
+| Panel position | Floats over page content | Shifts page content aside |
+| Idle fade | Yes (fades to inactive opacity) | Yes (if auto-hide is off) |
+| Auto-hide | Yes | Yes |
+
+### Inactivity timer
+
+When `autoHideDelay` is greater than 0, a timer starts on every mouse movement and resets each time the mouse moves.
+
+- **Auto-hide off** — when the timer fires the panel fades to `opacityInactive`. Moving the mouse restores `opacityActive`.
+- **Auto-hide on** — when the timer fires the panel is hidden entirely (respecting push layout in push mode). Moving the mouse reopens it automatically.
+
+Setting `autoHideDelay` to `0` disables the timer entirely; the panel stays at `opacityActive` at all times.
 
 ---
 
@@ -172,10 +203,10 @@ var m = Plugins.uikit.createModal('my-dialog', {
 
 m.contentEl.innerHTML = '<p>Plugin content here</p>';
 
-var saveBtn = document.createElement('button');
-saveBtn.className = 'owrx-uikit__btn owrx-uikit__btn--primary';
-saveBtn.textContent = 'Save';
-saveBtn.addEventListener('click', function () { m.close(); });
+var saveBtn = Plugins.uikit.createButton('Save', {
+  style: 'primary',
+  onClick: function () { m.close(); }
+});
 m.footerEl.appendChild(saveBtn);
 
 m.open();
@@ -282,6 +313,126 @@ Plugins.uikit.loading(m.contentEl, true);
 
 ---
 
+## Developer Helpers
+
+These methods are available for plugin developers to build consistent UI that matches the uikit style.
+
+### `el(tag, opts)` → HTMLElement
+
+DOM element factory. Creates and optionally appends a fully configured element in one call.
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `cls` | string | Sets `className` |
+| `text` | string | Sets `textContent` |
+| `html` | string | Sets `innerHTML` |
+| `id` | string | Sets `id` |
+| `title` | string | Sets `title` |
+| `type` | string | Sets `type` (for inputs) |
+| `attrs` | object | `setAttribute(k, v)` for each key |
+| `data` | object | `el.dataset[k] = v` for each key |
+| `style` | string\|object | CSS text string or `{ prop: value }` |
+| `on` | object | `addEventListener(event, handler)` for each key |
+| `children` | array | Child elements to append (falsy items skipped) |
+| `parent` | HTMLElement | If set, appends the new element to this parent |
+| `disabled` | bool | Sets `el.disabled = true` |
+
+```js
+var btn = Plugins.uikit.el('button', {
+  cls: 'owrx-uikit__btn owrx-uikit__btn--primary',
+  text: 'Go',
+  on: { click: function () { doSomething(); } },
+  parent: containerEl
+});
+```
+
+### `createDualSlider(opts)` → handle
+
+Creates a dual-thumb range slider for selecting a `[lower, upper]` range. Both thumbs share a single track with a highlighted fill between them. The lower thumb cannot exceed the upper thumb and vice versa.
+
+**opts:**
+
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `min` | number | `0` | Minimum value |
+| `max` | number | `1` | Maximum value |
+| `step` | number | `0.05` | Step size |
+| `lower` | number | `min` | Initial lower thumb value |
+| `upper` | number | `max` | Initial upper thumb value |
+| `onInput` | function(lo, hi) | — | Called on every thumb move (live preview) |
+| `onChange` | function(lo, hi) | — | Called on thumb release (persist/apply) |
+
+**Handle object:**
+
+```js
+{
+  el,                    // root <div> to insert into your layout
+  setDisabled(bool),     // enable/disable both thumbs
+  setValues(lo, hi)      // programmatically update both thumb positions
+}
+```
+
+```js
+var slider = Plugins.uikit.createDualSlider({
+  min: 0, max: 1, step: 0.05,
+  lower: 0.2, upper: 0.8,
+  onInput: function (lo, hi) {
+    previewEl.textContent = Math.round(lo * 100) + '% – ' + Math.round(hi * 100) + '%';
+  },
+  onChange: function (lo, hi) {
+    saveMySettings(lo, hi);
+  }
+});
+myContainer.appendChild(slider.el);
+```
+
+### `renderRadioGroup(container, name, options, current, onChange)`
+
+Renders a group of styled radio buttons into `container`, clearing any existing content.
+
+- `options` — array of strings **or** `{ value, label, data }` objects. The `data` key sets `dataset` entries on the label element (e.g. `{ pos: 'top' }` → `data-pos="top"`).
+- `current` — the initially selected value.
+- `onChange(value)` — called when a radio is selected.
+
+```js
+Plugins.uikit.renderRadioGroup(myDiv, 'my-group',
+  ['option-a', 'option-b', 'option-c'],
+  'option-a',
+  function (val) { applyOption(val); }
+);
+```
+
+### Icon builders
+
+All return an `<svg>` element sized 16×16 by default.
+
+| Method | Description |
+| --- | --- |
+| `iconArrow(dir)` | Chevron arrow. `dir`: `'up'` \| `'down'` \| `'left'` \| `'right'` |
+| `iconCog()` | Settings / gear icon |
+| `iconChevron()` | Up-pointing chevron (collapse indicator) |
+| `iconHide()` | Horizontal lines (hide/minimise indicator) |
+| `iconClose()` | × close icon |
+| `iconPanel()` | Panel / window icon (24×24) |
+
+```js
+var arrow = Plugins.uikit.iconArrow('right');
+myButton.appendChild(arrow);
+```
+
+### `buildSvg(viewBox, paths, size)` → SVGElement
+
+Low-level SVG builder used by all icon helpers. `paths` is an array of inner SVG markup strings. `size` defaults to `16`.
+
+```js
+var icon = Plugins.uikit.buildSvg('0 0 24 24', [
+  '<circle cx="12" cy="12" r="5"/>',
+  '<path d="M12 2v2M12 20v2"/>'
+], 20);
+```
+
+---
+
 ## CSS Classes
 
 All styles are scoped under `.owrx-uikit`. Button classes available for use in modals and footers:
@@ -290,6 +441,8 @@ All styles are scoped under `.owrx-uikit`. Button classes available for use in m
 - `.owrx-uikit__btn--primary` — primary action (blue)
 - `.owrx-uikit__btn--danger` — destructive action (red)
 - `.owrx-uikit__btn--ghost` — secondary/cancel (outline)
+
+The dual-range slider is styled via `.owrx-uikit__dual-range` and its children — no extra work needed if you use `createDualSlider`.
 
 ---
 
@@ -310,3 +463,5 @@ await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/exampl
 - On mobile (viewport < 768px), only `top` and `bottom` panel positions are available.
 - Toast containers are appended to `document.body`, independent of the panel position.
 - Plugin modals are appended to the uikit root element at z-index 10001.
+- The inactivity timer uses a single `mousemove` listener and is shared between the opacity fade and the auto-hide behaviour. Only one timer runs at a time.
+- In push mode, auto-hiding the panel via the inactivity timer correctly restores page layout (padding/margins) — identical to the user clicking the toggle button.

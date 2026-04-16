@@ -4,21 +4,28 @@
  * This plugin is for developers. It demonstrates every UIKit API with
  * working, copy-paste-ready code. Enable it in init.js to explore.
  *
- * Dependencies: uikit >= 0.2
+ * Dependencies: uikit >= 0.3
  * License: MIT
  */
 
 Plugins.example_uikit = Plugins.example_uikit || {};
-Plugins.example_uikit._version = 0.2;
+Plugins.example_uikit._version = 0.3;
 Plugins.example_uikit.no_css = true;
 
 Plugins.example_uikit.init = async function () {
-	if (!Plugins.isLoaded('uikit', 0.2)) {
+	if (!Plugins.isLoaded('uikit', 0.3)) {
 		await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/uikit/uikit.js');
 	}
-	if (!Plugins.isLoaded('uikit', 0.2)) {
-		console.error('[example_uikit] failed to load uikit >= 0.2');
+	if (!Plugins.isLoaded('uikit', 0.3)) {
+		console.error('[example_uikit] failed to load uikit >= 0.3');
 		return false;
+	}
+
+	// The plugin loader calls uikit.init() but does not await it (async return
+	// value is treated as truthy and ignored). Await the stored Promise directly
+	// so sub-modules are guaranteed to be loaded before we use any of their API.
+	if (Plugins.uikit._initPromise instanceof Promise) {
+		await Plugins.uikit._initPromise;
 	}
 
 	// Helper: create a demo button with margin
@@ -28,9 +35,9 @@ Plugins.example_uikit.init = async function () {
 		return b;
 	}
 
-	var starIcon = Plugins.uikit.svgFromString(
-		'<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01z" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
-	);
+	var starIcon = Plugins.uikit.buildSvg('0 0 24 24', [
+		'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01z"/>'
+	]);
 
 	// ── Buttons Tab ─────────────────────────────────────────────────────
 	var buttonsSlug = Plugins.uikit.addTab('Buttons', { order: 902 });
@@ -262,6 +269,130 @@ Plugins.example_uikit.init = async function () {
 
 		loadingEl.innerHTML = '';
 		loadingEl.appendChild(wrap);
+	}
+
+	// ── Helpers Tab ─────────────────────────────────────────────────────
+	var helpersSlug = Plugins.uikit.addTab('Helpers', { order: 906 });
+	var helpersEl = Plugins.uikit.getTabEl(helpersSlug);
+	if (helpersEl) {
+		var uk = Plugins.uikit;
+
+		// — el() —
+		var elSection = uk.el('div', {
+			cls: 'owrx-uikit__settings-section',
+			children: [
+				uk.el('div', { cls: 'owrx-uikit__settings-title', text: 'el()' }),
+				uk.el('div', { cls: 'owrx-uikit__settings-label', text: 'DOM factory — creates an element with cls, text, style, on, children, parent in one call.' }),
+				uk.el('div', {
+					cls: 'owrx-uikit__settings-label',
+					style: { marginTop: '6px', padding: '8px', background: 'rgba(255,255,255,0.07)', borderRadius: '4px' },
+					html: 'This box was built with <code>Plugins.uikit.el()</code>.',
+					on: { click: function () { uk.toast('el() box clicked', { type: 'info', timeout: 1500 }); } }
+				})
+			]
+		});
+
+		// — Icon builders & buildSvg() —
+		var iconDefs = [
+			{ fn: "iconArrow('up')",    icon: uk.iconArrow('up') },
+			{ fn: "iconArrow('right')", icon: uk.iconArrow('right') },
+			{ fn: "iconArrow('down')",  icon: uk.iconArrow('down') },
+			{ fn: "iconArrow('left')",  icon: uk.iconArrow('left') },
+			{ fn: 'iconCog()',           icon: uk.iconCog() },
+			{ fn: 'iconChevron()',       icon: uk.iconChevron() },
+			{ fn: 'iconHide()',          icon: uk.iconHide() },
+			{ fn: 'iconClose()',         icon: uk.iconClose() },
+			{ fn: 'iconPanel()',         icon: uk.iconPanel() }
+		];
+
+		var iconGrid = uk.el('div', {
+			style: { display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '6px' }
+		});
+		for (var i = 0; i < iconDefs.length; i++) {
+			var def = iconDefs[i];
+			uk.el('div', {
+				style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: '68px' },
+				parent: iconGrid,
+				children: [
+					def.icon,
+					uk.el('code', { text: def.fn, style: { fontSize: '9px', opacity: '0.7', textAlign: 'center', whiteSpace: 'nowrap' } })
+				]
+			});
+		}
+
+		// Custom icon via buildSvg()
+		var customSvg = uk.buildSvg('0 0 24 24', [
+			'<circle cx="12" cy="12" r="5"/>',
+			'<path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M18.36 5.64l-1.42 1.42M5.64 18.36l-1.42 1.42"/>'
+		], 20);
+
+		var iconsSection = uk.el('div', {
+			cls: 'owrx-uikit__settings-section',
+			children: [
+				uk.el('div', { cls: 'owrx-uikit__settings-title', text: 'Icon Builders & buildSvg()' }),
+				uk.el('div', { cls: 'owrx-uikit__settings-label', text: 'Built-in icons (16×16, iconPanel 24×24):' }),
+				iconGrid,
+				uk.el('div', { cls: 'owrx-uikit__settings-label', style: { marginTop: '10px' }, text: 'Custom icon via buildSvg():' }),
+				uk.el('div', {
+					style: { display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' },
+					children: [
+						customSvg,
+						uk.el('span', { cls: 'owrx-uikit__settings-label', html: "Sun icon — <code>buildSvg('0 0 24 24', [...paths], 20)</code>" })
+					]
+				})
+			]
+		});
+
+		// — renderRadioGroup() —
+		var radioResult = uk.el('div', { cls: 'owrx-uikit__settings-label', style: { marginTop: '4px' }, text: 'Selected: option-a' });
+		var radioContainer = uk.el('div', { cls: 'owrx-uikit__settings-options' });
+		uk.renderRadioGroup(radioContainer, 'helpers-demo-radio',
+			['option-a', 'option-b', 'option-c'],
+			'option-a',
+			function (val) {
+				radioResult.textContent = 'Selected: ' + val;
+				uk.toast('Radio: ' + val, { type: 'info', timeout: 1500 });
+			}
+		);
+
+		var radioSection = uk.el('div', {
+			cls: 'owrx-uikit__settings-section',
+			children: [
+				uk.el('div', { cls: 'owrx-uikit__settings-title', text: 'renderRadioGroup()' }),
+				uk.el('div', { cls: 'owrx-uikit__settings-label', text: 'Renders a group of styled radio buttons into a container.' }),
+				radioContainer,
+				radioResult
+			]
+		});
+
+		// — createDualSlider() —
+		var sliderLabel = uk.el('div', { cls: 'owrx-uikit__settings-label', text: 'Range: 20% – 80%' });
+		var dualSlider = uk.createDualSlider({
+			min: 0, max: 1, step: 0.05,
+			lower: 0.2, upper: 0.8,
+			onInput: function (lo, hi) {
+				sliderLabel.textContent = 'Range: ' + Math.round(lo * 100) + '% – ' + Math.round(hi * 100) + '%';
+			},
+			onChange: function (lo, hi) {
+				uk.toast('Range set: ' + Math.round(lo * 100) + '% – ' + Math.round(hi * 100) + '%', { type: 'success', timeout: 2000 });
+			}
+		});
+
+		var sliderSection = uk.el('div', {
+			cls: 'owrx-uikit__settings-section',
+			children: [
+				uk.el('div', { cls: 'owrx-uikit__settings-title', text: 'createDualSlider()' }),
+				uk.el('div', { cls: 'owrx-uikit__settings-label', text: 'Dual-thumb range slider. Drag both thumbs to set a [lower, upper] range.' }),
+				sliderLabel,
+				dualSlider.el
+			]
+		});
+
+		helpersEl.innerHTML = '';
+		helpersEl.appendChild(elSection);
+		helpersEl.appendChild(iconsSection);
+		helpersEl.appendChild(radioSection);
+		helpersEl.appendChild(sliderSection);
 	}
 
 	// ── Settings Tab ────────────────────────────────────────────────────
