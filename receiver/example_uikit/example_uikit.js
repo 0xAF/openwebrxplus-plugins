@@ -4,12 +4,12 @@
  * This plugin is for developers. It demonstrates every UIKit API with
  * working, copy-paste-ready code. Enable it in init.js to explore.
  *
- * Dependencies: uikit >= 0.3
+ * Dependencies: uikit >= 0.4
  * License: MIT
  */
 
 Plugins.example_uikit = Plugins.example_uikit || {};
-Plugins.example_uikit._version = 0.3;
+Plugins.example_uikit._version = 0.4;
 Plugins.example_uikit.no_css = true;
 
 Plugins.example_uikit.init = async function () {
