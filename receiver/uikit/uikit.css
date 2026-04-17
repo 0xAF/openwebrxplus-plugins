@@ -660,6 +660,11 @@
 	min-height: 0;
 }
 
+.owrx-uikit__footer {
+	flex-shrink: 0;
+	transition: opacity 0.4s ease;
+}
+
 .owrx-uikit__pm-footer {
 	display: flex;
 	align-items: center;

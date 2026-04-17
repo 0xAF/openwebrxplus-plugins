@@ -39,12 +39,14 @@
  *  - tabs-scroll: scrollbar hidden; left/right arrow buttons shown when overflow exists
  *  - tabs-scroll: mouse drag and touch drag for scrolling tabs
  *  - fade: content area uses opacity so native widgets fade in Firefox (matches Chrome)
+ * 0.5:
+ *  - setFooter(el) public API: pins a footer element below the content area; included in panel fade
  */
 
 // Namespace
 Plugins.uikit = Plugins.uikit || {};
 
-Plugins.uikit._version = 0.4;
+Plugins.uikit._version = 0.5;
 
 // Capture base URL at load time — document.currentScript is only available
 // during script execution, not later in init(). Works for both local and

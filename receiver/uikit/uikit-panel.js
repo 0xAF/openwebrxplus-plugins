@@ -370,6 +370,13 @@ Plugins.uikit._applyPanelSize = function () {
 	}
 };
 
+Plugins.uikit.setFooter = function (el) {
+	if (!this._ui || !this._ui.panel) return;
+	if (this._ui.footer) this._ui.panel.removeChild(this._ui.footer);
+	this._ui.footer = el;
+	this._ui.panel.appendChild(el);
+};
+
 Plugins.uikit.setPanelSize = function (pct) {
 	pct = Math.round(pct / 5) * 5;
 	pct = Math.max(20, Math.min(50, pct));
@@ -505,14 +512,16 @@ Plugins.uikit._setPanelAlpha = function (alpha, withBlur) {
 		this._ui.panel.style.removeProperty('--uikit-panel-bg-alpha');
 		if (this._ui.tabsBar) this._ui.tabsBar.style.removeProperty('opacity');
 		if (this._ui.content) this._ui.content.style.removeProperty('opacity');
+		if (this._ui.footer)  this._ui.footer.style.removeProperty('opacity');
 	} else {
 		// Keep backdrop-filter active by only fading the panel background;
-		// fade tabsBar and content via opacity so all child elements (text,
-		// borders, native inputs) fade uniformly — matching Chrome behaviour.
+		// fade tabsBar, content, and footer via opacity so all child elements
+		// (text, borders, native inputs) fade uniformly — matching Chrome behaviour.
 		this._ui.panel.style.setProperty('--uikit-panel-bg-alpha', alpha);
 		this._ui.panel.style.removeProperty('opacity');
 		if (this._ui.tabsBar) this._ui.tabsBar.style.opacity = alpha;
 		if (this._ui.content) this._ui.content.style.opacity = alpha;
+		if (this._ui.footer)  this._ui.footer.style.opacity = alpha;
 	}
 	this._ui.panel.style.setProperty('--uikit-panel-blur', withBlur !== false ? 'blur(12px)' : 'none');
 };
