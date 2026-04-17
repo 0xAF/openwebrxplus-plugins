@@ -23,8 +23,19 @@ Each plugin is a folder under `receiver/` or `map/` containing at minimum `plugi
 ## Key infrastructure plugins
 
 - **utils** (`receiver/utils/utils.js`) — `wrap_func()`, `on_ready()`, event system, `deepMerge()`, `fillTemplate()`. Almost all plugins depend on this.
-- **uikit** (`receiver/uikit/uikit.js`) — Dockable panel, settings modal, plugin modals, toasts, loading overlays. Version 0.2+.
+- **uikit** (`receiver/uikit/uikit.js`) — Dockable panel, settings modal, plugin modals, toasts, loading overlays. Version 0.3+.
 - **notify** (`receiver/notify/notify.js`) — Deprecated in favor of `uikit.toast()`. Has backward-compat shim.
+
+## uikit migration
+
+Existing plugins are being migrated to use uikit for their UI. Rules:
+
+- The migrated plugin gets a new folder and name prefixed with `ui_` (e.g. `magic_key` → `ui_magic_key`).
+- The original plugin is left untouched for backward compatibility.
+- Migrated plugins capture `_baseUrl` at load time via `document.currentScript.src` and use it for auto-loading dependencies.
+- Migrated plugins require `uikit >= 0.3` and `utils >= 0.6`.
+- **Always update dependency version checks** (`Plugins.isLoaded('uikit', x)` and `Plugins.isLoaded('utils', x)`) to the latest released versions when touching a plugin. Current versions: `uikit = 0.3`, `utils = 0.6`.
+- Use `var ui = Plugins.uikit;` as the local shorthand alias inside migrated plugin `init()` functions.
 
 ## uikit specifics
 
@@ -45,6 +56,8 @@ Each plugin is a folder under `receiver/` or `map/` containing at minimum `plugi
 - Indent with tabs.
 - Use `Plugins.pluginname.method = function () { ... };` pattern (not class syntax).
 - Each plugin's README has YAML frontmatter for Jekyll (GitHub Pages).
+- **Always update a plugin's README** when adding new functionality, changing behaviour, or touching the plugin in any significant way.
+- Every plugin README must include a `## Code` section with a link to the Github repo: `[Github repo](https://github.com/0xAF/openwebrxplus-plugins/tree/main/receiver/<plugin_name>)` (use `map/` for map plugins).
 
 ## OpenWebRX+ integration points
 

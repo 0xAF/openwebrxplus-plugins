@@ -37,15 +37,6 @@ Plugins.uikit.openModal = function (slug) {
 	}
 	entry.modalEl.focus();
 
-	// Bind Escape key to close (unless disabled in opts)
-	if (entry.opts.closeOnEsc !== false) {
-		var self = this;
-		entry._escHandler = function (e) {
-			if (e.key === 'Escape') self.closeModal(slug);
-		};
-		document.addEventListener('keydown', entry._escHandler);
-	}
-
 	if (typeof entry.opts.onOpen === 'function') {
 		entry.opts.onOpen();
 	}
@@ -58,11 +49,6 @@ Plugins.uikit.closeModal = function (slug) {
 	// onClose hook can return false to prevent closing
 	if (typeof entry.opts.onClose === 'function') {
 		if (entry.opts.onClose() === false) return;
-	}
-
-	if (entry._escHandler) {
-		document.removeEventListener('keydown', entry._escHandler);
-		entry._escHandler = null;
 	}
 
 	var visibleEl = entry.wrapEl || entry.modalEl;
@@ -79,11 +65,6 @@ Plugins.uikit.closeModal = function (slug) {
 Plugins.uikit.destroyModal = function (slug) {
 	var entry = this._modals[slug];
 	if (!entry) return;
-
-	if (entry._escHandler) {
-		document.removeEventListener('keydown', entry._escHandler);
-		entry._escHandler = null;
-	}
 
 	var removeEl = entry.wrapEl || entry.modalEl;
 	if (removeEl && removeEl.parentNode) {
@@ -120,7 +101,11 @@ Plugins.uikit._buildPluginModal = function (slug, opts) {
 			height: (opts.height && opts.height !== 'auto') ? opts.height : '',
 			minWidth: opts.minWidth || '',
 			minHeight: opts.minHeight || ''
-		}
+		},
+		on: { keydown: function (e) {
+			e.stopPropagation();
+			if (e.key === 'Escape' && opts.closeOnEsc !== false) self.closeModal(slug);
+		}}
 	});
 
 	if (isResizable) modalEl.classList.add('owrx-uikit__pm--resizable');
@@ -185,7 +170,7 @@ Plugins.uikit._buildPluginModal = function (slug, opts) {
 	}
 
 	// Body (plugin content goes here)
-	var bodyEl = this.el('div', { cls: 'owrx-uikit__pm-body', parent: modalEl });
+	var bodyEl = this.el('div', { cls: 'owrx-uikit__pm-body openwebrx-panel', parent: modalEl });
 
 	// Footer (optional button bar)
 	var footerEl = null;
@@ -238,7 +223,6 @@ Plugins.uikit._buildPluginModal = function (slug, opts) {
 		footerEl: footerEl,
 		resizeHandle: resizeHandle,
 		_lastFocus: null,
-		_escHandler: null,
 		_resizing: false
 	};
 

@@ -29,8 +29,8 @@ Plugins.uikit._defaults = {
 	position: 'bottom',
 	visible: true,
 	mode: 'push',
-	opacityActive: 0.45,
-	opacityInactive: 0.20,
+	opacityActive: 0.95,
+	opacityInactive: 0.30,
 	autoHide: false,
 	autoHideDelay: 2
 };

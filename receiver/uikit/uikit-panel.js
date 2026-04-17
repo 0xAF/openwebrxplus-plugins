@@ -38,7 +38,7 @@ Plugins.uikit._buildRoot = function () {
 	tabsBar.appendChild(tabsScroll);
 	tabsBar.appendChild(settingsBtn);
 
-	var content = this.el('div', { cls: 'owrx-uikit__content' });
+	var content = this.el('div', { cls: 'owrx-uikit__content openwebrx-panel' });
 
 	panel.appendChild(tabsBar);
 	panel.appendChild(content);
@@ -387,7 +387,15 @@ Plugins.uikit._destroyInactiveTimer = function () {
 // Pass withBlur=false to remove the backdrop-filter (inactive/faded state).
 Plugins.uikit._setPanelAlpha = function (alpha, withBlur) {
 	if (!this._ui || !this._ui.panel) return;
-	this._ui.panel.style.setProperty('--uikit-panel-bg-alpha', alpha);
+	if (document.body.classList.contains('has-theme')) {
+		// Themed mode: background is solid, use element opacity for fading
+		this._ui.panel.style.opacity = alpha;
+		this._ui.panel.style.removeProperty('--uikit-panel-bg-alpha');
+	} else {
+		// Default mode: use background alpha so backdrop-filter blur shows through
+		this._ui.panel.style.setProperty('--uikit-panel-bg-alpha', alpha);
+		this._ui.panel.style.removeProperty('opacity');
+	}
 	this._ui.panel.style.setProperty('--uikit-panel-blur', withBlur !== false ? 'blur(12px)' : 'none');
 };
 

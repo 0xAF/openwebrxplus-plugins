@@ -24,7 +24,7 @@
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	transition: background 0.4s ease;
+	transition: background 0.4s ease, opacity 0.4s ease;
 }
 
 .owrx-uikit__tabs-bar {
@@ -32,11 +32,10 @@
 	align-items: center;
 	gap: 8px;
 	padding: 10px 12px 0;
-	background: rgba(17, 20, 26, var(--uikit-panel-bg-alpha, 0.92));
+	background: rgba(12, 14, 18, 0.95);
 	border-bottom: none;
 	overflow-y: hidden;
 	flex-shrink: 0;
-	transition: background 0.4s ease;
 }
 
 .owrx-uikit__tabs-scroll {
@@ -59,12 +58,12 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--uikit-border-mid, rgba(255, 255, 255, 0.1));
 	border-bottom: none;
 	border-radius: 10px 10px 0 0;
 	padding: 6px 12px 8px;
 	background: rgba(12, 14, 18, 0.9);
-	color: #cdd2db;
+	color: var(--uikit-text-dim, #cdd2db);
 	font-size: 12px;
 	cursor: pointer;
 	white-space: nowrap;
@@ -76,8 +75,8 @@
 
 .owrx-uikit__tab.is-active {
 	background: rgba(17, 20, 26, 0.92);
-	border-color: rgba(255, 255, 255, 0.35);
-	color: #ffffff;
+	border-color: var(--uikit-border-strong, rgba(255, 255, 255, 0.35));
+	color: var(--uikit-text, #ffffff);
 	box-shadow: none;
 	border-bottom-color: transparent;
 	margin-bottom: -1px;
@@ -100,9 +99,9 @@
 }
 
 .owrx-uikit__icon-btn {
-	border: 1px solid rgba(255, 255, 255, 0.12);
+	border: 1px solid var(--uikit-border-mid, rgba(255, 255, 255, 0.12));
 	background: rgba(255, 255, 255, 0.05);
-	color: #e1e4ea;
+	color: var(--uikit-text, #e1e4ea);
 	border-radius: 8px;
 	padding: 6px;
 	cursor: pointer;
@@ -125,10 +124,9 @@
 	flex: 1;
 	min-height: 0;
 	overflow-y: auto;
-	background: rgba(17, 20, 26, var(--uikit-panel-bg-alpha, 0.92));
+	background: rgba(17, 20, 26, 0.92);
 	margin-top: 0;
 	border-top: none;
-	transition: background 0.4s ease;
 }
 
 .owrx-uikit__tab-panel {
@@ -158,12 +156,12 @@
 
 .owrx-uikit__empty-text {
 	font-size: 13px;
-	color: #c7ccd6;
+	color: var(--uikit-text-dim, #c7ccd6);
 }
 
 .owrx-uikit__empty-hint {
 	font-size: 12px;
-	color: #9aa3b2;
+	color: var(--uikit-text-muted, #9aa3b2);
 	background: rgba(255, 255, 255, 0.05);
 	border-radius: 6px;
 	padding: 6px 8px;
@@ -194,7 +192,7 @@
 	font-size: 13px;
 	text-transform: uppercase;
 	letter-spacing: 0.06em;
-	color: #9aa3b2;
+	color: var(--uikit-text-muted, #9aa3b2);
 }
 
 .owrx-uikit__settings-group {
@@ -219,7 +217,7 @@
 
 .owrx-uikit__settings-label {
 	font-size: 13px;
-	color: #cfd3db;
+	color: var(--uikit-text-dim, #cfd3db);
 }
 
 .owrx-uikit__settings-label--inline {
@@ -255,8 +253,8 @@
 }
 
 .owrx-uikit__position-grid .owrx-uikit__radio:has(input:checked) {
-	background: rgba(111, 137, 255, 0.25);
-	border-color: #6f89ff;
+	background: var(--uikit-accent-dim, rgba(111, 137, 255, 0.25));
+	border-color: var(--uikit-accent, #6f89ff);
 }
 
 .owrx-uikit__position-grid .owrx-uikit__radio input {
@@ -304,7 +302,7 @@
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	background: #6f89ff;
+	background: var(--uikit-accent, #6f89ff);
 	border-radius: 2px;
 }
 
@@ -337,7 +335,7 @@
 	width: 14px;
 	height: 14px;
 	border-radius: 50%;
-	background: #6f89ff;
+	background: var(--uikit-accent, #6f89ff);
 	border: 2px solid #fff;
 	cursor: pointer;
 	margin-top: -5px;
@@ -348,7 +346,7 @@
 	width: 14px;
 	height: 14px;
 	border-radius: 50%;
-	background: #6f89ff;
+	background: var(--uikit-accent, #6f89ff);
 	border: 2px solid #fff;
 	cursor: pointer;
 	box-sizing: border-box;
@@ -376,7 +374,7 @@
 
 .owrx-uikit__radio input,
 .owrx-uikit__settings-label input {
-	accent-color: #6f89ff;
+	accent-color: var(--uikit-accent, #6f89ff);
 }
 
 .owrx-uikit__btn {
@@ -388,25 +386,26 @@
 	padding: 8px 12px;
 	font-size: 12px;
 	cursor: pointer;
-	background: rgba(255, 255, 255, 0.06);
-	color: #e9edf5;
+	background: var(--uikit-btn-bg, rgba(255, 255, 255, 0.06));
+	color: var(--uikit-btn-text, #e9edf5);
 }
 
 .owrx-uikit__btn--primary {
-	background: #3b5bfd;
-	border-color: #3b5bfd;
+	background: var(--uikit-btn-primary-bg, #3b5bfd);
+	border-color: var(--uikit-btn-primary-bg, #3b5bfd);
+	color: var(--uikit-btn-primary-text, #ffffff);
 }
 
 .owrx-uikit__btn--danger {
-	background: rgba(226, 76, 76, 0.15);
-	border-color: rgba(226, 76, 76, 0.4);
-	color: #ff9e9e;
+	background: var(--uikit-btn-danger-bg, rgba(226, 76, 76, 0.15));
+	border-color: var(--uikit-btn-danger-border, rgba(226, 76, 76, 0.4));
+	color: var(--uikit-btn-danger-text, #ff9e9e);
 }
 
 .owrx-uikit__btn--ghost {
 	background: transparent;
-	border-color: rgba(255, 255, 255, 0.12);
-	color: #d9dde6;
+	border-color: var(--uikit-btn-ghost-border, rgba(255, 255, 255, 0.12));
+	color: var(--uikit-btn-ghost-text, #d9dde6);
 }
 
 .owrx-uikit__btn:disabled {
@@ -425,25 +424,26 @@
 	padding: 8px 12px;
 	font-size: 12px;
 	cursor: pointer;
-	background: rgba(255, 255, 255, 0.06);
-	color: #e9edf5;
+	background: var(--uikit-btn-bg, rgba(255, 255, 255, 0.06));
+	color: var(--uikit-btn-text, #e9edf5);
 }
 
 .owrx-uikit .btn-primary {
-	background: #3b5bfd;
-	border-color: #3b5bfd;
+	background: var(--uikit-btn-primary-bg, #3b5bfd);
+	border-color: var(--uikit-btn-primary-bg, #3b5bfd);
+	color: var(--uikit-btn-primary-text, #ffffff);
 }
 
 .owrx-uikit .btn-error {
-	background: rgba(226, 76, 76, 0.15);
-	border-color: rgba(226, 76, 76, 0.4);
-	color: #ff9e9e;
+	background: var(--uikit-btn-danger-bg, rgba(226, 76, 76, 0.15));
+	border-color: var(--uikit-btn-danger-border, rgba(226, 76, 76, 0.4));
+	color: var(--uikit-btn-danger-text, #ff9e9e);
 }
 
 .owrx-uikit .btn-link {
 	background: transparent;
-	border-color: rgba(255, 255, 255, 0.12);
-	color: #d9dde6;
+	border-color: var(--uikit-btn-ghost-border, rgba(255, 255, 255, 0.12));
+	color: var(--uikit-btn-ghost-text, #d9dde6);
 }
 
 
@@ -530,6 +530,45 @@
 	top: 50%;
 	left: 10px;
 	transform: translateY(-50%);
+}
+
+
+/* ── OWRX+ native input/select/option styling ──────────────────────────── */
+
+/* Reset the layout-only properties that .openwebrx-panel applies — we add
+   that class to content areas so OWRX+'s input/select/option rules are
+   inherited automatically, but we don't want its positioning or background. */
+.owrx-uikit__pm-body.openwebrx-panel,
+.owrx-uikit__content.openwebrx-panel {
+	transform: none;
+	background: transparent;
+	background-color: transparent;
+	color: inherit;
+	font-size: inherit;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	margin: 0;
+	box-sizing: border-box;
+	transition: none;
+}
+
+/* .openwebrx-panel input targets ALL input types with a dark gradient.
+   Revert that for non-text inputs so native rendering is preserved. */
+.owrx-uikit__pm-body.openwebrx-panel input[type="checkbox"],
+.owrx-uikit__pm-body.openwebrx-panel input[type="radio"],
+.owrx-uikit__pm-body.openwebrx-panel input[type="range"],
+.owrx-uikit__content.openwebrx-panel input[type="checkbox"],
+.owrx-uikit__content.openwebrx-panel input[type="radio"],
+.owrx-uikit__content.openwebrx-panel input[type="range"] {
+	background: revert;
+	background-color: revert;
+	border-radius: revert;
+	border-color: revert;
+	border-width: revert;
+	color: revert;
+	font-size: revert;
+	font-weight: revert;
+	margin-right: revert;
 }
 
 
@@ -623,7 +662,7 @@
 .owrx-uikit__pm-message {
 	font-size: 13px;
 	line-height: 1.5;
-	color: #cdd2db;
+	color: var(--uikit-text-dim, #cdd2db);
 	margin: 0;
 }
 
@@ -750,7 +789,7 @@
 	flex-shrink: 0;
 	background: none;
 	border: none;
-	color: #9aa3b2;
+	color: var(--uikit-text-muted, #9aa3b2);
 	cursor: pointer;
 	padding: 2px;
 	display: flex;
@@ -810,7 +849,7 @@
 	width: 28px;
 	height: 28px;
 	border: 3px solid rgba(255, 255, 255, 0.15);
-	border-top-color: #6f89ff;
+	border-top-color: var(--uikit-accent, #6f89ff);
 	border-radius: 50%;
 	animation: owrx-uikit-spin 0.7s linear infinite;
 }
@@ -818,3 +857,47 @@
 @keyframes owrx-uikit-spin {
 	to { transform: rotate(360deg); }
 }
+
+
+/* ── OWRX+ theme integration ───────────────────────────────────────────── */
+
+/* Panel: main surface */
+body.has-theme .owrx-uikit__panel,
+body.has-theme .owrx-uikit__content,
+body.has-theme .owrx-uikit__tab.is-active {
+	background: var(--theme-color2);
+	background-color: var(--theme-color2);
+}
+
+/* Tab bar and inactive tabs: darker surface */
+body.has-theme .owrx-uikit__tabs-bar,
+body.has-theme .owrx-uikit__tab {
+	background: var(--theme-color1);
+	background-color: var(--theme-color1);
+}
+
+/* Modal: content surface */
+body.has-theme .owrx-uikit__pm {
+	background: var(--theme-color2);
+	background-color: var(--theme-color2);
+}
+
+/* Modal header: darker surface */
+body.has-theme .owrx-uikit__pm-header {
+	background: var(--theme-color1);
+	background-color: var(--theme-color1);
+}
+
+/* Modal tabs bar (settings modal): darker surface */
+body.has-theme .owrx-uikit__pm .owrx-uikit__tabs-bar {
+	background: var(--theme-color1);
+	background-color: var(--theme-color1);
+}
+
+/* Toasts */
+body.has-theme .owrx-uikit__toast {
+	background: var(--theme-color2);
+	background-color: var(--theme-color2);
+}
+
+

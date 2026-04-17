@@ -25,7 +25,12 @@ Plugins.uikit.settings = {
 };
 
 await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/uikit/uikit.js');
+
+// Optional but recommended: companion theme that matches the uikit palette
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/ui_basic_theme/ui_basic_theme.js');
 ```
+
+After loading, select **UI Basic** in the OWRX+ theme list to apply the recommended flat dark theme. See [`ui_basic_theme`](https://0xaf.github.io/openwebrxplus-plugins/receiver/ui_basic_theme) for details.
 
 Any key omitted falls back to its default. Settings are merged over the defaults and then over any value previously saved by the user in localStorage, so user preferences always win.
 
@@ -457,6 +462,67 @@ await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/exampl
 
 ---
 
+## Theme Integration
+
+### OWRX+ theme colours
+
+When an OWRX+ theme is active (`body.has-theme`), uikit surfaces automatically pick up the theme's colours:
+
+| Surface | CSS variable used |
+| --- | --- |
+| Panel, content area, active tab | `--theme-color2` |
+| Tab bar, inactive tabs, modal header | `--theme-color1` |
+| Toasts | `--theme-color2` |
+
+In themed mode the auto-fade uses element `opacity` instead of background alpha (so `backdrop-filter` blur is not expected to show through a solid theme colour).
+
+### `--uikit-*` CSS variables
+
+All uikit colours are driven by CSS custom properties with sensible dark-mode fallbacks. A theme only needs to define the variables it wants to override — undefined variables fall back automatically.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--uikit-accent` | `#6f89ff` | Slider fill, checked radio/checkbox highlight |
+| `--uikit-accent-dim` | `rgba(111,137,255,.25)` | Accent background tint |
+| `--uikit-btn-bg` | `rgba(255,255,255,.06)` | Default button background |
+| `--uikit-btn-text` | `#e9edf5` | Default button text |
+| `--uikit-btn-primary-bg` | `#3b5bfd` | Primary button background |
+| `--uikit-btn-primary-text` | `#ffffff` | Primary button text |
+| `--uikit-btn-danger-bg` | `rgba(226,76,76,.15)` | Danger button background |
+| `--uikit-btn-danger-border` | `rgba(226,76,76,.4)` | Danger button border |
+| `--uikit-btn-danger-text` | `#ff9e9e` | Danger button text |
+| `--uikit-btn-ghost-border` | `rgba(255,255,255,.12)` | Ghost button border |
+| `--uikit-btn-ghost-text` | `#d9dde6` | Ghost button text |
+| `--uikit-text` | `#f6f7f9` | Primary text |
+| `--uikit-text-dim` | `#cdd2db` | Secondary text |
+| `--uikit-text-muted` | `#9aa3b2` | Muted / label text |
+| `--uikit-border` | `rgba(255,255,255,.08)` | Subtle border |
+| `--uikit-border-strong` | `rgba(255,255,255,.35)` | Strong border (active tab) |
+| `--uikit-border-mid` | `rgba(255,255,255,.12)` | Mid-weight border |
+
+Set these on `body.theme-yourtheme { }` in your theme CSS file. uikit buttons and controls inside `.owrx-uikit` will inherit them without any extra selectors.
+
+### Recommended companion theme: `ui_basic_theme`
+
+[`ui_basic_theme`](https://0xaf.github.io/openwebrxplus-plugins/receiver/ui_basic_theme) reproduces the original flat dark uikit palette (near-black, cool tint) as a proper OWRX+ theme entry. It defines all `--uikit-*` variables and also corrects the native OWRX+ inputs and buttons for the flat look. Load it alongside uikit:
+
+```js
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/uikit/uikit.js');
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/ui_basic_theme/ui_basic_theme.js');
+```
+
+Then select **UI Basic** in the OWRX+ theme list.
+
+### Native OWRX+ inputs and selects inside modals
+
+uikit adds the `openwebrx-panel` class to modal bodies and the panel content area. This allows OWRX+ theme CSS to style `<input>` and `<select>` elements inside uikit surfaces automatically, matching the rest of the receiver UI. Non-text inputs (checkboxes, radios, range sliders) are exempt via explicit `revert` rules so their native appearance is preserved.
+
+### Keyboard handling in modals
+
+All modals capture `keydown` and call `stopPropagation()` so that OWRX+'s global keyboard shortcuts (frequency entry, mode keys, etc.) do not fire while typing in modal inputs. The Escape key is also handled by the modal and does not bubble to the page.
+
+---
+
 ## Notes
 
 - Settings are stored under localStorage key `uikit` via `LS.save/LS.loadStr`.
@@ -465,3 +531,4 @@ await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/exampl
 - Plugin modals are appended to the uikit root element at z-index 10001.
 - The inactivity timer uses a single `mousemove` listener and is shared between the opacity fade and the auto-hide behaviour. Only one timer runs at a time.
 - In push mode, auto-hiding the panel via the inactivity timer correctly restores page layout (padding/margins) — identical to the user clicking the toggle button.
+- When a theme is active (`body.has-theme`), fading uses element `opacity` so the solid theme background is preserved. Without a theme, background-alpha is used so `backdrop-filter: blur()` shows through.
