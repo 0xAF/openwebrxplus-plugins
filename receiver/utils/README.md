@@ -19,3 +19,7 @@ await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/
 ## init.js
 
 Learn how to [load plugins](/openwebrxplus-plugins/#load-plugins).
+
+## Code
+
+Code is in the [Github repo](https://github.com/0xAF/openwebrxplus-plugins/tree/main/receiver/utils).

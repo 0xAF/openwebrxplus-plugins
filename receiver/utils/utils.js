@@ -5,7 +5,7 @@
  * and adds some events for the rest plugins.
  *
  * License: MIT
- * Copyright (c) 2023-2025 Stanislav Lechev [0xAF], LZ2SLL
+ * Copyright (c) 2023-2026 Stanislav Lechev [0xAF], LZ2SLL
  *
  * Changes:
  * 0.1:
@@ -22,13 +22,15 @@
  *  - add fillTemplate() method to fill a template with variables
  * 0.6:
  *  - add findCommonPrefix() method to find the common prefix of an array of strings
+ * 0.7:
+ *  - wrap_func: guard after_cb call with typeof check so null/undefined after_cb is safe
  */
 
 // Disable CSS loading for this plugin
 Plugins.utils.no_css = true;
 
 // Utils plugin version
-Plugins.utils._version = 0.6;
+Plugins.utils._version = 0.7;
 
 /**
  * Wrap an existing function with before and after callbacks.
@@ -95,8 +97,11 @@ Plugins.utils.wrap_func = function (name, before_cb, after_cb, obj = window) {
     apply: function (target, thisArg, args) {
       if (before_cb(target, thisArg, args)) {
         var orgRet = fn_original.apply(thisArg, args);
-        var ret = after_cb(orgRet, thisArg, args);
-        return ret !== undefined ? ret : orgRet;
+        if (typeof after_cb === 'function') {
+          var ret = after_cb(orgRet, thisArg, args);
+          return ret !== undefined ? ret : orgRet;
+        }
+        return orgRet;
       }
     }
   });
