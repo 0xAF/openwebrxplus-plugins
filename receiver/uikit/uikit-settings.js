@@ -131,6 +131,31 @@ Plugins.uikit._renderSettingsUI = function (slug) {
 		data: { role: 'position-options' }
 	});
 
+	// Panel size slider (20 / 30 / 40 / 50 % of screen)
+	var panelSizeLabel = this.el('div', {
+		cls: 'owrx-uikit__settings-label',
+		text: this._getPanelSizeLabel()
+	});
+	var panelSizeSlider = this.el('input', {
+		type: 'range',
+		attrs: { min: '20', max: '50', step: '5' },
+		style: { width: '100%' },
+		on: {
+			input: function (e) {
+				self._settings.panelSize = parseInt(e.target.value, 10);
+				panelSizeLabel.textContent = self._getPanelSizeLabel();
+				self._applyPanelSize();
+			},
+			change: function (e) {
+				self._settings.panelSize = parseInt(e.target.value, 10);
+				self._saveSettings();
+				self._applyPanelSize();
+				self._applyPanelMode();
+			}
+		}
+	});
+	panelSizeSlider.value = this._settings.panelSize || 30;
+
 	// Visibility toggle
 	var visibilityInput = this.el('input', {
 		type: 'checkbox',
@@ -226,12 +251,14 @@ Plugins.uikit._renderSettingsUI = function (slug) {
 			this.el('div', {
 				cls: 'owrx-uikit__settings-row',
 				children: [
-					// Left: position
+					// Left: position + size
 					this.el('div', {
 						cls: 'owrx-uikit__settings-group',
 						children: [
 							this.el('div', { cls: 'owrx-uikit__settings-label', text: 'Position' }),
-							positionOptions
+							positionOptions,
+							panelSizeLabel,
+							panelSizeSlider
 						]
 					}),
 					// Right: mode + opacity + visibility
@@ -285,11 +312,14 @@ Plugins.uikit._renderSettingsUI = function (slug) {
 	this._ui.autoHideInput = autoHideInput;
 	this._ui.autoHideDelaySlider = autoHideDelaySlider;
 	this._ui.autoHideDelayLabel = autoHideDelayLabel;
+	this._ui.panelSizeLabel = panelSizeLabel;
+	this._ui.panelSizeSlider = panelSizeSlider;
 
 	this._renderPositionOptions();
 	this._renderModeOptions();
 	this._renderVisibilityToggle();
 	this._renderOpacitySlider();
+	this._renderPanelSizeSlider();
 };
 
 // Renders position arrow buttons (icon-only, no text, hidden radio input).
@@ -349,6 +379,18 @@ Plugins.uikit._renderOpacitySlider = function () {
 		var ds2 = this._settings.autoHideDelay || 0;
 		this._ui.autoHideDelayLabel.textContent = 'Inactive timeout: ' + (ds2 ? ds2 + 's' : 'OFF');
 	}
+};
+
+Plugins.uikit._getPanelSizeLabel = function () {
+	var pct = this._settings.panelSize || 30;
+	var pos = this._settings.position || 'bottom';
+	var axis = (pos === 'bottom' || pos === 'top') ? 'Height' : 'Width';
+	return axis + ': ' + pct + '% of screen';
+};
+
+Plugins.uikit._renderPanelSizeSlider = function () {
+	if (this._ui.panelSizeLabel) this._ui.panelSizeLabel.textContent = this._getPanelSizeLabel();
+	if (this._ui.panelSizeSlider) this._ui.panelSizeSlider.value = this._settings.panelSize || 30;
 };
 
 // Renders mode radio buttons (overlay / push).

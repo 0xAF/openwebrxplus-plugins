@@ -36,6 +36,7 @@
 	border-bottom: none;
 	overflow-y: hidden;
 	flex-shrink: 0;
+	transition: opacity 0.4s ease;
 }
 
 .owrx-uikit__tabs-scroll {
@@ -45,8 +46,17 @@
 	overflow-x: auto;
 	overflow-y: hidden;
 	padding-bottom: 0;
-	scrollbar-width: thin;
+	scrollbar-width: none;
 	align-items: stretch;
+	cursor: grab;
+}
+
+.owrx-uikit__tabs-scroll::-webkit-scrollbar {
+	display: none;
+}
+
+.owrx-uikit__tabs-arrow {
+	flex-shrink: 0;
 }
 
 .owrx-uikit__tabs-scroll:has(.owrx-uikit__tab.is-active) {
@@ -127,6 +137,7 @@
 	background: rgba(17, 20, 26, 0.92);
 	margin-top: 0;
 	border-top: none;
+	transition: opacity 0.4s ease;
 }
 
 .owrx-uikit__tab-panel {

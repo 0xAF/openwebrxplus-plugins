@@ -10,12 +10,41 @@
  * loading) before running initialization.
  *
  * License: MIT
+ * Copyright (c) 2024-2026 Stanislav Lechev [0xAF], LZ2SLL
+ *
+ * Changes:
+ * 0.1:
+ *  - initial release: dockable panel, tab system, push/overlay mode
+ * 0.2:
+ *  - plugin modal API (createModal, openModal, closeModal, destroyModal, getModal)
+ *  - resizable modals, backdrop, floating mode
+ *  - info() and question() dialog helpers
+ *  - toast notifications with progress bar and hover-pause
+ *  - loading overlay (loading())
+ *  - dual-range slider (createDualSlider)
+ *  - renderRadioGroup helper
+ *  - svgFromString, buildSvg, icon helpers
+ * 0.3:
+ *  - CSS custom property system (--uikit-* variables) for theme integration
+ *  - body.has-theme integration: panel/tabs/modal surfaces follow OWRX+ theme colours
+ *  - openwebrx-panel class on modal body and content for native input/select styling
+ *  - keydown stopPropagation on modals to block OWRX+ global shortcuts
+ *  - Escape key handled by modal keydown handler (removed document-level _escHandler)
+ *  - _setPanelAlpha: hybrid opacity/background-alpha approach for themed vs non-themed
+ *  - panel mouseenter/mouseleave: timer paused while mouse is over the panel
+ *  - panelHovered state tracked in _state for use by dependent plugins
+ * 0.4:
+ *  - panelSize setting (20–50 % of screen, step 5): height for top/bottom, width for left/right
+ *  - setPanelSize() public API; slider in settings UI tab
+ *  - tabs-scroll: scrollbar hidden; left/right arrow buttons shown when overflow exists
+ *  - tabs-scroll: mouse drag and touch drag for scrolling tabs
+ *  - fade: content area uses opacity so native widgets fade in Firefox (matches Chrome)
  */
 
 // Namespace
 Plugins.uikit = Plugins.uikit || {};
 
-Plugins.uikit._version = 0.3;
+Plugins.uikit._version = 0.4;
 
 // Capture base URL at load time — document.currentScript is only available
 // during script execution, not later in init(). Works for both local and
@@ -32,7 +61,8 @@ Plugins.uikit._defaults = {
 	opacityActive: 0.95,
 	opacityInactive: 0.30,
 	autoHide: false,
-	autoHideDelay: 2
+	autoHideDelay: 2,
+	panelSize: 25
 };
 
 Plugins.uikit._state = {
@@ -40,6 +70,9 @@ Plugins.uikit._state = {
 	lastSettingsTab: 'ui',
 	inactiveTimer: null,
 	inactiveMoveHandler: null,
+	panelMouseenterHandler: null,
+	panelMouseleaveHandler: null,
+	panelHovered: false,
 	autoHidden: false
 };
 

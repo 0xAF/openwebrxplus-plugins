@@ -26,6 +26,24 @@ Plugins.uikit._buildRoot = function () {
 
 	var tabsScroll = this.el('div', { cls: 'owrx-uikit__tabs-scroll' });
 
+	var tabsArrowLeft = this.el('button', {
+		type: 'button',
+		cls: 'owrx-uikit__icon-btn owrx-uikit__tabs-arrow owrx-uikit__tabs-arrow--left',
+		title: 'Scroll tabs left',
+		style: { display: 'none' },
+		children: [this.iconArrow('left')],
+		on: { click: function () { tabsScroll.scrollBy({ left: -120, behavior: 'smooth' }); } }
+	});
+
+	var tabsArrowRight = this.el('button', {
+		type: 'button',
+		cls: 'owrx-uikit__icon-btn owrx-uikit__tabs-arrow owrx-uikit__tabs-arrow--right',
+		title: 'Scroll tabs right',
+		style: { display: 'none' },
+		children: [this.iconArrow('right')],
+		on: { click: function () { tabsScroll.scrollBy({ left: 120, behavior: 'smooth' }); } }
+	});
+
 	var settingsBtn = this.el('button', {
 		type: 'button',
 		cls: 'owrx-uikit__icon-btn owrx-uikit__settings-btn',
@@ -35,8 +53,48 @@ Plugins.uikit._buildRoot = function () {
 	});
 
 	tabsBar.appendChild(hideBtn);
+	tabsBar.appendChild(tabsArrowLeft);
 	tabsBar.appendChild(tabsScroll);
+	tabsBar.appendChild(tabsArrowRight);
 	tabsBar.appendChild(settingsBtn);
+
+	// ── Tab drag-scroll (mouse + touch) ────────────────────────────────────────
+
+	var drag = { active: false, dragged: false, x: 0, scrollLeft: 0 };
+
+	tabsScroll.addEventListener('mousedown', function (e) {
+		if (e.button !== 0) return;
+		drag.active = true;
+		drag.dragged = false;
+		drag.x = e.clientX;
+		drag.scrollLeft = tabsScroll.scrollLeft;
+	}, { passive: true });
+
+	// Suppress the click on the tab button after a drag so it doesn't activate
+	tabsScroll.addEventListener('click', function (e) {
+		if (drag.dragged) { e.stopPropagation(); drag.dragged = false; }
+	}, true);
+
+	document.addEventListener('mousemove', function (e) {
+		if (!drag.active) return;
+		var dx = e.clientX - drag.x;
+		if (Math.abs(dx) > 4) drag.dragged = true;
+		tabsScroll.scrollLeft = drag.scrollLeft - dx;
+	});
+
+	document.addEventListener('mouseup', function () { drag.active = false; });
+
+	var touch = { x: 0, scrollLeft: 0 };
+	tabsScroll.addEventListener('touchstart', function (e) {
+		touch.x = e.touches[0].clientX;
+		touch.scrollLeft = tabsScroll.scrollLeft;
+	}, { passive: true });
+
+	tabsScroll.addEventListener('touchmove', function (e) {
+		tabsScroll.scrollLeft = touch.scrollLeft - (e.touches[0].clientX - touch.x);
+	}, { passive: true });
+
+	tabsScroll.addEventListener('scroll', function () { self._updateTabArrows(); });
 
 	var content = this.el('div', { cls: 'owrx-uikit__content openwebrx-panel' });
 
@@ -63,6 +121,8 @@ Plugins.uikit._buildRoot = function () {
 		tabsBar: tabsBar,
 		hideBtn: hideBtn,
 		tabsScroll: tabsScroll,
+		tabsArrowLeft: tabsArrowLeft,
+		tabsArrowRight: tabsArrowRight,
 		content: content,
 		settingsBtn: settingsBtn,
 		miniButton: miniButton
@@ -157,6 +217,8 @@ Plugins.uikit._addTabInternal = function (type, name, opts) {
 		if (type === 'panel') this._activateTab(slug);
 		else this._activateSettingsTab(slug);
 	}
+
+	if (type === 'panel') this._updateTabArrows();
 
 	return slug;
 };
@@ -260,6 +322,7 @@ Plugins.uikit.setPanelPosition = function (pos) {
 	this._applyPosition();
 	this._applyPanelMode();
 	this._renderPositionOptions();
+	this._renderPanelSizeSlider();
 };
 
 Plugins.uikit.setPanelVisible = function (visible) {
@@ -289,7 +352,32 @@ Plugins.uikit._applyPosition = function () {
 	var root = this._ui.root;
 	root.classList.remove('owrx-uikit--pos-top', 'owrx-uikit--pos-right', 'owrx-uikit--pos-bottom', 'owrx-uikit--pos-left');
 	root.classList.add('owrx-uikit--pos-' + this._settings.position);
+	this._applyPanelSize();
 	this._updateMiniButtonIcon();
+};
+
+Plugins.uikit._applyPanelSize = function () {
+	if (!this._ui || !this._ui.panel) return;
+	var pct = this._settings.panelSize || 30;
+	var pos = this._settings.position || 'bottom';
+	var panel = this._ui.panel;
+	if (pos === 'bottom' || pos === 'top') {
+		panel.style.height = pct + 'vh';
+		panel.style.width = '';
+	} else {
+		panel.style.width = pct + 'vw';
+		panel.style.height = '';
+	}
+};
+
+Plugins.uikit.setPanelSize = function (pct) {
+	pct = Math.round(pct / 5) * 5;
+	pct = Math.max(20, Math.min(50, pct));
+	this._settings.panelSize = pct;
+	this._saveSettings();
+	this._applyPanelSize();
+	this._applyPanelMode();
+	this._renderPanelSizeSlider();
 };
 
 Plugins.uikit._applyVisibility = function () {
@@ -341,6 +429,8 @@ Plugins.uikit._initInactiveTimer = function () {
 	var delay = this._settings.autoHideDelay * 1000;
 
 	function goInactive() {
+		// Don't go inactive while the mouse is over the panel
+		if (self._state.panelHovered) { startTimer(); return; }
 		// Hide or fade depending on checkbox (both modes)
 		if (self._settings.autoHide) {
 			self._setAutoHidden(true);
@@ -365,7 +455,20 @@ Plugins.uikit._initInactiveTimer = function () {
 		startTimer();
 	};
 
+	this._state.panelMouseenterHandler = function () {
+		self._state.panelHovered = true;
+		clearTimeout(self._state.inactiveTimer);
+		goActive();
+	};
+
+	this._state.panelMouseleaveHandler = function () {
+		self._state.panelHovered = false;
+		startTimer();
+	};
+
 	document.addEventListener('mousemove', this._state.inactiveMoveHandler);
+	this._ui.panel.addEventListener('mouseenter', this._state.panelMouseenterHandler);
+	this._ui.panel.addEventListener('mouseleave', this._state.panelMouseleaveHandler);
 	goActive();
 	startTimer();
 };
@@ -379,27 +482,53 @@ Plugins.uikit._destroyInactiveTimer = function () {
 		document.removeEventListener('mousemove', this._state.inactiveMoveHandler);
 		this._state.inactiveMoveHandler = null;
 	}
+	if (this._state.panelMouseenterHandler && this._ui && this._ui.panel) {
+		this._ui.panel.removeEventListener('mouseenter', this._state.panelMouseenterHandler);
+		this._ui.panel.removeEventListener('mouseleave', this._state.panelMouseleaveHandler);
+		this._state.panelMouseenterHandler = null;
+		this._state.panelMouseleaveHandler = null;
+	}
+	this._state.panelHovered = false;
 	if (this._state.autoHidden) this._setAutoHidden(false);
 	this._setPanelAlpha(this._settings.opacityActive || 0.92);
 };
 
-// Uses CSS custom properties so one update changes panel, tabs-bar, and content.
-// Pass withBlur=false to remove the backdrop-filter (inactive/faded state).
+// Fades the panel surfaces consistently across Chrome and Firefox.
+// In default mode: panel/tabs backgrounds use --uikit-panel-bg-alpha (keeps
+// backdrop-filter blur visible); content uses opacity so native widgets (inputs,
+// buttons) also fade — matching Chrome's compositor behaviour in Firefox.
+// In themed mode: opacity on the panel element cascades to everything.
 Plugins.uikit._setPanelAlpha = function (alpha, withBlur) {
 	if (!this._ui || !this._ui.panel) return;
 	if (document.body.classList.contains('has-theme')) {
-		// Themed mode: background is solid, use element opacity for fading
 		this._ui.panel.style.opacity = alpha;
 		this._ui.panel.style.removeProperty('--uikit-panel-bg-alpha');
+		if (this._ui.tabsBar) this._ui.tabsBar.style.removeProperty('opacity');
+		if (this._ui.content) this._ui.content.style.removeProperty('opacity');
 	} else {
-		// Default mode: use background alpha so backdrop-filter blur shows through
+		// Keep backdrop-filter active by only fading the panel background;
+		// fade tabsBar and content via opacity so all child elements (text,
+		// borders, native inputs) fade uniformly — matching Chrome behaviour.
 		this._ui.panel.style.setProperty('--uikit-panel-bg-alpha', alpha);
 		this._ui.panel.style.removeProperty('opacity');
+		if (this._ui.tabsBar) this._ui.tabsBar.style.opacity = alpha;
+		if (this._ui.content) this._ui.content.style.opacity = alpha;
 	}
 	this._ui.panel.style.setProperty('--uikit-panel-blur', withBlur !== false ? 'blur(12px)' : 'none');
 };
 
 // ── Layout & Resize ─────────────────────────────────────────────────────────
+
+Plugins.uikit._updateTabArrows = function () {
+	var el = this._ui && this._ui.tabsScroll;
+	var left = this._ui && this._ui.tabsArrowLeft;
+	var right = this._ui && this._ui.tabsArrowRight;
+	if (!el) return;
+	var canLeft = el.scrollLeft > 1;
+	var canRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 1;
+	if (left) left.style.display = canLeft ? '' : 'none';
+	if (right) right.style.display = canRight ? '' : 'none';
+};
 
 // Re-check allowed positions on window resize (mobile may lose left/right).
 Plugins.uikit._bindResize = function () {
@@ -412,6 +541,7 @@ Plugins.uikit._bindResize = function () {
 			self._applyPosition();
 		}
 		self._renderPositionOptions();
+		self._updateTabArrows();
 	});
 };
 
