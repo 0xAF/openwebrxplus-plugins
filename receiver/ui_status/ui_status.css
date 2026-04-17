@@ -1,0 +1,50 @@
+.owrx-uikit-status {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	padding: 5px 8px;
+	background: rgba(12, 14, 18, 0.95);
+	border-top: 1px solid var(--uikit-border, rgba(255,255,255,0.08));
+}
+
+.owrx-uikit-status__bar {
+	position: relative;
+	flex: 1 1 100px;
+	min-width: 70px;
+	max-width: 200px;
+	height: 20px;
+	border-radius: 4px;
+	background: #003850;
+	overflow: hidden;
+	color: #fff;
+	font-size: 10px;
+	font-weight: bold;
+	cursor: default;
+	user-select: none;
+}
+
+.owrx-uikit-status__bar-fill {
+	position: absolute;
+	inset: 0;
+	background: #00aba6;
+	border-radius: 4px;
+	transform: translateX(-100%);
+	transition: transform 1s ease-in-out, background-color 1s ease-in-out;
+	will-change: transform;
+}
+
+.owrx-uikit-status__bar--over .owrx-uikit-status__bar-fill {
+	background: #ff6262;
+}
+
+.owrx-uikit-status__bar-text {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+	z-index: 2;
+	text-shadow: 0 0 4px #000;
+	pointer-events: none;
+}
