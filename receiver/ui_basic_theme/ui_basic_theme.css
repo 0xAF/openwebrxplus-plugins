@@ -1,0 +1,80 @@
+/*
+ * ui_basic_theme — dark theme matching uikit's original built-in colors
+ *
+ * Standard OWRX+ theme vars (affect native OWRX+ elements):
+ */
+body.theme-ui-basic {
+    --theme-color1:           #0c0e12;
+    --theme-color2:           #11141a;
+    --theme-gradient-color1:  #11141a;
+    --theme-gradient-color2:  #0c0e12;
+
+    /* uikit-specific vars (only affect uikit and ui_* plugins): */
+
+    /* Accent color — sliders, active highlights, spinner */
+    --uikit-accent:           #6f89ff;
+    --uikit-accent-dim:       rgba(111, 137, 255, 0.25);
+
+    /* uikit button styles */
+    --uikit-btn-bg:           rgba(255, 255, 255, 0.06);
+    --uikit-btn-text:         #e9edf5;
+    --uikit-btn-primary-bg:   #3b5bfd;
+    --uikit-btn-primary-text: #ffffff;
+    --uikit-btn-danger-bg:    rgba(226, 76, 76, 0.15);
+    --uikit-btn-danger-border: rgba(226, 76, 76, 0.4);
+    --uikit-btn-danger-text:  #ff9e9e;
+    --uikit-btn-ghost-border: rgba(255, 255, 255, 0.12);
+    --uikit-btn-ghost-text:   #d9dde6;
+
+    /* Text hierarchy */
+    --uikit-text:             #f6f7f9;
+    --uikit-text-dim:         #cdd2db;
+    --uikit-text-muted:       #9aa3b2;
+
+    /* Borders */
+    --uikit-border:           rgba(255, 255, 255, 0.08);
+    --uikit-border-strong:    rgba(255, 255, 255, 0.35);
+    --uikit-border-mid:       rgba(255, 255, 255, 0.12);
+
+    /* Native OWRX+ inputs and selects */
+    --uikit-input-bg:         linear-gradient(#373737, #4F4F4F);
+    --uikit-input-bg-color:   #373737;
+    --uikit-input-option-bg:  #373737;
+
+    /* Native OWRX+ buttons */
+    --uikit-native-btn-bg:       linear-gradient(#373737, #4F4F4F);
+    --uikit-native-btn-bg-color: #373737;
+    --uikit-native-btn-hover-bg: #474747;
+}
+
+
+/* ── Native OWRX+ inputs / selects ────────────────────────────────────── */
+
+body.theme-ui-basic .openwebrx-panel input,
+body.theme-ui-basic .openwebrx-panel select,
+body.theme-ui-basic .openwebrx-dialog input,
+body.theme-ui-basic .openwebrx-dialog select {
+    background-color: var(--uikit-input-bg-color);
+    background: var(--uikit-input-bg);
+}
+
+body.theme-ui-basic .openwebrx-panel select option,
+body.theme-ui-basic .openwebrx-dialog select option {
+    background-color: var(--uikit-input-option-bg);
+}
+
+
+/* ── Native OWRX+ buttons ──────────────────────────────────────────────── */
+
+body.theme-ui-basic .openwebrx-button {
+    background-color: var(--uikit-native-btn-bg-color);
+    background: var(--uikit-native-btn-bg);
+    filter: none;
+}
+
+body.theme-ui-basic .openwebrx-button:hover,
+body.theme-ui-basic .openwebrx-demodulator-button.highlighted,
+body.theme-ui-basic .openwebrx-button.highlighted {
+    background: var(--uikit-native-btn-hover-bg);
+    filter: none;
+}
