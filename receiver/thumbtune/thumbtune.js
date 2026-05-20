@@ -2,7 +2,7 @@
  * ThumbTune plugin for OpenWebRX+
  * Minimalistic floating control panel optimized for one-finger tuning on mobile devices.
  * 
- * Copyright (c) 2026 Denis Brekhov , UB1AON
+ * Copyright (c) 2026 Denis Brekhov, UB1AON
  * Licensed under MIT
  */
 
