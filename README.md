@@ -89,6 +89,7 @@ Each plugin is documented in its own folder.
 |[show_band_plan](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
 |[smeter](receiver/smeter)|Show S-Meter (needs calibration!) ([Joerg](#contributors))|
 |[sort_profiles](receiver/sort_profiles)|Sort profiles by name|
+|[thumbtune](receiver/thumbtune)|Minimalistic floating control panel optimized for one-finger mobile tuning ([UB1AON](#contributors))|
 |[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of bookmarks with right mouse button|
 |[tune_checkbox](receiver/tune_checkbox)|Enable mouse-scroll to zoom by default ([LZ2DMV](#contributors))|
 |[tune_precise](receiver/tune_precise)|Add buttons for precise frequency tuning ([LZ2DMV](#contributors))|
@@ -230,6 +231,7 @@ A: Use `Plugins.load('https://.../plugin_name/plugin_name.js');` in your `init.j
 - [Joerg](https://github.com/joer123)
 - [fustinoni-net](https://github.com/fustinoni-net)
 - [13MAD86](https://github.com/Rikku2000)
+- [UB1AON](https://github.com/UB1AON)
 
 ---
 

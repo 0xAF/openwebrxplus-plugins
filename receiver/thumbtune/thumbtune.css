@@ -1,0 +1,187 @@
+/* ThumbTune Main Container */
+#owrx-thumbtune-container {
+	position: fixed;
+	bottom: 120px;
+	left: 20px;
+	z-index: 2147483647;
+	width: 260px;
+	background: rgba(20, 20, 20, 0.5);
+	padding: 22px;
+	border-radius: 40px;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+	touch-action: none;
+	box-sizing: border-box;
+	font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Layout & Common Components */
+.owrx-tt-row {
+	display: flex;
+	gap: 10px;
+	width: 100%;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.owrx-tt-btn {
+	background: none;
+	border: none;
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	outline: none;
+	font-weight: bold;
+	box-sizing: border-box;
+	transition: transform 0.1s, background 0.2s, color 0.2s;
+}
+
+.owrx-tt-btn:active {
+	transform: scale(0.95);
+}
+
+/* Profile Selector Dropdown */
+.owrx-tt-select {
+	width: 100%;
+	height: 42px;
+	background: rgba(255,255,255,0.06);
+	border: 1px solid rgba(255,255,255,0.08);
+	border-radius: 21px;
+	color: #fff;
+	padding: 0 15px;
+	font-size: 13px;
+	appearance: none;
+	outline: none;
+	cursor: pointer;
+	text-align-last: center;
+}
+
+/* Frequency Digital Display Area */
+.owrx-tt-fdisp {
+	color: #fff;
+	font-size: 20px;
+	font-weight: 500;
+	flex-grow: 1;
+	text-align: center;
+	cursor: pointer;
+	padding: 4px 0;
+	border-radius: 10px;
+	transition: background 0.2s;
+	user-select: none;
+	font-family: monospace;
+}
+
+.owrx-tt-fdisp:hover {
+	background: rgba(255,255,255,0.06);
+}
+
+@keyframes owrxBlurBlink {
+	50% { opacity: 0; }
+}
+
+.owrx-tt-cursor {
+	animation: owrxBlurBlink 1s infinite;
+	color: #2ecc71;
+	font-weight: bold;
+	margin-left: 2px;
+}
+
+.owrx-tt-placeholder {
+	color: rgba(255,255,255,0.25);
+	font-size: 16px;
+}
+
+/* Numpad Area Layout */
+@keyframes owrxFadeIn {
+	from { opacity: 0; transform: scale(0.98); }
+	to { opacity: 1; transform: scale(1); }
+}
+
+#owrx-thumbtune-numpad {
+	display: none;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 6px;
+	justify-items: center;
+	width: 100%;
+	margin-top: 6px;
+	padding: 12px 0 4px 0;
+	border-top: 1px solid rgba(255,255,255,0.08);
+	animation: owrxFadeIn 0.2s ease-out;
+}
+
+/* Button UI Variations */
+.owrx-tt-btn-zoom {
+	width: 45px;
+	height: 45px;
+	border-radius: 22.5px;
+	background: rgba(255,255,255,0.06);
+	font-size: 20px;
+}
+
+.owrx-tt-btn-step {
+	height: 50px;
+	border-radius: 25px;
+	background: rgba(255,255,255,0.12);
+	font-size: 16px;
+	flex-grow: 1;
+}
+
+.owrx-tt-btn-jump {
+	height: 60px;
+	border-radius: 30px;
+	background: rgba(255,255,255,0.1);
+	font-size: 18px;
+	flex-grow: 1;
+}
+
+.owrx-tt-digit {
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	font-size: 20px;
+	color: rgba(255,255,255,0.8);
+	font-family: monospace;
+	font-weight: normal;
+}
+
+.owrx-tt-digit:hover {
+	background: rgba(255, 255, 255, 0.08);
+	color: #fff;
+	transform: scale(1.08);
+}
+
+.owrx-tt-action {
+	height: 40px;
+	border-radius: 14px;
+	font-size: 20px;
+	flex-grow: 1;
+	font-weight: normal;
+}
+
+.owrx-tt-action-esc {
+	color: rgba(231, 76, 60, 0.5);
+}
+
+.owrx-tt-action-esc:hover {
+	background: rgba(231, 76, 60, 0.12);
+	color: #ff7675;
+	transform: scale(1.05);
+}
+
+.owrx-tt-action-ent {
+	color: rgba(46, 204, 113, 0.6);
+	font-weight: bold;
+}
+
+.owrx-tt-action-ent:hover {
+	background: rgba(46, 204, 113, 0.15);
+	color: #2ecc71;
+	transform: scale(1.05);
+}
