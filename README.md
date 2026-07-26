@@ -73,6 +73,7 @@ Each plugin is documented in its own folder.
 
 | Name | Description |
 | :------ | :---------- |
+|[accessible_bookmark_search](receiver/accessible_bookmark_search)|Replaces the built-in bookmark search dialog with a native dropdown and improoves keyboard navigation ([René Jaun](#contributors))|
 |[antenna_switcher](receiver/antenna_switcher)|Antenna switching for Raspberry Pi devices ([LZ2DMV](#contributors))|
 |[colorful_spectrum](receiver/colorful_spectrum)|Colorize the spectrum analyzer|
 |[compact_analog_modes](receiver/compact_analog_modes)|Compact the receiver analog modes section ([fustinoni-net](#contributors))|
@@ -234,6 +235,7 @@ A: Use `Plugins.load('https://.../plugin_name/plugin_name.js');` in your `init.j
 - [fustinoni-net](https://github.com/fustinoni-net)
 - [13MAD86](https://github.com/Rikku2000)
 - [UB1AON](https://github.com/UB1AON)
+- [René Jaun](https://github.com/the-swissionary)
 
 ---
 
