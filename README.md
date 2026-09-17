@@ -83,7 +83,6 @@ Each plugin is documented in its own folder.
 |[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner; uses a receiver section and setup windows when available ([Joerg](#contributors))|
 |[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
 |[magic_key](receiver/magic_key)|Set MagicKey without typing it in the browser's address bar|
-|[minimap](receiver/minimap)|Opens the map on the receiver page via the built-in MapPlugin when available ([13MAD86](#contributors))|
 |[screenshot](receiver/screenshot)|Take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|Provide spoken notifications for accessibility|
 |[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
@@ -92,11 +91,11 @@ Each plugin is documented in its own folder.
 |[thumbtune](receiver/thumbtune)|Minimalistic floating control panel optimized for one-finger mobile tuning ([UB1AON](#contributors))|
 |[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of bookmarks with right mouse button|
 |[tune_checkbox](receiver/tune_checkbox)|Enable mouse-scroll to zoom by default ([LZ2DMV](#contributors))|
-|[tune_precise](receiver/tune_precise)|Add buttons for precise frequency tuning ([LZ2DMV](#contributors))|
+|[tune_precise](receiver/tune_precise)|Add buttons for precise frequency tuning in a receiver section when available ([LZ2DMV](#contributors))|
 
 ### OpenWebRX+ UI Compatibility
 
-`antenna_switcher`, `doppler`, `freq_scanner`, and `smeter` use the built-in receiver sections or plugin windows supported by newer OpenWebRX+ versions. `minimap` uses the built-in `MapPlugin` when available. Each keeps its previous interface on older versions. See the individual plugin pages for details.
+`antenna_switcher`, `doppler`, `freq_scanner`, `smeter`, and `tune_precise` use the built-in receiver sections or plugin windows supported by newer OpenWebRX+ versions. Each keeps its previous interface on older versions. See the individual plugin pages for details.
 
 ### Utility & Example Plugins
 
@@ -114,6 +113,7 @@ Each plugin is documented in its own folder.
 | Name | Description |
 | :------ | :---------- |
 |[search_bookmarks_old](receiver/search_bookmarks_old)|This is the old version of the plugin, working on OWRX+ before v1.2.118([Yannis](#contributors))|
+|[~~minimap~~](receiver/minimap)|Use the built-in `MapPlugin` on newer OpenWebRX+; the plugin remains for older versions ([13MAD86](#contributors))|
 |[~~mouse_freq~~](receiver/mouse_freq)|Built into OpenWebRX+ 1.2.124 as **Settings → Show pointer frequency**; plugin remains for older versions|
 |[~~show_band_plan~~](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
 |[~~keyboard_shortcuts~~](receiver/keyboard_shortcuts)|Add keyboard shortcuts|

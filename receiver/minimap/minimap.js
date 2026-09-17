@@ -34,6 +34,7 @@ Plugins.minimap.init = async function () {
         typeof Plugins.addButton === 'function' &&
         typeof Plugins.addWindow === 'function' &&
         typeof Plugins.toggleWindow === 'function') {
+        console.log('minimap: Deprecated on this OpenWebRX+ version. Call MapPlugin.init() once in receiver/init.js and remove minimap. Delegating to MapPlugin for now.');
         var mapId = MapPlugin.myname || 'map';
         if (!document.getElementById('plugin-button-' + mapId)) MapPlugin.init();
 

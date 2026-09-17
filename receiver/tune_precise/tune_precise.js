@@ -3,7 +3,7 @@
  *
  * License: MIT
  * Copyright (c) 2025 Dimitar Milkov, LZ2DMV
- * Copyright (c) 2025 Stanislav Lechev, LZ2SLL
+ * Copyright (c) 2025-2026 Stanislav Lechev, LZ2SLL
  */
 
 Plugins.tune_precise.no_css = true;
@@ -41,7 +41,9 @@ Plugins.tune_precise.init = async function () {
     return `${freq}${unit}`;
   }
 
-  $(".webrx-mouse-freq").after(`
+  if ($('#id-step-freq').length) return true;
+
+  const $controls = $(`
     <div id="id-step-freq" style="padding-bottom: 4px; padding-top: 4px; display: flex; justify-content: space-between; align-items: center;">
       <div class="tune-precise-step" data-step="-${steps[0]}" title="-${formatFreq(steps[0])}">${renderIcon(-1, 22)}</div>
       <div class="tune-precise-step" data-step="-${steps[1]}" title="-${formatFreq(steps[1])}">${renderIcon(-1, 20)}</div>
@@ -49,9 +51,19 @@ Plugins.tune_precise.init = async function () {
       <div class="tune-precise-step" data-step="+${steps[2]}" title="+${formatFreq(steps[2])}">${renderIcon(+1, 18)}</div>
       <div class="tune-precise-step" data-step="+${steps[1]}" title="+${formatFreq(steps[1])}">${renderIcon(+1, 20)}</div>
       <div class="tune-precise-step" data-step="+${steps[0]}" title="+${formatFreq(steps[0])}">${renderIcon(+1, 22)}</div>
-    </div>   
+    </div>
   `);
-  $('.tune-precise-step')
+
+  const section = typeof Plugins.addSection === 'function'
+    ? Plugins.addSection('tune-precise', 'Precise Tuning') : null;
+  const sectionBody = section && section.nextElementSibling;
+  if (sectionBody && sectionBody.classList.contains('openwebrx-section') && sectionBody.parentNode) {
+    sectionBody.appendChild($controls[0]);
+  } else {
+    $('.webrx-mouse-freq').after($controls);
+  }
+
+  $controls.find('.tune-precise-step')
     .css({
       cursor: 'pointer',
       filter: 'brightness(0.8)'

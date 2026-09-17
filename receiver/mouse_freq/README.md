@@ -20,7 +20,7 @@ On older OpenWebRX+ versions, the plugin depends on [utils](https://0xaf.github.
 
 ## Load
 
-Add these lines in your `init.js` file:
+For older OpenWebRX+ versions only, add these lines in your `init.js` file:
 
 ```js
 await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
