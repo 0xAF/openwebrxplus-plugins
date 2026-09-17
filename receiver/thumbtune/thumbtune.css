@@ -1,23 +1,38 @@
 /* ThumbTune Main Container */
 #owrx-thumbtune-container {
-	position: fixed;
-	bottom: 120px;
-	left: 20px;
 	z-index: 2147483647;
-	width: 260px;
-	background: rgba(20, 20, 20, 0.5);
+	min-width: 260px;
 	padding: 22px;
-	border-radius: 40px;
-	border: 1px solid rgba(255, 255, 255, 0.15);
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
-	box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 	touch-action: none;
 	box-sizing: border-box;
 	font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Standalone panel used when OpenWebRX+ has no plugin window API. */
+#owrx-thumbtune-container.owrx-tt-legacy {
+	position: fixed;
+	bottom: 120px;
+	left: 20px;
+	background: rgba(20, 20, 20, 0.5);
+	border-radius: 40px;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* Keep the touch controls scrollable inside OpenWebRX+'s resizable plugin window. */
+#plugin-window-thumbtune #owrx-thumbtune-container {
+	position: relative;
+	bottom: auto;
+	left: auto;
+	width: 100%;
+	z-index: auto;
+	box-shadow: none;
+	touch-action: pan-y;
 }
 
 /* Layout & Common Components */
@@ -61,6 +76,11 @@
 	outline: none;
 	cursor: pointer;
 	text-align-last: center;
+}
+
+.owrx-tt-select option {
+	background-color: #fff;
+	color: #111;
 }
 
 /* Frequency Digital Display Area */
@@ -134,7 +154,7 @@
 }
 
 .owrx-tt-btn-jump {
-	height: 60px;
+	height: 30px;
 	border-radius: 30px;
 	background: rgba(255,255,255,0.1);
 	font-size: 18px;
