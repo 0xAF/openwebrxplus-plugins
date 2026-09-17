@@ -23,9 +23,13 @@ Plugins.load('freq_scanner');
 
 ## Usage
 
-A small **SC** button is added to the bottom left of the receiver panel. Clicking this button opens a floating, draggable window containing the scanner display and controls.
+On OpenWebRX+ versions with `Plugins.addSection()`, open the **Frequency Scanner** section in the receiver panel. It contains the display and Scan, Skip, Block, and Setup controls. Closing the section does not stop a running scan. Setup and Manage Blacklist use built-in plugin windows when available; Scan and Block long-press menus stay next to their buttons.
 
-### SC Button Status
+On older OpenWebRX+ versions, the **SC** button at the bottom left of the receiver panel opens the original draggable scanner panel. The original setup menus and blacklist editor remain available when the built-in window API is missing.
+
+### Scanner Status
+The native section title is green while scanning, yellow in Edit Blocks mode or while blocked ranges are shown, and uses its normal color otherwise. On older versions, the SC button retains its existing status colors:
+
 * **Grey**: Scanner is stopped and window is closed.
 * **Green**: Scanner window is open.
 * **Yellow**: Scanner is running in the background OR "Always Show Blocked Ranges" is active (window closed).
@@ -92,3 +96,7 @@ No manual configuration in `init.js` is required. The plugin automatically adapt
 ## License
 
 MIT
+
+## Code
+
+[Github repo](https://github.com/0xAF/openwebrxplus-plugins/tree/main/receiver/freq_scanner)

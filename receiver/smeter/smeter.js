@@ -3,7 +3,7 @@
  *
  *
  * License: MIT
- * Copyright (c) 2025 DL1HQH
+ * Copyright (c) 2025-2026 DL1HQH
  */
 
 // Create namespace for the plugin to avoid conflicts
@@ -454,27 +454,48 @@ Plugins.smeter = {
         $('#smeter-theme-style').text(css);
     },
 
+    close_settings_menu: function() {
+        if (!this.settingsMenu) return;
+        var menu = this.settingsMenu;
+        if (menu.cleanup) menu.cleanup();
+        if (menu.closeHandler) {
+            document.removeEventListener('mousedown', menu.closeHandler);
+            document.removeEventListener('touchstart', menu.closeHandler);
+        }
+        menu.remove();
+        this.settingsMenu = null;
+    },
+
     show_settings_menu: function(rect) {
-        $('#smeter-floating-menu').remove();
+        this.close_settings_menu();
+        var nativeWindow = null;
+        var nativeBody = null;
+        if (typeof Plugins.addWindow === 'function' && typeof Plugins.toggleWindow === 'function') {
+            nativeWindow = Plugins.addWindow('smeter-settings', 'S-Meter Settings');
+            nativeBody = nativeWindow && nativeWindow.querySelector('.openwebrx-plugin-body');
+        }
         var self = this;
 
         var menu = document.createElement('div');
         menu.id = 'smeter-floating-menu';
-        
-        var right = window.innerWidth - rect.right;
-        if (right < 5) right = 5;
-        
-        // Smart positioning: Open upwards if space permits, otherwise downwards
-        var posStyle = '';
-        if (rect.top > 300) {
-             var bottom = window.innerHeight - rect.top + 2;
-             posStyle = 'bottom: ' + bottom + 'px;';
+        if (nativeBody) {
+            menu.style.cssText = 'background: #222; color: #eee; font-family: sans-serif; font-size: 13px; min-width: 220px;';
         } else {
-             var top = rect.bottom + 2;
-             posStyle = 'top: ' + top + 'px;';
+            var right = window.innerWidth - rect.right;
+            if (right < 5) right = 5;
+
+            // Smart positioning: Open upwards if space permits, otherwise downwards
+            var posStyle = '';
+            if (rect.top > 300) {
+                 var bottom = window.innerHeight - rect.top + 2;
+                 posStyle = 'bottom: ' + bottom + 'px;';
+            } else {
+                 var top = rect.bottom + 2;
+                 posStyle = 'top: ' + top + 'px;';
+            }
+
+            menu.style.cssText = 'position: fixed; right: ' + right + 'px; ' + posStyle + ' background: #222; border: 1px solid #444; color: #eee; z-index: 10001; border-radius: 4px; padding: 0; font-family: sans-serif; font-size: 13px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); min-width: 220px;';
         }
-        
-        menu.style.cssText = 'position: fixed; right: ' + right + 'px; ' + posStyle + ' background: #222; border: 1px solid #444; color: #eee; z-index: 10001; border-radius: 4px; padding: 0; font-family: sans-serif; font-size: 13px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); min-width: 220px;';
 
         var content = document.createElement('div');
         content.style.padding = '10px';
@@ -482,7 +503,7 @@ Plugins.smeter = {
         var title = document.createElement('div');
         title.textContent = 'S-Meter Settings';
         title.style.cssText = 'font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px;';
-        content.appendChild(title);
+        if (!nativeBody) content.appendChild(title);
 
         var ctx = self.getBandContext();
         var isVHF = ctx.isVHF;
@@ -648,7 +669,7 @@ Plugins.smeter = {
 
         // Cleanup listeners when menu is closed to avoid memory leaks
         menu.cleanup = function() {
-            delete self.refreshGraph;
+            if (self.refreshGraph === updateGraph) delete self.refreshGraph;
         };
         // -------------------------
 
@@ -1030,7 +1051,25 @@ Plugins.smeter = {
         content.appendChild(btnDiv);
 
         menu.appendChild(content);
-        document.body.appendChild(menu);
+        this.settingsMenu = menu;
+        if (nativeBody) {
+            if (!nativeWindow.smeterCloseBound) {
+                $(nativeWindow).find('.openwebrx-plugin-close').on('click.smeter touchend.smeter', function() {
+                    self.close_settings_menu();
+                });
+                nativeWindow.smeterCloseBound = true;
+            }
+            nativeWindow.style.width = nativeWindow.style.width || '300px';
+            nativeWindow.style.height = nativeWindow.style.height || '520px';
+            nativeWindow.style.maxWidth = 'calc(100vw - 20px)';
+            nativeWindow.style.maxHeight = 'calc(100vh - 20px)';
+            nativeBody.style.overflowY = 'auto';
+            nativeBody.style.minHeight = '0';
+            nativeBody.appendChild(menu);
+            Plugins.toggleWindow('smeter-settings', true);
+        } else {
+            document.body.appendChild(menu);
+        }
         $('#smeter-delay').on('input', function() {
             self.smeter_delay = parseInt($(this).val());
             $('#smeter-delay-val').text((self.smeter_delay > 0 ? '+' : '') + self.smeter_delay + ' ms');
@@ -1052,18 +1091,20 @@ Plugins.smeter = {
             self.saveSettings();
         });
 
-        var closeHandler = function(e) {
-            if (!menu.contains(e.target) && !$(e.target).closest('#smeter-panel').length) {
-                if (menu.cleanup) menu.cleanup();
-                menu.remove();
-                document.removeEventListener('mousedown', closeHandler);
-                document.removeEventListener('touchstart', closeHandler);
-            }
-        };
-        setTimeout(function() {
-            document.addEventListener('mousedown', closeHandler);
-            document.addEventListener('touchstart', closeHandler);
-        }, 10);
+        if (!nativeBody) {
+            var closeHandler = function(e) {
+                if (!menu.contains(e.target) && !$(e.target).closest('#smeter-panel').length) {
+                    self.close_settings_menu();
+                }
+            };
+            menu.closeHandler = closeHandler;
+            setTimeout(function() {
+                if (self.settingsMenu === menu) {
+                    document.addEventListener('mousedown', closeHandler);
+                    document.addEventListener('touchstart', closeHandler);
+                }
+            }, 10);
+        }
     },
 
     update: function() {

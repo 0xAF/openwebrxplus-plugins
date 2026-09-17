@@ -21,7 +21,6 @@ const PluginsToLoad = [
 	'screenshot',
 	'magic_key',
 	'doppler',
-	'mouse_freq',
 	'tune_precise',
 	'toggle_scannable',
 ];

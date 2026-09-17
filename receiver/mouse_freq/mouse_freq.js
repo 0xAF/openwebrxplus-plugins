@@ -4,14 +4,20 @@
  * I saw this on https://rikmotik.ru/ and decided to make a plugin.
  *
  * License: MIT
- * Copyright (c) 2025 Stanislav Lechev [0xAF], LZ2SLL
+ * Copyright (c) 2025-2026 Stanislav Lechev [0xAF], LZ2SLL
  */
 
 // no css for this plugin
 Plugins.mouse_freq.no_css = true;
+Plugins.mouse_freq._version = 0.1;
 
 // Initialize the plugin
 Plugins.mouse_freq.init = async function () {
+  if (typeof UI !== 'undefined' && typeof UI.toggleCrossFreq === 'function' &&
+      document.getElementById('openwebrx-crossfreq-checkbox')) {
+    console.log('mouse_freq: OpenWebRX+ now includes this feature. In the receiver Settings section, enable "Show pointer frequency". Remove mouse_freq from receiver/init.js.');
+    return true;
+  }
 
   // Check if utils plugin is loaded
   if (!Plugins.isLoaded('utils', 0.4)) {

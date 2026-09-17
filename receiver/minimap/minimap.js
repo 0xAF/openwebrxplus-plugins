@@ -7,6 +7,7 @@
 
 // plugin provides its own CSS dynamically
 Plugins.minimap.no_css = true;
+Plugins.minimap._version = 0.1;
 
 // plugin default configs
 Plugins.minimap.width = 430;
@@ -24,6 +25,27 @@ Plugins.minimap.resizable = true;
 
 Plugins.minimap.init = async function () {
     'use strict';
+
+    // Current OpenWebRX+ supplies the Map window. Use it instead of creating
+    // a second iframe, button, and set of window handlers.
+    if (typeof MapPlugin !== 'undefined' && MapPlugin &&
+        typeof MapPlugin.init === 'function' &&
+        typeof MapPlugin.create === 'function' &&
+        typeof Plugins.addButton === 'function' &&
+        typeof Plugins.addWindow === 'function' &&
+        typeof Plugins.toggleWindow === 'function') {
+        var mapId = MapPlugin.myname || 'map';
+        if (!document.getElementById('plugin-button-' + mapId)) MapPlugin.init();
+
+        Plugins.minimap.show = function () {
+            if (MapPlugin.iframe === null) MapPlugin.create();
+            else Plugins.toggleWindow(mapId, true);
+        };
+        Plugins.minimap.hide = function () { Plugins.toggleWindow(mapId, false); };
+        Plugins.minimap.toggle = function () { MapPlugin.create(); };
+
+        return true;
+    }
 
     var cfg = Plugins.minimap;
 

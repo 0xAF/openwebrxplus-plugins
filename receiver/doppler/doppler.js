@@ -6,7 +6,7 @@
  * Then evolved.
  * 
  * License: MIT
- * Copyright (c) 2024 Stanislav Lechev [0xAF], LZ2SLL
+ * Copyright (c) 2024-2026 Stanislav Lechev [0xAF], LZ2SLL
  * 
  * TODO:
  * - Option to integrate sat bookmarks
@@ -18,16 +18,14 @@
 
 // no css for this plugin
 // Plugins.doppler.no_css = true;
+Plugins.doppler._version = 0.1;
 
 // Initialize the plugin
 Plugins.doppler.init = async function () {
-  // Check if utils plugin is loaded
-  // if (!Plugins.isLoaded('utils', 0.3)) {
-  //   console.error('Example plugin depends on "utils >= 0.3".');
-  //   return false;
-  // }
+  const nativeFinder = typeof Plugins.addWindow === 'function' &&
+    typeof Plugins.toggleWindow === 'function';
+  Plugins.doppler.nativeFinder = nativeFinder;
 
-  // await Plugins._load_script('http://192.168.175.99:8080/doppler/sat.js').catch(function () {
   await Plugins._load_script('https://0xaf.github.io/openwebrxplus-plugins/receiver/doppler/sat.js').catch(function() {
     throw ("Cannot load satellite-js script.");
   });
@@ -37,27 +35,28 @@ Plugins.doppler.init = async function () {
   });
   
 
-  await Plugins._load_style('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css').catch(function () {
-    throw ("Cannot load jquery-modal style.");
-  });
-
-  await Plugins._load_script('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js').catch(function () {
-    throw ("Cannot load jquery-modal script.");
-  }).then(() => {
-    // $.modal.defaults.escapeClose = true;
-    // $.modal.defaults.clickClose = false;
-    // $.modal.defaults.showClose = false;
-  });
+  if (!nativeFinder) {
+    await Plugins._load_style('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css');
+    await Plugins._load_script('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js');
+  }
 
   // initialize on load
   if ($("#satellite-row").length < 1) {
-    $(".openwebrx-modes").after(`
-      <div id="satellite-row" class="openwebrx-panel-line openwebrx-panel-flex-line">
-        <input id="satellite-input" type="text" placeholder="Sat ID">
-        <div id="satellite-name" class="openwebrx-button">Open SAT Finder</div>
-        <div id="satellite-track" class="openwebrx-button">TRACK</div>
-      </div>
-    `);
+    const controls = `<div id="satellite-row" class="openwebrx-panel-line openwebrx-panel-flex-line">
+      <input id="satellite-input" type="text" placeholder="Sat ID">
+      <div id="satellite-name" class="openwebrx-button">Open SAT Finder</div>
+      <div id="satellite-track" class="openwebrx-button">TRACK</div>
+    </div>`;
+
+    if (typeof Plugins.addSection === 'function' && $('#openwebrx-section-settings').length) {
+      const sectionId = 'plugin-section-doppler';
+      const expanded = LS.has(sectionId) ? LS.loadBool(sectionId) : true;
+      const divider = Plugins.addSection('doppler', 'Doppler');
+      $(divider.nextElementSibling).append(controls);
+      UI.toggleSection(divider, expanded);
+    } else {
+      $('.openwebrx-modes').after(controls);
+    }
 
     var modalTabs = `
     <div class="satellite-modal-tabs-wrapper">
@@ -68,7 +67,7 @@ Plugins.doppler.init = async function () {
     for (let i = 0; i < groups.length; i++) {
       modalTabs += `
           <div class="satellite-modal-tab">
-            <input type="radio" name="css-tabs" id="satellite-tab-${i}" ${i == 0 ? 'xxx-checked' : ''} onclick="Plugins.doppler.tabChange(${i}, '${groups[i]}')" class="satellite-modal-tab-switch" data-group="${groups[i]}">
+            <input type="radio" name="css-tabs" id="satellite-tab-${i}" ${i == 0 && nativeFinder ? 'checked' : ''} onclick="Plugins.doppler.tabChange(${i}, '${groups[i]}')" class="satellite-modal-tab-switch" data-group="${groups[i]}">
             <label for="satellite-tab-${i}" class="satellite-modal-tab-label">${groups[i]}</label>
             <div class="satellite-modal-tab-content" id="satellite-tab-content-${i}">
               <div class="openwebrx-panel" style="transform: none; padding:0; background: none;">
@@ -84,7 +83,7 @@ Plugins.doppler.init = async function () {
                   </svg>
                 </div>
               </div>
-              <div id="satellite-tab-content-${i}-list" style="height: 370px; overflow-y: scroll">
+              <div id="satellite-tab-content-${i}-list" class="satellite-tab-list">
                 <table class="satellite-table">
                   <thead>
                     <tr>
@@ -110,34 +109,42 @@ Plugins.doppler.init = async function () {
     </div>
     `;
 
-    $('#satellite-row').append(`
-      <div id="satellite-modal" class="modal satellite-modal">
-        <div class="satellite-modal-header">
-          Satellite Finder (up to 2 hours)
+    if (nativeFinder) {
+      const content = '<div class="satellite-finder-native">' + modalTabs +
+        '<div class="satellite-finder-footer">' +
+        '<div class="openwebrx-button" onclick="Plugins.doppler.closeFinder()">Close</div>' +
+        '</div></div>';
+      const finder = Plugins.addWindow('doppler-finder', 'Satellite Finder (up to 2 hours)', content);
+      if (!LS.has('plugin_doppler-finder_w')) finder.style.width = '650px';
+      if (!LS.has('plugin_doppler-finder_h')) finder.style.height = '520px';
+      $(finder).find('.openwebrx-plugin-close').on('click touchend', Plugins.doppler.stopFinderRefresh);
+      Plugins.doppler.tabChange(0, groups[0]);
+    } else {
+      $('#satellite-row').append(`
+        <div id="satellite-modal" class="modal satellite-modal">
+          <div class="satellite-modal-header">Satellite Finder (up to 2 hours)</div>
+          <div class="satellite-modal-body">
+          ${modalTabs}
+          <br><br><center style="vertical-align: middle">Select Category</center>
+          </div>
+          <div class="satellite-modal-footer">
+            <div class="openwebrx-button" rel="modal:close" onclick="$.modal.close()">Close</div>
+          </div>
         </div>
-        <div class="satellite-modal-body">
-        ${modalTabs}
-        <br><br><center style="vertical-align: middle">Select Category</center>
-        </div>
-        <div class="satellite-modal-footer">
-          <div class="openwebrx-button" rel="modal:close" onclick="$.modal.close()">Close</div>
-        </div>
-      </div>
-    `);
-
-    $('#satellite-modal').on($.modal.BEFORE_CLOSE, function(event, modal) {
-      if (Plugins.doppler.scanRunning !== undefined) {
-        Plugins.doppler.toggleRefresh(Plugins.doppler.scanRunning);
-      }
-    });
+      `);
+      $('#satellite-modal').on($.modal.BEFORE_CLOSE, Plugins.doppler.stopFinderRefresh);
+    }
 
     $("#satellite-name").click(() => {
-      // window.open("https://tle.ivanstanojevic.me/", "_blank");
-      $('#satellite-modal').modal({
-        escapeClose: true,
-        clickClose: false,
-        showClose: false,
-      });
+      if (nativeFinder) {
+        Plugins.toggleWindow('doppler-finder', true);
+      } else {
+        $('#satellite-modal').modal({
+          escapeClose: true,
+          clickClose: false,
+          showClose: false,
+        });
+      }
     });
 
     $("#satellite-track").click(() => {
@@ -347,8 +354,23 @@ Plugins.doppler.selectSatellite = function (id, grp) {
   Plugins.doppler.lastSatId = id;
   $('#satellite-input').val(id);
   if (Plugins.doppler.intervalId) Plugins.doppler.stop_tracker();
-  $.modal.close();
+  Plugins.doppler.closeFinder();
 }
+
+Plugins.doppler.stopFinderRefresh = function () {
+  if (Plugins.doppler.scanRunning !== undefined) {
+    Plugins.doppler.toggleRefresh(Plugins.doppler.scanRunning);
+  }
+};
+
+Plugins.doppler.closeFinder = function () {
+  Plugins.doppler.stopFinderRefresh();
+  if (Plugins.doppler.nativeFinder) {
+    Plugins.toggleWindow('doppler-finder', false);
+  } else {
+    $.modal.close();
+  }
+};
 
 Plugins.doppler.toggleRefresh = function (id) {
   const refresh = $('#satellite-tab-content-' + id + '-refresh');

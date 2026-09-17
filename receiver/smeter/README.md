@@ -58,6 +58,8 @@ window.smeter_config_global = {
 ## Usage
 **Long Press (> 800ms)** on the S-Meter panel to open the **Settings Menu**.
 
+On current OpenWebRX+, the menu opens in a movable, resizable plugin window. On older versions it remains a floating menu beside the meter. The meter itself stays in the receiver panel.
+
 ### Settings Menu
 * **Calibration Offset (Blue)**: Global offset in dB. Adjusts the entire scale up or down (e.g. to compensate for cable loss).
 * **S0 / S9 / S9+60 Input Levels (Green)**: Defines which input level (dBm) corresponds to S0, S9, and S9+60 on the meter. This allows for precise 3-point calibration and linearity correction.

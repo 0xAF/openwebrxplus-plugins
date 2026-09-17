@@ -132,6 +132,52 @@ body.has-theme {
   width: calc(100% - .5rem);
 }
 
+.satellite-tab-list {
+  height: 370px;
+  overflow-y: scroll;
+}
+
+#plugin-window-doppler-finder {
+  min-width: 300px;
+  min-height: 260px;
+}
+
+#plugin-window-doppler-finder .openwebrx-plugin-body {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+
+.satellite-finder-native {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.satellite-finder-native .satellite-modal-tabs-wrapper {
+  flex: 1;
+  min-height: 0;
+}
+
+.satellite-finder-native .satellite-modal-tabs {
+  height: 100%;
+}
+
+.satellite-finder-native .satellite-modal-tab-content {
+  height: calc(100% - 2em);
+}
+
+.satellite-finder-native .satellite-tab-list {
+  height: calc(100% - 35px);
+}
+
+.satellite-finder-footer {
+  display: flex;
+  flex: none;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
 .satellite-modal-tab-switch:checked+.satellite-modal-tab-label {
   background: linear-gradient(to bottom, var(--satellite-grad-1) 0%, var(--satellite-grad-2) 100%);
   color: var(--satellite-fg);

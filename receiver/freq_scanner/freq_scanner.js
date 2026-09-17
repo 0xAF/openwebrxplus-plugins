@@ -40,6 +40,7 @@ var fs_scanner_state = {
 var fs_scanner_ui = {
     toggleBtn: null,
     panel: null,
+    sectionHeader: null,
     dragHandle: null,
     infoDisplay: null,
     scanBtn: null,
@@ -60,8 +61,6 @@ var fs_SCANNER_COLORS = [
     { name: 'Purple', value: 'rgba(128, 0, 128, 0.3)' },
     { name: 'White', value: 'rgba(255, 255, 255, 0.3)' }
 ];
-
-$(document).ready(fs_init_freq_scanner);
 
 function fs_init_freq_scanner() {
     console.log('[freq_scanner] Plugin loaded and ready.');
@@ -116,8 +115,10 @@ function fs_inject_css() {
 
 function fs_create_ui() {
     var container = document.querySelector('#openwebrx-panel-receiver');
+    var nativeSection = typeof Plugins.addSection === 'function' &&
+        document.getElementById('openwebrx-section-settings');
 
-    if (!fs_scanner_ui.toggleBtn) {
+    if (!nativeSection && !fs_scanner_ui.toggleBtn) {
         var toggleBtn = document.createElement('div');
         toggleBtn.id = 'fs-toggle-btn';
         toggleBtn.textContent = 'SC';
@@ -169,57 +170,67 @@ function fs_create_ui() {
     }
 
     if (!fs_scanner_ui.panel) {
-        var panel = document.createElement('div');
-        panel.id = 'fs-floating-panel';
-        panel.style.cssText = 'display: none; position: fixed; top: 150px; left: 10px; background: #000000; border: 1px solid var(--openwebrx-border-color, #666); border-radius: 5px; padding: 0; z-index: 10000; box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif; width: 225px;';
-        
-        var dragHandle = document.createElement('div');
-        dragHandle.id = 'fs-drag-handle';
-        dragHandle.textContent = 'Frequency Scanner';
-        dragHandle.style.cssText = 'height: 36px; line-height: 36px; font-size: 14px; text-align: center; cursor: move; border-radius: 5px 5px 0 0; width: 100%; user-select: none; border-bottom: 1px solid #555; background: #444; color: #ddd;';
-        dragHandle.title = 'Drag to move';
-        panel.appendChild(dragHandle);
+        var panel;
+        if (nativeSection) {
+            var sectionId = 'plugin-section-freq_scanner';
+            var expanded = LS.has(sectionId) ? LS.loadBool(sectionId) : true;
+            fs_scanner_ui.sectionHeader = Plugins.addSection('freq_scanner', 'Frequency Scanner');
+            panel = fs_scanner_ui.sectionHeader.nextElementSibling;
+            panel.id = 'fs-floating-panel';
+            UI.toggleSection(fs_scanner_ui.sectionHeader, expanded);
+        } else {
+            panel = document.createElement('div');
+            panel.id = 'fs-floating-panel';
+            panel.style.cssText = 'display: none; position: fixed; top: 150px; left: 10px; background: #000000; border: 1px solid var(--openwebrx-border-color, #666); border-radius: 5px; padding: 0; z-index: 10000; box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif; width: 225px;';
 
-        var isDragging = false;
-        var dragOffsetX = 0;
-        var dragOffsetY = 0;
+            var dragHandle = document.createElement('div');
+            dragHandle.id = 'fs-drag-handle';
+            dragHandle.textContent = 'Frequency Scanner';
+            dragHandle.style.cssText = 'height: 36px; line-height: 36px; font-size: 14px; text-align: center; cursor: move; border-radius: 5px 5px 0 0; width: 100%; user-select: none; border-bottom: 1px solid #555; background: #444; color: #ddd;';
+            dragHandle.title = 'Drag to move';
+            panel.appendChild(dragHandle);
 
-        var startDrag = function(e) {
-            isDragging = true;
-            var clientX = e.clientX;
-            var clientY = e.clientY;
-            if (e.touches && e.touches.length > 0) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            }
-            dragOffsetX = clientX - panel.offsetLeft;
-            dragOffsetY = clientY - panel.offsetTop;
-            e.preventDefault();
-        };
+            var isDragging = false;
+            var dragOffsetX = 0;
+            var dragOffsetY = 0;
 
-        var doDrag = function(e) {
-            if (isDragging) {
+            var startDrag = function(e) {
+                isDragging = true;
                 var clientX = e.clientX;
                 var clientY = e.clientY;
                 if (e.touches && e.touches.length > 0) {
                     clientX = e.touches[0].clientX;
                     clientY = e.touches[0].clientY;
                 }
-                panel.style.left = (clientX - dragOffsetX) + 'px';
-                panel.style.top = (clientY - dragOffsetY) + 'px';
-                if (e.type === 'touchmove') e.preventDefault();
-            }
-        };
+                dragOffsetX = clientX - panel.offsetLeft;
+                dragOffsetY = clientY - panel.offsetTop;
+                e.preventDefault();
+            };
 
-        var stopDrag = function() { isDragging = false; };
+            var doDrag = function(e) {
+                if (isDragging) {
+                    var clientX = e.clientX;
+                    var clientY = e.clientY;
+                    if (e.touches && e.touches.length > 0) {
+                        clientX = e.touches[0].clientX;
+                        clientY = e.touches[0].clientY;
+                    }
+                    panel.style.left = (clientX - dragOffsetX) + 'px';
+                    panel.style.top = (clientY - dragOffsetY) + 'px';
+                    if (e.type === 'touchmove') e.preventDefault();
+                }
+            };
 
-        dragHandle.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', doDrag);
-        document.addEventListener('mouseup', stopDrag);
+            var stopDrag = function() { isDragging = false; };
 
-        dragHandle.addEventListener('touchstart', startDrag, {passive: false});
-        document.addEventListener('touchmove', doDrag, {passive: false});
-        document.addEventListener('touchend', stopDrag);
+            dragHandle.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', doDrag);
+            document.addEventListener('mouseup', stopDrag);
+
+            dragHandle.addEventListener('touchstart', startDrag, {passive: false});
+            document.addEventListener('touchmove', doDrag, {passive: false});
+            document.addEventListener('touchend', stopDrag);
+        }
 
         var content = document.createElement('div');
         content.style.padding = '5px';
@@ -286,7 +297,7 @@ function fs_create_ui() {
         
         content.appendChild(btnContainer);
         panel.appendChild(content);
-        document.body.appendChild(panel);
+        if (!nativeSection) document.body.appendChild(panel);
     }
 }
 
@@ -1008,7 +1019,7 @@ function fs_find_next_peak(current_freq, step, threshold, cached_bookmarks) {
     return null;
 }
 
-function fs_show_floating_menu(rect, items) {
+function fs_show_floating_menu(rect, items, nativeWindowId) {
     var existing = document.getElementById('fs-menu');
     if (existing) existing.remove();
 
@@ -1017,7 +1028,8 @@ function fs_show_floating_menu(rect, items) {
     
     var closeHandler;
     var closeMenu = function() {
-        menu.remove();
+        if (nativeWindowId) Plugins.toggleWindow(nativeWindowId, false);
+        else menu.remove();
         if (closeHandler) {
             document.removeEventListener('mousedown', closeHandler);
             document.removeEventListener('touchstart', closeHandler);
@@ -1105,6 +1117,18 @@ function fs_show_floating_menu(rect, items) {
             menu.appendChild(div);
         }
     });
+
+    if (nativeWindowId) {
+        var windowEl = Plugins.addWindow(nativeWindowId, 'Scanner Setup');
+        var body = windowEl.querySelector('.openwebrx-plugin-body');
+        body.innerHTML = '';
+        menu.style.cssText = 'background: #222; color: #eee; width: 100%; height: 100%; box-sizing: border-box; overflow-y: auto; font-family: sans-serif; font-size: 13px;';
+        body.appendChild(menu);
+        if (!LS.has('plugin_' + nativeWindowId + '_w')) windowEl.style.width = '320px';
+        if (!LS.has('plugin_' + nativeWindowId + '_h')) windowEl.style.height = '450px';
+        Plugins.toggleWindow(nativeWindowId, true);
+        return;
+    }
 
     menu.style.visibility = 'hidden';
     menu.style.position = 'fixed';
@@ -1230,7 +1254,9 @@ function fs_show_blacklist_menu(rect) {
         }
     ];
 
-    fs_show_floating_menu(rect, items);
+    var nativeWindowId = typeof Plugins.addWindow === 'function' &&
+        typeof Plugins.toggleWindow === 'function' ? 'freq-scanner-settings' : null;
+    fs_show_floating_menu(rect, items, nativeWindowId);
 }
 
 function fs_load_blacklist() {
@@ -1814,20 +1840,31 @@ function fs_clear_blacklist() {
 function fs_edit_fs_blacklist() {
     var existing = document.getElementById('fs-edit-dialog');
     if (existing) existing.remove();
+    var nativeWindow = typeof Plugins.addWindow === 'function' &&
+        typeof Plugins.toggleWindow === 'function';
+    var windowId = 'freq-scanner-blacklist';
 
     var themeColor = fs_scanner_state.last_theme_color || '#444';
 
     var dialog = document.createElement('div');
     dialog.id = 'fs-edit-dialog';
-    dialog.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #000; border: 1px solid ' + themeColor + '; color: #eee; z-index: 10002; padding: 20px; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 450px; max-width: 95%; max-height: 80vh; display: flex; flex-direction: column; font-family: sans-serif;';
+    dialog.style.cssText = nativeWindow ?
+        'background: #000; color: #eee; padding: 10px; box-sizing: border-box; height: 100%; display: flex; flex-direction: column; font-family: sans-serif;' :
+        'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #000; border: 1px solid ' + themeColor + '; color: #eee; z-index: 10002; padding: 20px; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 450px; max-width: 95%; max-height: 80vh; display: flex; flex-direction: column; font-family: sans-serif;';
+
+    var closeDialog = function() {
+        if (nativeWindow) Plugins.toggleWindow(windowId, false);
+        dialog.remove();
+    };
 
     var title = document.createElement('h3');
     title.textContent = 'Manage Blacklist';
-    title.style.cssText = 'margin: -20px -20px 15px -20px; padding: 12px 20px; background: ' + themeColor + '; color: #fff; font-size: 16px; font-weight: bold; border-bottom: 1px solid #555; border-radius: 4px 4px 0 0;';
-    dialog.appendChild(title);
+    title.style.cssText = (nativeWindow ? 'margin: -10px -10px 15px -10px;' : 'margin: -20px -20px 15px -20px;') + ' padding: 12px 20px; background: ' + themeColor + '; color: #fff; font-size: 16px; font-weight: bold; border-bottom: 1px solid #555; border-radius: 4px 4px 0 0;';
+    if (!nativeWindow) dialog.appendChild(title);
 
     var listContainer = document.createElement('div');
     listContainer.style.cssText = 'flex: 1; overflow-y: auto; margin-bottom: 10px; border: 1px solid ' + themeColor + '; background: #111; padding: 5px; min-height: 200px;';
+    if (nativeWindow) listContainer.style.minHeight = '0';
     
     var currentList = fs_scanner_state.blacklist.slice();
 
@@ -1882,7 +1919,7 @@ function fs_edit_fs_blacklist() {
     var btnCancel = document.createElement('button');
     btnCancel.textContent = 'Cancel';
     btnCancel.style.cssText = 'margin-right: 10px; padding: 5px 10px; background: #444; color: white; border: none; cursor: pointer; border-radius: 3px;';
-    btnCancel.onclick = function() { dialog.remove(); };
+    btnCancel.onclick = closeDialog;
 
     var btnSave = document.createElement('button');
     btnSave.textContent = 'Save';
@@ -1891,14 +1928,24 @@ function fs_edit_fs_blacklist() {
         fs_scanner_state.blacklist = currentList;
         localStorage.setItem('fs-scanner-blacklist', JSON.stringify(fs_scanner_state.blacklist));
         fs_update_visualizer();
-        dialog.remove();
+        closeDialog();
     };
 
     btnContainer.appendChild(btnCancel);
     btnContainer.appendChild(btnSave);
     dialog.appendChild(btnContainer);
 
-    document.body.appendChild(dialog);
+    if (nativeWindow) {
+        var windowEl = Plugins.addWindow(windowId, 'Manage Blacklist');
+        var body = windowEl.querySelector('.openwebrx-plugin-body');
+        body.innerHTML = '';
+        body.appendChild(dialog);
+        if (!LS.has('plugin_' + windowId + '_w')) windowEl.style.width = '480px';
+        if (!LS.has('plugin_' + windowId + '_h')) windowEl.style.height = '450px';
+        Plugins.toggleWindow(windowId, true);
+    } else {
+        document.body.appendChild(dialog);
+    }
 }
 
 function fs_get_tolerance() {
@@ -1972,7 +2019,13 @@ function fs_is_ignored(f, cached_bookmarks) {
     return false;
 }
 
-Plugins.freq_scanner = { no_css: true };
+Plugins.freq_scanner = Plugins.freq_scanner || {};
+Plugins.freq_scanner.no_css = true;
+Plugins.freq_scanner._version = 0.1;
+Plugins.freq_scanner.init = function() {
+    $(document).ready(fs_init_freq_scanner);
+    return true;
+};
 
 function fs_init_visualizer() {
     var strip = fs_scanner_ui.waterfallContainer;
@@ -2083,6 +2136,14 @@ function fs_update_visualizer_render() {
 }
 
 function fs_update_sca_button_state() {
+    var section = fs_scanner_ui.sectionHeader;
+    if (section) {
+        section.style.color = fs_scanner_state.edit_mode ? 'yellow' :
+            fs_scanner_state.running ? '#39FF14' :
+            fs_scanner_state.show_blocked_ranges ? 'yellow' : '';
+        return;
+    }
+
     var btn = fs_scanner_ui.toggleBtn;
     var panel = fs_scanner_ui.panel;
     if (!btn || !panel) return;

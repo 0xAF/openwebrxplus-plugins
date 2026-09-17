@@ -17,6 +17,7 @@ permalink: /
   - [Beginner Quickstart](#beginner-quickstart)
   - [Plugin List](#plugin-list)
     - [Receiver Plugins](#receiver-plugins)
+    - [OpenWebRX+ UI Compatibility](#openwebrx-ui-compatibility)
     - [Utility \& Example Plugins](#utility--example-plugins)
     - [Deprecated Receiver Plugins](#deprecated-receiver-plugins)
     - [Map Plugins](#map-plugins)
@@ -74,26 +75,28 @@ Each plugin is documented in its own folder.
 | Name | Description |
 | :------ | :---------- |
 |[accessible_bookmark_search](receiver/accessible_bookmark_search)|Replaces the built-in bookmark search dialog with a native dropdown and improoves keyboard navigation ([René Jaun](#contributors))|
-|[antenna_switcher](receiver/antenna_switcher)|Antenna switching for Raspberry Pi devices ([LZ2DMV](#contributors))|
+|[antenna_switcher](receiver/antenna_switcher)|Antenna switching for Raspberry Pi devices; uses a receiver section when available ([LZ2DMV](#contributors))|
 |[colorful_spectrum](receiver/colorful_spectrum)|Colorize the spectrum analyzer|
 |[compact_analog_modes](receiver/compact_analog_modes)|Compact the receiver analog modes section ([fustinoni-net](#contributors))|
 |[connect_notify](receiver/connect_notify)|Send/receive notifications on user connect/disconnect|
-|[doppler](receiver/doppler)|Track Doppler shift/effect of satellites|
-|[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner ([Joerg](#contributors))|
+|[doppler](receiver/doppler)|Track Doppler shift/effect of satellites; uses a receiver section and Satellite Finder window when available|
+|[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner; uses a receiver section and setup windows when available ([Joerg](#contributors))|
 |[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
 |[magic_key](receiver/magic_key)|Set MagicKey without typing it in the browser's address bar|
-|[minimap](receiver/minimap)|Adds a minimap to receiver page ([13MAD86](#contributors))|
-|[mouse_freq](receiver/mouse_freq)|Show frequency under cursor on the waterfall|
+|[minimap](receiver/minimap)|Opens the map on the receiver page via the built-in MapPlugin when available ([13MAD86](#contributors))|
 |[screenshot](receiver/screenshot)|Take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|Provide spoken notifications for accessibility|
 |[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
-|[show_band_plan](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
-|[smeter](receiver/smeter)|Show S-Meter (needs calibration!) ([Joerg](#contributors))|
+|[smeter](receiver/smeter)|Show S-Meter (needs calibration!); settings use a plugin window when available ([Joerg](#contributors))|
 |[sort_profiles](receiver/sort_profiles)|Sort profiles by name|
 |[thumbtune](receiver/thumbtune)|Minimalistic floating control panel optimized for one-finger mobile tuning ([UB1AON](#contributors))|
 |[toggle_scannable](receiver/toggle_scannable)|Toggle the scannable state of bookmarks with right mouse button|
 |[tune_checkbox](receiver/tune_checkbox)|Enable mouse-scroll to zoom by default ([LZ2DMV](#contributors))|
 |[tune_precise](receiver/tune_precise)|Add buttons for precise frequency tuning ([LZ2DMV](#contributors))|
+
+### OpenWebRX+ UI Compatibility
+
+`antenna_switcher`, `doppler`, `freq_scanner`, and `smeter` use the built-in receiver sections or plugin windows supported by newer OpenWebRX+ versions. `minimap` uses the built-in `MapPlugin` when available. Each keeps its previous interface on older versions. See the individual plugin pages for details.
 
 ### Utility & Example Plugins
 
@@ -111,6 +114,7 @@ Each plugin is documented in its own folder.
 | Name | Description |
 | :------ | :---------- |
 |[search_bookmarks_old](receiver/search_bookmarks_old)|This is the old version of the plugin, working on OWRX+ before v1.2.118([Yannis](#contributors))|
+|[~~mouse_freq~~](receiver/mouse_freq)|Built into OpenWebRX+ 1.2.124 as **Settings → Show pointer frequency**; plugin remains for older versions|
 |[~~show_band_plan~~](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
 |[~~keyboard_shortcuts~~](receiver/keyboard_shortcuts)|Add keyboard shortcuts|
 |[~~set_waterfall_theme~~](receiver/set_waterfall_theme)|Set the default waterfall theme ([fustinoni-net](#contributors))|
