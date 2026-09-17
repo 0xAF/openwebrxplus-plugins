@@ -320,7 +320,7 @@ Plugins.thumbtune.init = function () {
     if (typeof Plugins.addButton === 'function' &&
         typeof Plugins.addWindow === 'function' &&
         typeof Plugins.toggleWindow === 'function') {
-        var launchButton = Plugins.addButton('thumbtune', 'ThumbTune', function () {
+        var launchButton = Plugins.addButton('thumbtune', 'Tune', function () {
             clearRepeat();
             if (state.isEditing) utils.closeNumpad();
             Plugins.toggleWindow('thumbtune');
