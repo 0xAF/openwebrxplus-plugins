@@ -83,6 +83,7 @@ Each plugin is documented in its own folder.
 |[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner; uses a receiver section and setup windows when available ([Joerg](#contributors))|
 |[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
 |[magic_key](receiver/magic_key)|Set MagicKey without typing it in the browser's address bar|
+|[map](receiver/map)|Enable the native OpenWebRX+ map window|
 |[screenshot](receiver/screenshot)|Take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|Provide spoken notifications for accessibility|
 |[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
