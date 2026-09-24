@@ -34,7 +34,7 @@ Plugins.minimap.init = async function () {
         typeof Plugins.addButton === 'function' &&
         typeof Plugins.addWindow === 'function' &&
         typeof Plugins.toggleWindow === 'function') {
-        console.log('minimap: Deprecated on this OpenWebRX+ version. Remove minimap and add MapPlugin.init(); once to receiver/init.js. Instructions: https://0xaf.github.io/openwebrxplus-plugins/receiver/map');
+        console.log('minimap: Deprecated on this OpenWebRX+ version. Remove minimap and add MapPlugin.init(); once to receiver/init.js. Instructions: https://0xaf.github.io/openwebrxplus-plugins/#built-in-plugins');
         var mapId = MapPlugin.myname || 'map';
         if (!document.getElementById('plugin-button-' + mapId)) MapPlugin.init();
 

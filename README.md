@@ -16,6 +16,7 @@ permalink: /
   - [Project Overview](#project-overview)
   - [Beginner Quickstart](#beginner-quickstart)
   - [Plugin List](#plugin-list)
+    - [Built-in Plugins](#built-in-plugins)
     - [Receiver Plugins](#receiver-plugins)
     - [OpenWebRX+ UI Compatibility](#openwebrx-ui-compatibility)
     - [Utility \& Example Plugins](#utility--example-plugins)
@@ -37,10 +38,11 @@ permalink: /
 
 This repository provides a set of plugins for OpenWebRX+, allowing users to customize and enhance their SDR experience. Plugins are grouped into:
 
+- **Built-in Plugins**: Optional plugins included with OpenWebRX+ and enabled from `init.js`.
 - **Receiver Plugins**: Enhance the receiver UI and add new features.
 - **Map Plugins**: Add new layers or features to the map interface.
 
-Each plugin is documented in its own folder.
+Each plugin provided by this repository is documented in its own folder.
 
 ## Beginner Quickstart
 
@@ -70,6 +72,16 @@ Each plugin is documented in its own folder.
 
 ## Plugin List
 
+### Built-in Plugins
+
+OpenWebRX+ includes optional built-in plugins that are already part of the receiver. Enable them by calling their initialization command once from your receiver `init.js`. Do not load them with `Plugins.load()`.
+
+| Name | Description | Available since | `init.js` command |
+| :--- | :---------- | :-------------- | :---------------- |
+|`MapPlugin`|Open the native map in a floating window|OpenWebRX+ 1.2.124|`MapPlugin.init();`|
+|`SunPlugin`|Display Solar Weather from HamQSL and refresh it every 15 minutes|OpenWebRX+ 1.2.125|`SunPlugin.init();`|
+|`KeyPlugin`|Add a Magic Key input to the receiver Settings section|OpenWebRX+ 1.2.125|`KeyPlugin.init();`|
+
 ### Receiver Plugins
 
 | Name | Description |
@@ -83,7 +95,6 @@ Each plugin is documented in its own folder.
 |[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner; uses a receiver section and setup windows when available ([Joerg](#contributors))|
 |[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
 |[magic_key](receiver/magic_key)|Set MagicKey without typing it in the browser's address bar|
-|[map](receiver/map)|Enable the native OpenWebRX+ map window|
 |[screenshot](receiver/screenshot)|Take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|Provide spoken notifications for accessibility|
 |[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
