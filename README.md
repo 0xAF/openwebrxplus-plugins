@@ -81,6 +81,9 @@ OpenWebRX+ includes optional built-in plugins that are already part of the recei
 |`MapPlugin`|Open the native map in a floating window|OpenWebRX+ 1.2.124|`MapPlugin.init();`|
 |`SunPlugin`|Display Solar Weather from HamQSL and refresh it every 15 minutes|OpenWebRX+ 1.2.125|`SunPlugin.init();`|
 |`KeyPlugin`|Add a Magic Key input to the receiver Settings section|OpenWebRX+ 1.2.125|`KeyPlugin.init();`|
+|`RigPlugin`|Add a TRANSMIT (PTT) button for a RigControl-connected transceiver; hold Backspace to transmit. Requires both RigControl options (transceiver control and PTT) enabled in Settings → Reporting|OpenWebRX+ 1.2.125|`RigPlugin.init();`|
+
+The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for all built-in plugins.
 
 ### Receiver Plugins
 
@@ -94,7 +97,6 @@ OpenWebRX+ includes optional built-in plugins that are already part of the recei
 |[doppler](receiver/doppler)|Track Doppler shift/effect of satellites; uses a receiver section and Satellite Finder window when available|
 |[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner; uses a receiver section and setup windows when available ([Joerg](#contributors))|
 |[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
-|[magic_key](receiver/magic_key)|Set MagicKey without typing it in the browser's address bar|
 |[screenshot](receiver/screenshot)|Take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|Provide spoken notifications for accessibility|
 |[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
@@ -126,6 +128,7 @@ OpenWebRX+ includes optional built-in plugins that are already part of the recei
 | :------ | :---------- |
 |[search_bookmarks_old](receiver/search_bookmarks_old)|This is the old version of the plugin, working on OWRX+ before v1.2.118([Yannis](#contributors))|
 |[~~minimap~~](receiver/minimap)|Use the built-in `MapPlugin` on newer OpenWebRX+; the plugin remains for older versions ([13MAD86](#contributors))|
+|[~~magic_key~~](receiver/magic_key)|Use the built-in `KeyPlugin` on OpenWebRX+ 1.2.125 and newer; the plugin remains for older versions|
 |[~~mouse_freq~~](receiver/mouse_freq)|Built into OpenWebRX+ 1.2.124 as **Settings → Show pointer frequency**; plugin remains for older versions|
 |[~~show_band_plan~~](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
 |[~~keyboard_shortcuts~~](receiver/keyboard_shortcuts)|Add keyboard shortcuts|

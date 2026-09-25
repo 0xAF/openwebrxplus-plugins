@@ -19,7 +19,6 @@ const PluginsToLoad = [
 	'frequency_far_jump',
 	'screen_reader',
 	'screenshot',
-	'magic_key',
 	'doppler',
 	'tune_precise',
 	'toggle_scannable',
@@ -39,6 +38,13 @@ const PluginsToLoad = [
 	for (const pluginName of PluginsToLoad) {
 		await Plugins.load(`https://0xaf.github.io/openwebrxplus-plugins/receiver/${pluginName}/${pluginName}.js`);
 	}
+
+	// Built-in (native) OpenWebRX+ plugins. Uncomment to enable.
+	// These are part of OpenWebRX+ itself and must not be loaded with Plugins.load().
+	// MapPlugin.init(); // native map in a floating window (OpenWebRX+ 1.2.124+)
+	// SunPlugin.init(); // Solar Weather from HamQSL (OpenWebRX+ 1.2.125+)
+	// KeyPlugin.init(); // Magic Key input in the Settings section (OpenWebRX+ 1.2.125+)
+	// RigPlugin.init(); // RigControl PTT button, hold Backspace to transmit (OpenWebRX+ 1.2.125+)
 })();
 
 // vim: ft=javascript

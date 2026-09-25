@@ -1,8 +1,11 @@
 /*
  * Plugin: MagicKey - Set the MagicKey without typing it in browser's address bar
  *
+ * DEPRECATED: OpenWebRX+ 1.2.125+ has a built-in KeyPlugin.
+ * Use `KeyPlugin.init();` in your init.js instead.
+ *
  * License: MIT
- * Copyright (c) 2024 Stanislav Lechev [0xAF], LZ2SLL
+ * Copyright (c) 2024-2026 Stanislav Lechev [0xAF], LZ2SLL
  */
 
 
@@ -11,6 +14,9 @@ Plugins.magic_key.no_css = true;
 
 // Initialize the plugin
 Plugins.magic_key.init = async function () {
+  if (typeof KeyPlugin !== 'undefined')
+    console.warn('magic_key plugin is deprecated. Use the built-in KeyPlugin.init() instead.');
+
   // Check if utils plugin is loaded
   if (!Plugins.isLoaded('utils', 0.3)) {
     console.error('Example plugin depends on "utils >= 0.3".');
