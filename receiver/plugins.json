@@ -1,0 +1,272 @@
+{
+	"version": 1,
+	"plugins": [
+		{
+			"id": "MapPlugin",
+			"category": "builtin",
+			"global": "MapPlugin",
+			"since": "1.2.124",
+			"description": "Open the native map in a floating window"
+		},
+		{
+			"id": "SunPlugin",
+			"category": "builtin",
+			"global": "SunPlugin",
+			"since": "1.2.125",
+			"description": "Display Solar Weather from HamQSL and refresh it every 15 minutes"
+		},
+		{
+			"id": "KeyPlugin",
+			"category": "builtin",
+			"global": "KeyPlugin",
+			"since": "1.2.125",
+			"description": "Add a Magic Key input to the receiver Settings section",
+			"detect": "#magic-key-input",
+			"conflicts": ["magic_key", "ui_magic_key"]
+		},
+		{
+			"id": "RigPlugin",
+			"category": "builtin",
+			"global": "RigPlugin",
+			"since": "1.2.125",
+			"description": "Add a TRANSMIT (PTT) button for a RigControl-connected transceiver; hold Backspace to transmit. Requires both RigControl options (transceiver control and PTT) enabled in Settings → Reporting"
+		},
+
+		{
+			"id": "accessible_bookmark_search",
+			"category": "receiver",
+			"description": "Replaces the built-in bookmark search dialog with a native dropdown and improoves keyboard navigation",
+			"author": "René Jaun",
+			"requires": ["utils"]
+		},
+		{
+			"id": "antenna_switcher",
+			"category": "receiver",
+			"description": "Antenna switching for Raspberry Pi devices; uses a receiver section when available",
+			"author": "LZ2DMV"
+		},
+		{
+			"id": "colorful_spectrum",
+			"category": "receiver",
+			"description": "Colorize the spectrum analyzer",
+			"requires": ["utils"]
+		},
+		{
+			"id": "compact_analog_modes",
+			"category": "receiver",
+			"description": "Compact the receiver analog modes section",
+			"author": "fustinoni-net"
+		},
+		{
+			"id": "connect_notify",
+			"category": "receiver",
+			"description": "Send/receive notifications on user connect/disconnect",
+			"requires": ["notify"]
+		},
+		{
+			"id": "doppler",
+			"category": "receiver",
+			"description": "Track Doppler shift/effect of satellites; uses a receiver section and Satellite Finder window when available"
+		},
+		{
+			"id": "freq_scanner",
+			"category": "receiver",
+			"description": "Adds a frequency scanner; uses a receiver section and setup windows when available",
+			"author": "Joerg"
+		},
+		{
+			"id": "frequency_far_jump",
+			"category": "receiver",
+			"description": "Jump to a frequency outside the current profile",
+			"author": "LZ2DMV",
+			"requires": ["utils"]
+		},
+		{
+			"id": "screenshot",
+			"category": "receiver",
+			"description": "Take screenshot of the waterfall"
+		},
+		{
+			"id": "screen_reader",
+			"category": "receiver",
+			"description": "Provide spoken notifications for accessibility",
+			"requires": ["utils"]
+		},
+		{
+			"id": "search_bookmarks",
+			"category": "receiver",
+			"description": "Search all OWRX bookmarks and click to tune",
+			"author": "Yannis",
+			"requires": ["utils"],
+			"conflicts": ["search_bookmarks_old"]
+		},
+		{
+			"id": "smeter",
+			"category": "receiver",
+			"description": "Show S-Meter (needs calibration!); settings use a plugin window when available",
+			"author": "Joerg"
+		},
+		{
+			"id": "sort_profiles",
+			"category": "receiver",
+			"description": "Sort profiles by name",
+			"requires": ["utils"]
+		},
+		{
+			"id": "thumbtune",
+			"category": "receiver",
+			"description": "Minimalistic floating control panel optimized for one-finger mobile tuning",
+			"author": "UB1AON",
+			"requires": ["utils"]
+		},
+		{
+			"id": "toggle_scannable",
+			"category": "receiver",
+			"description": "Toggle the scannable state of bookmarks with right mouse button",
+			"requires": ["utils"]
+		},
+		{
+			"id": "tune_checkbox",
+			"category": "receiver",
+			"description": "Enable mouse-scroll to zoom by default",
+			"author": "LZ2DMV"
+		},
+		{
+			"id": "tune_precise",
+			"category": "receiver",
+			"description": "Add buttons for precise frequency tuning in a receiver section when available",
+			"author": "LZ2DMV"
+		},
+
+		{
+			"id": "example",
+			"category": "utility",
+			"description": "Example plugin for developers",
+			"requires": ["utils"]
+		},
+		{
+			"id": "example_theme",
+			"category": "utility",
+			"description": "Example theme plugin for developers"
+		},
+		{
+			"id": "example_uikit",
+			"category": "utility",
+			"description": "Demo plugin showcasing all UIKit features",
+			"requires": ["uikit"]
+		},
+		{
+			"id": "notify",
+			"category": "utility",
+			"description": "Notification utility plugin (delegates to `uikit.toast()` when available)"
+		},
+		{
+			"id": "plugin_loader",
+			"category": "utility",
+			"description": "Let users enable admin-approved plugins from a native plugin window"
+		},
+		{
+			"id": "uikit",
+			"category": "utility",
+			"description": "UI toolkit: dockable panel, modals, toasts, buttons, loading overlays"
+		},
+		{
+			"id": "utils",
+			"category": "utility",
+			"description": "Utility plugin, required by many plugins"
+		},
+
+		{
+			"id": "search_bookmarks_old",
+			"category": "deprecated",
+			"description": "This is the old version of the plugin, working on OWRX+ before v1.2.118",
+			"author": "Yannis",
+			"requires": ["utils"],
+			"conflicts": ["search_bookmarks"]
+		},
+		{
+			"id": "minimap",
+			"category": "deprecated",
+			"description": "Use the built-in `MapPlugin` on newer OpenWebRX+; the plugin remains for older versions",
+			"author": "13MAD86",
+			"replaced_by": "MapPlugin"
+		},
+		{
+			"id": "magic_key",
+			"category": "deprecated",
+			"description": "Use the built-in `KeyPlugin` on OpenWebRX+ 1.2.125 and newer; the plugin remains for older versions",
+			"requires": ["utils"],
+			"replaced_by": "KeyPlugin",
+			"conflicts": ["KeyPlugin", "ui_magic_key"]
+		},
+		{
+			"id": "mouse_freq",
+			"category": "deprecated",
+			"description": "Built into OpenWebRX+ 1.2.124 as **Settings → Show pointer frequency**; plugin remains for older versions",
+			"requires": ["utils"]
+		},
+		{
+			"id": "show_band_plan",
+			"category": "deprecated",
+			"description": "Show the band plan ribbon by default",
+			"author": "fustinoni-net"
+		},
+		{
+			"id": "keyboard_shortcuts",
+			"category": "deprecated",
+			"description": "Add keyboard shortcuts",
+			"requires": ["notify"]
+		},
+		{
+			"id": "set_waterfall_theme",
+			"category": "deprecated",
+			"description": "Set the default waterfall theme",
+			"author": "fustinoni-net"
+		},
+
+		{
+			"id": "ui_basic_theme",
+			"category": "experimental",
+			"description": "Dark theme matching uikit's original built-in colors",
+			"requires": ["uikit"]
+		},
+		{
+			"id": "ui_chat",
+			"category": "experimental",
+			"description": "Chat/Log tab in the uikit panel",
+			"requires": ["utils", "uikit"]
+		},
+		{
+			"id": "ui_magic_key",
+			"category": "experimental",
+			"description": "Set the MagicKey via a UIKit settings tab",
+			"requires": ["utils", "uikit"],
+			"conflicts": ["KeyPlugin", "magic_key"]
+		},
+		{
+			"id": "ui_status",
+			"category": "experimental",
+			"description": "Status bar footer in the uikit panel",
+			"requires": ["utils", "uikit"]
+		},
+
+		{
+			"id": "owrxantswitcher",
+			"category": "thirdparty",
+			"homepage": "https://github.com/jrghnng/owrxantswitcher",
+			"description": "Switch antenna ports using a WebAPI on the server."
+		},
+		{
+			"id": "owrx_devices_status",
+			"category": "thirdparty",
+			"homepage": "https://github.com/fustinoni-net/owrx_devices_status",
+			"description": "Extend the status panel by displaying the profile name each receiver is currently tuned to."
+		},
+		{
+			"id": "OWRX_Antenna_manager",
+			"category": "thirdparty",
+			"homepage": "https://github.com/fustinoni-net/OWRX_Antenna_manager",
+			"description": "A foundation for developing an antenna manager for OpenWebRX+."
+		}
+	]
+}

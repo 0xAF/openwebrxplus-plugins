@@ -10,6 +10,25 @@ docs/               — Documentation (GitHub Pages / Jekyll)
 
 Each plugin is a folder under `receiver/` or `map/` containing at minimum `pluginname.js` and optionally `pluginname.css`. The CSS is auto-loaded unless `Plugins.pluginname.no_css = true`.
 
+## Plugin manifest
+
+- `receiver/plugins.json` lists every receiver plugin and every built-in OpenWebRX+ plugin. It is used by `plugin_loader` and to generate the README plugin tables.
+- When adding, renaming, deprecating or changing the description/dependencies of a receiver plugin, update `receiver/plugins.json` and run `python3 tools/plugins.py`.
+- Never edit the README tables between `<!-- plugins:<category>:start -->` and `<!-- plugins:<category>:end -->` by hand.
+- New built-in OpenWebRX+ plugins get a `"category": "builtin"` entry and a commented-out line in `receiver/init.js.sample`.
+- Third-party plugins get `"category": "thirdparty"` with `homepage`; add `url` only for single-file plugins that work with `Plugins.load()` and need no server-side setup.
+- Map plugins are not in the manifest; their README table is edited by hand.
+- Field reference: README section "Adding a New Plugin to This Repository".
+
+## Plugin options
+
+- Plugins that take options from `init.js` expose `Plugins.<name>.setup(options)`, called after `Plugins.load()`.
+- Options that are only read at runtime may be plain properties set after `Plugins.load()`.
+- Never create `Plugins.<name>` before `Plugins.load()` - the loader then skips the plugin as already loaded.
+- When migrating an existing plugin to `setup()`, keep the old way of passing options working as a fallback.
+- `setup()` must also work after `init()` and apply the options to existing UI.
+- Known plugins still to migrate: `uikit` (`Plugins.uikit.settings` before load), `tune_precise` (`Plugins.tune_precise_steps`).
+
 ## Plugin conventions
 
 - **Namespace**: `Plugins.pluginname = Plugins.pluginname || {};`

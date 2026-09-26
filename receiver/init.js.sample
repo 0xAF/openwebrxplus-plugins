@@ -6,7 +6,6 @@
 // Plugins._enable_debug = true;
 
 // Optional per-plugin settings before load
-// Plugins.screen_reader.log_messages = true;
 // Plugins.tune_precise_steps = [12500, 5000, 10];
 // Plugins.uikit.settings = { position: 'bottom', visible: true };
 
@@ -29,6 +28,20 @@ const PluginsToLoad = [
 (async () => {
 	await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
 	// Plugins.utils._DEBUG_ALL_EVENTS = true;
+
+	// Wait until the receiver page is fully initialized before loading the rest.
+	// Built-in plugins (e.g. KeyPlugin) need the receiver panel to exist.
+	await new Promise(resolve => Plugins.utils.on_ready(resolve));
+
+	// Built-in (native) OpenWebRX+ plugins. Uncomment to enable.
+	// These are part of OpenWebRX+ itself and must not be loaded with Plugins.load().
+	// Start them before other plugins: deprecated plugins like minimap reuse them
+	// instead of starting them a second time.
+	// MapPlugin.init(); // native map in a floating window (OpenWebRX+ 1.2.124+)
+	// SunPlugin.init(); // Solar Weather from HamQSL (OpenWebRX+ 1.2.125+)
+	// KeyPlugin.init(); // Magic Key input in the Settings section (OpenWebRX+ 1.2.125+)
+	// RigPlugin.init(); // RigControl PTT button, hold Backspace to transmit (OpenWebRX+ 1.2.125+)
+
 	await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
 
 	// Load a local plugin if you have one
@@ -39,12 +52,15 @@ const PluginsToLoad = [
 		await Plugins.load(`https://0xaf.github.io/openwebrxplus-plugins/receiver/${pluginName}/${pluginName}.js`);
 	}
 
-	// Built-in (native) OpenWebRX+ plugins. Uncomment to enable.
-	// These are part of OpenWebRX+ itself and must not be loaded with Plugins.load().
-	// MapPlugin.init(); // native map in a floating window (OpenWebRX+ 1.2.124+)
-	// SunPlugin.init(); // Solar Weather from HamQSL (OpenWebRX+ 1.2.125+)
-	// KeyPlugin.init(); // Magic Key input in the Settings section (OpenWebRX+ 1.2.125+)
-	// RigPlugin.init(); // RigControl PTT button, hold Backspace to transmit (OpenWebRX+ 1.2.125+)
+	// Let users enable plugins themselves from a Plugins window (puzzle button, OpenWebRX+ 1.2.124+).
+	// Keep it last: everything loaded before setup() is shown as "loaded by admin".
+	// await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/plugin_loader/plugin_loader.js');
+	// Plugins.plugin_loader.setup({
+	// 	allowed: ['doppler', 'screenshot', 'tune_precise', 'MapPlugin', 'SunPlugin'],
+	// 	allow_all: false,          // true = users may enable any repository or built-in plugin
+	// 	allow_experimental: false, // true = users may enable experimental (ui_*) plugins
+	// 	allow_thirdparty: false,   // true = users may enable third-party plugins
+	// });
 })();
 
 // vim: ft=javascript
