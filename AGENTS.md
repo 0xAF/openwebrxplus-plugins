@@ -18,7 +18,8 @@ Each plugin is a folder under `receiver/` or `map/` containing at minimum `plugi
 - New built-in OpenWebRX+ plugins get a `"category": "builtin"` entry and a commented-out line in `receiver/init.js.sample`.
 - Third-party plugins get `"category": "thirdparty"` with `homepage`; add `url` only for single-file plugins that work with `Plugins.load()` and need no server-side setup.
 - Map plugins are not in the manifest; their README table is edited by hand.
-- Field reference: README section "Adding a New Plugin to This Repository".
+- Field reference: `DEVELOPMENT.md`, section "Adding a New Plugin to This Repository".
+- Developer documentation (plugin API, utils API, conventions) lives in `DEVELOPMENT.md`; keep it in sync when utils or the OpenWebRX+ plugin API change.
 
 ## Plugin options
 

@@ -18,18 +18,13 @@ permalink: /
   - [Plugin List](#plugin-list)
     - [Built-in Plugins](#built-in-plugins)
     - [Receiver Plugins](#receiver-plugins)
-    - [OpenWebRX+ UI Compatibility](#openwebrx-ui-compatibility)
     - [Utility \& Example Plugins](#utility--example-plugins)
     - [Deprecated Receiver Plugins](#deprecated-receiver-plugins)
     - [Map Plugins](#map-plugins)
-    - [Thirdparty Plugins](#thirdparty-plugins)
+    - [Third-party Plugins](#third-party-plugins)
   - [Detailed Installation \& Loading Instructions](#detailed-installation--loading-instructions)
   - [Raspberry Pi \& Docker Notes](#raspberry-pi--docker-notes)
   - [Developing Plugins](#developing-plugins)
-    - [Plugin Structure](#plugin-structure)
-    - [Adding a New Plugin to This Repository](#adding-a-new-plugin-to-this-repository)
-    - [Plugin Options](#plugin-options)
-    - [Hosting on GitHub](#hosting-on-github)
   - [Contributing](#contributing)
   - [Support](#support)
   - [FAQ](#faq)
@@ -42,7 +37,10 @@ This repository provides a set of plugins for OpenWebRX+, allowing users to cust
 
 - **Built-in Plugins**: Optional plugins included with OpenWebRX+ and enabled from `init.js`.
 - **Receiver Plugins**: Enhance the receiver UI and add new features.
+- **Utility & Example Plugins**: Shared helpers used by other plugins, the [plugin_loader](receiver/plugin_loader) that lets users enable plugins themselves, and examples for developers.
+- **Deprecated Receiver Plugins**: Older plugins kept for older OpenWebRX+ versions.
 - **Map Plugins**: Add new layers or features to the map interface.
+- **Third-party Plugins**: Plugins from other authors, hosted in their own repositories.
 
 Each plugin provided by this repository is documented in its own folder.
 
@@ -69,6 +67,8 @@ Each plugin provided by this repository is documented in its own folder.
    ```
 
 1. Keep the `utils` and `notify` `Plugins.load` lines and the `on_ready` wait between them. `utils` and `notify` are shared dependencies, and the wait makes the rest load after the receiver page is fully initialized. Add or remove names in `PluginsToLoad` to pick which plugins you want.
+
+1. Uncomment the built-in plugins (`MapPlugin.init();`, ...) you want, and optionally the `plugin_loader` block at the end to let users enable plugins themselves.
 
 1. Refresh the OpenWebRX+ page to see the changes. If nothing changes, restart varnish/nginx as noted below.
 
@@ -99,7 +99,7 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 
 | Name | Description |
 | :------ | :---------- |
-|[accessible_bookmark_search](receiver/accessible_bookmark_search)|Replaces the built-in bookmark search dialog with a native dropdown and improoves keyboard navigation ([René Jaun](#contributors))|
+|[accessible_bookmark_search](receiver/accessible_bookmark_search)|Replaces the built-in bookmark search dialog with a native dropdown and improves keyboard navigation ([René Jaun](#contributors))|
 |[antenna_switcher](receiver/antenna_switcher)|Antenna switching for Raspberry Pi devices; uses a receiver section when available ([LZ2DMV](#contributors))|
 |[colorful_spectrum](receiver/colorful_spectrum)|Colorize the spectrum analyzer|
 |[compact_analog_modes](receiver/compact_analog_modes)|Compact the receiver analog modes section ([fustinoni-net](#contributors))|
@@ -119,10 +119,6 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 
 <!-- plugins:receiver:end -->
 
-### OpenWebRX+ UI Compatibility
-
-`antenna_switcher`, `doppler`, `freq_scanner`, `smeter`, and `tune_precise` use the built-in receiver sections or plugin windows supported by newer OpenWebRX+ versions. Each keeps its previous interface on older versions. The receiver sections need OpenWebRX+ 1.2.125 or newer; `antenna_switcher`, `doppler`, `freq_scanner`, and `tune_precise` do not support OpenWebRX+ 1.2.124. See the individual plugin pages for details.
-
 ### Utility & Example Plugins
 
 <!-- plugins:utility:start -->
@@ -132,10 +128,8 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 | :------ | :---------- |
 |[example](receiver/example)|Example plugin for developers|
 |[example_theme](receiver/example_theme)|Example theme plugin for developers|
-|[example_uikit](receiver/example_uikit)|Demo plugin showcasing all UIKit features|
-|[notify](receiver/notify)|Notification utility plugin (delegates to `uikit.toast()` when available)|
+|[notify](receiver/notify)|Notification utility plugin|
 |[plugin_loader](receiver/plugin_loader)|Let users enable admin-approved plugins from a native plugin window|
-|[uikit](receiver/uikit)|UI toolkit: dockable panel, modals, toasts, buttons, loading overlays|
 |[utils](receiver/utils)|Utility plugin, required by many plugins|
 
 <!-- plugins:utility:end -->
@@ -164,7 +158,7 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 |[~~layer_qth_maidenhead~~](map/layer_qth_maidenhead)|(**deprecated**) Add Maidenhead (QTH) grid to the map|
 |[reduce_map_legend_sections](map/reduce_map_legend_sections)|Allow the reduction of the map legend sections ([fustinoni-net](#contributors))|
 
-### Thirdparty Plugins
+### Third-party Plugins
 
 <!-- plugins:thirdparty:start -->
 <!-- generated by tools/plugins.py from receiver/plugins.json - do not edit -->
@@ -190,23 +184,24 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
    - `/opt/openwebrx/htdocs`
    - `/usr/lib/python3/dist-packages/htdocs`
 
-3. **Create the plugins folders if they doesn't exist**  
+3. **Create the plugins folders if they don't exist**  
 
    ```sh
    mkdir -p /path/to/htdocs/plugins/{receiver,map}
    ```
 
-4. **Create or edit the `init.js` file inside the coresponding plugin type folder (receiver or map)**  
+4. **Create or edit the `init.js` file inside the corresponding plugin type folder (receiver or map)**  
    Use the provided templates:
    - [receiver/init.js.sample](receiver/init.js.sample)
    - [map/init.js.sample](map/init.js.sample)
 
 5. **Add plugin loading lines to your `init.js` file if you're not using the provided init.js - see** [Beginner Quickstart](#beginner-quickstart)  
-   Use the async pattern so dependencies load first:
+   Use the async pattern so dependencies load first, and load the other plugins after the receiver page is initialized:
 
    ```js
    (async () => {
      await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js');
+     await new Promise(resolve => Plugins.utils.on_ready(resolve));
      await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/notify/notify.js');
      await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/tune_precise/tune_precise.js');
    })();
@@ -227,82 +222,14 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 
 ## Developing Plugins
 
-The [example plugin README](receiver/example/README.md) has a step-by-step quickstart, a minimal plugin skeleton, a table of available events, and annotated patterns for the most common tasks (event listening, function wrapping, DOM access). Start there.
-
-Short summary:
-
-1. Create `$OWRX_FOLDER/plugins/receiver/my_plugin/my_plugin.js`.
-2. Load it locally by folder name: `await Plugins.load('my_plugin');`
-3. Export `Plugins.my_plugin.init()` — return `true` on success, `false` on a failed dependency check.
-
-### Plugin Structure
-
-- Each plugin lives in `plugins/{receiver|map}/plugin_name/` with a matching `plugin_name.js` entry file.
-- Set `Plugins.<name>._version` so other plugins can check for it with `Plugins.isLoaded('name', version)`.
-- Set `Plugins.<name>.no_css = true` if there is no sibling CSS file; otherwise the loader fetches `plugin_name.css` automatically.
-- Declare dependencies with `await Plugins.load('dep')` before loading plugins that need them.
-- Use `Plugins.utils.wrap_func()` to intercept existing OWRX+ functions and `Plugins.utils.on_ready()` to defer work until the page is fully initialised.
-- See [uikit](receiver/uikit/README.md) for a dockable panel and settings modal you can build on.
-
-### Adding a New Plugin to This Repository
-
-All receiver plugins are listed in [`receiver/plugins.json`](receiver/plugins.json). This manifest is the single source of truth: the [plugin_loader](receiver/plugin_loader) plugin reads it at runtime, and the plugin tables in this README are generated from it.
-
-1. Create `receiver/<name>/<name>.js`, and `<name>.css` if needed.
-2. Create `receiver/<name>/README.md` with the Jekyll frontmatter and a `## Code` section linking to the Github repo (see any existing plugin).
-3. Add an entry to `receiver/plugins.json`. The order of entries is the order of the README tables.
-4. Run `python3 tools/plugins.py`. It validates the manifest, checks that every plugin folder is listed, and regenerates the README tables.
-5. Commit the plugin folder, `receiver/plugins.json` and `README.md` together.
-
-Do not edit the tables between `<!-- plugins:...:start -->` and `<!-- plugins:...:end -->` by hand. Change `plugins.json` and run the script. `python3 tools/plugins.py --check` only validates and fails if the README is outdated.
-
-Manifest entry fields:
-
-| Field | Required | Description |
-| :---- | :------- | :---------- |
-| `id` | yes | Plugin folder name, the global name of a built-in plugin (`MapPlugin`), or a unique name for a third-party plugin |
-| `category` | yes | `builtin`, `receiver`, `utility`, `deprecated`, `experimental` or `thirdparty`. Experimental plugins are not listed in the README |
-| `description` | yes | One line, Markdown allowed. Shown in the README and in the loader |
-| `author` | no | Contributor name, rendered as a link to [Contributors](#contributors) |
-| `requires` | no | Plugin ids loaded before this plugin, e.g. `["utils"]` |
-| `conflicts` | no | Plugin ids that cannot run together with this plugin |
-| `replaced_by` | no | Built-in plugin that replaces a deprecated plugin; the loader hides the deprecated plugin when the built-in exists |
-| `homepage` | third-party | Project page of a third-party plugin, used as the README link |
-| `url` | no | Third-party only: `https://` link to the plugin `.js` file. Without it the plugin is listed in the README but not in the loader |
-| `global` | built-in | Global object of the built-in plugin, e.g. `MapPlugin` |
-| `since` | built-in | First OpenWebRX+ version with the built-in plugin |
-| `detect` | no | Built-ins only: CSS selector that exists once the plugin is started, when it does not create `#plugin-button-<name>`, `#plugin-section-<name>` or `#plugin-window-<name>` |
-
-When a new built-in plugin appears in OpenWebRX+, add it with `"category": "builtin"` and also add a commented-out line for it in [`receiver/init.js.sample`](receiver/init.js.sample).
-
-Third-party plugins live in other repositories. Add them with `"category": "thirdparty"` and a `homepage`. Add `url` only when the plugin is a single `.js` file that works with `Plugins.load()` and needs no server-side setup; only then can users enable it from the loader.
-
-Map plugins are not part of the manifest; their table is edited by hand.
-
-### Plugin Options
-
-Plugins that take options from `init.js` provide a `setup(options)` method, called after the plugin is loaded:
-
-```js
-await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/my_plugin/my_plugin.js');
-Plugins.my_plugin.setup({ color: 'red' });
-```
-
-- Options read only at runtime (for example on every event) may also be plain properties, set after `Plugins.load()`: `Plugins.screen_reader.log_messages = true;`
-- Never create or modify `Plugins.<name>` before `Plugins.load()`. `Plugins.load()` treats an existing `Plugins.<name>` as already loaded and skips the plugin.
-- Merge the options with defaults using `Plugins.utils.deepMerge()` when the plugin depends on utils.
-- `setup()` must work when called after `init()` and apply the new options to UI that already exists.
-
-### Hosting on GitHub
-
-To host plugins on GitHub, use [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) for correct JS Content-Type.
+See the [Development Guide](DEVELOPMENT.md) for the plugin structure, the OpenWebRX+ plugin API, the `utils` helpers, plugin options, and how to add a plugin to this repository.
 
 ## Contributing
 
 Contributions are welcome!  
 
 - Submit pull requests, providing the same structure for the folders as the rest of the plugins.
-- New or changed receiver plugins must be added to `receiver/plugins.json` - see [Adding a New Plugin to This Repository](#adding-a-new-plugin-to-this-repository).
+- New or changed receiver plugins must be added to `receiver/plugins.json` - see [Adding a New Plugin to This Repository](DEVELOPMENT.md#adding-a-new-plugin-to-this-repository).
 - For major changes, open an issue first to discuss.
 - Please follow the style of existing plugins and documentation.
 
@@ -321,6 +248,15 @@ A: In the `htdocs/plugins/receiver` or `htdocs/plugins/map` folder of your OpenW
 
 **Q: How do I load a plugin from a URL?**  
 A: Use `Plugins.load('https://.../plugin_name/plugin_name.js');` in your `init.js`.
+
+**Q: A plugin does not load. How do I find out why?**  
+A: Add `Plugins._enable_debug = true;` at the top of `init.js`, reload the page and check the browser console (F12). Errors from the plugins are shown there too.
+
+**Q: The `plugin_loader` window shows no plugins.**  
+A: The loader could not read `plugins.json`. Check the browser console. When the plugins are hosted on your own server, `plugins.json` must be in the `receiver` folder next to the plugin folders, and a server other than OpenWebRX+ must send the `Access-Control-Allow-Origin` header. See [plugin_loader](receiver/plugin_loader).
+
+**Q: The section of a plugin in the receiver panel is empty.**  
+A: Receiver sections need OpenWebRX+ 1.2.125 or newer. Update OpenWebRX+.
 
 ---
 

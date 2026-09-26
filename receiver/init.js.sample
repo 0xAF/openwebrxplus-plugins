@@ -7,12 +7,9 @@
 
 // Optional per-plugin settings before load
 // Plugins.tune_precise_steps = [12500, 5000, 10];
-// Plugins.uikit.settings = { position: 'bottom', visible: true };
 
 // List the plugins you want to load (folder names). Order matters if plugins depend on each other.
 const PluginsToLoad = [
-	'uikit',
-	'ui_receiver',
 	'colorful_spectrum',
 	'connect_notify',
 	'frequency_far_jump',
@@ -58,7 +55,7 @@ const PluginsToLoad = [
 	// Plugins.plugin_loader.setup({
 	// 	allowed: ['doppler', 'screenshot', 'tune_precise', 'MapPlugin', 'SunPlugin'],
 	// 	allow_all: false,          // true = users may enable any repository or built-in plugin
-	// 	allow_experimental: false, // true = users may enable experimental (ui_*) plugins
+	// 	allow_experimental: false, // true = users may enable experimental plugins
 	// 	allow_thirdparty: false,   // true = users may enable third-party plugins
 	// });
 })();

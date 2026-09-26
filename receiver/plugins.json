@@ -35,7 +35,7 @@
 		{
 			"id": "accessible_bookmark_search",
 			"category": "receiver",
-			"description": "Replaces the built-in bookmark search dialog with a native dropdown and improoves keyboard navigation",
+			"description": "Replaces the built-in bookmark search dialog with a native dropdown and improves keyboard navigation",
 			"author": "René Jaun",
 			"requires": ["utils"]
 		},
@@ -151,14 +151,14 @@
 		},
 		{
 			"id": "example_uikit",
-			"category": "utility",
+			"category": "experimental",
 			"description": "Demo plugin showcasing all UIKit features",
 			"requires": ["uikit"]
 		},
 		{
 			"id": "notify",
 			"category": "utility",
-			"description": "Notification utility plugin (delegates to `uikit.toast()` when available)"
+			"description": "Notification utility plugin"
 		},
 		{
 			"id": "plugin_loader",
@@ -167,7 +167,7 @@
 		},
 		{
 			"id": "uikit",
-			"category": "utility",
+			"category": "experimental",
 			"description": "UI toolkit: dockable panel, modals, toasts, buttons, loading overlays"
 		},
 		{
