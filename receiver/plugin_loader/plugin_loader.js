@@ -11,12 +11,18 @@
  *
  * Requires OpenWebRX+ 1.2.124+ (Plugins.addButton / Plugins.addWindow).
  *
+ * Changes:
+ * 0.1:
+ *  - initial release
+ * 0.2:
+ *  - highlight the button, notify and mark plugins that are new since the list was last opened
+ *
  * License: MIT
  * Copyright (c) 2026 Stanislav Lechev [0xAF], LZ2SLL
  */
 
 Plugins.plugin_loader = Plugins.plugin_loader || {};
-Plugins.plugin_loader._version = 0.1;
+Plugins.plugin_loader._version = 0.2;
 
 // styles are injected by the plugin
 Plugins.plugin_loader.no_css = true;
@@ -30,6 +36,8 @@ Plugins.plugin_loader._baseUrl = (document.currentScript && document.currentScri
 	|| Plugins.plugin_loader._cdnUrl;
 
 Plugins.plugin_loader._lsKey = 'plugin_loader_enabled';
+Plugins.plugin_loader._seenKey = 'plugin_loader_seen'; // plugin ids the user has seen in the list
+Plugins.plugin_loader._newColor = '#c77d1a';
 Plugins.plugin_loader._manifest = [];  // plugin entries from plugins.json (+ unknown built-ins)
 Plugins.plugin_loader._byId = {};
 Plugins.plugin_loader._config = { allowed: [], allow_all: false, allow_experimental: false, allow_thirdparty: false };
@@ -40,6 +48,7 @@ Plugins.plugin_loader._removed = {};   // ids unchecked by the user, removed aft
 Plugins.plugin_loader._busy = {};
 Plugins.plugin_loader._errors = {};
 Plugins.plugin_loader._setupDone = false;
+Plugins.plugin_loader._new = {};       // ids shown as new until the page is reloaded
 Plugins.plugin_loader._manifestLoaded = false;
 
 // Load the manifest. The UI is created later by setup().
@@ -125,9 +134,12 @@ Plugins.plugin_loader.setup = async function (config) {
 
 	self._injectStyle();
 	var button = Plugins.addButton('plugin_loader', 'PLUGINS', function () {
+		var opening = self._window && self._window.style.display === 'none';
 		self._render();
 		Plugins.toggleWindow('plugin_loader');
+		if (opening) self._markSeen();
 	});
+	self._button = button;
 	// addButton() only takes text - replace it with the puzzle icon
 	if (button) {
 		button.innerHTML = self._icon;
@@ -146,6 +158,7 @@ Plugins.plugin_loader.setup = async function (config) {
 		self._user[id] = true;
 		if (!self._isLoaded(p)) await self._enable(p);
 	}
+	self._checkNew();
 	self._render();
 };
 
@@ -314,7 +327,78 @@ Plugins.plugin_loader._toggle = async function (p, on) {
 };
 
 // ---------------------------------------------------------------------------
+// new plugins
+
+// Find plugins in the list the user has not seen yet. They stay "new" on every
+// page load until the user opens the window.
+Plugins.plugin_loader._checkNew = function () {
+	var self = Plugins.plugin_loader;
+	var visible = self._visibleIds();
+	var seen = self._loadSeen();
+	if (seen === null) {
+		// first run in this browser: remember the list, nothing is new
+		self._saveSeen(visible);
+		return;
+	}
+	var fresh = visible.filter(function (id) { return seen.indexOf(id) < 0; });
+	fresh.forEach(function (id) { self._new[id] = true; });
+	if (!fresh.length) return;
+
+	self._highlightButton(true);
+	if (Plugins.isLoaded('notify') && typeof Plugins.notify.show === 'function') {
+		Plugins.notify.show(fresh.length === 1
+			? 'New plugin available: ' + fresh[0]
+			: fresh.length + ' new plugins available in the Plugins window');
+	}
+};
+
+// The window was opened: everything in the list is seen now.
+// The "new" marks stay visible until the page is reloaded.
+Plugins.plugin_loader._markSeen = function () {
+	var self = Plugins.plugin_loader;
+	var seen = self._loadSeen() || [];
+	self._visibleIds().forEach(function (id) {
+		if (seen.indexOf(id) < 0) seen.push(id);
+	});
+	self._saveSeen(seen);
+	self._highlightButton(false);
+};
+
+Plugins.plugin_loader._visibleIds = function () {
+	var self = Plugins.plugin_loader;
+	return self._manifest.filter(self._isVisible).map(function (p) { return p.id; });
+};
+
+Plugins.plugin_loader._highlightButton = function (on) {
+	var btn = Plugins.plugin_loader._button;
+	if (!btn) return;
+	var count = Object.keys(Plugins.plugin_loader._new).length;
+	btn.style.background = on ? Plugins.plugin_loader._newColor : '';
+	btn.title = on ? 'Plugins (' + count + ' new)' : 'Plugins';
+};
+
+// ---------------------------------------------------------------------------
 // storage
+
+// Returns the list of seen plugin ids, or null when nothing was saved yet.
+Plugins.plugin_loader._loadSeen = function () {
+	try {
+		var raw = localStorage.getItem(Plugins.plugin_loader._seenKey);
+		if (raw === null) return null;
+		var list = JSON.parse(raw);
+		return Array.isArray(list) ? list : [];
+	} catch (e) {
+		return null;
+	}
+};
+
+Plugins.plugin_loader._saveSeen = function (list) {
+	try {
+		localStorage.setItem(Plugins.plugin_loader._seenKey, JSON.stringify(list));
+	} catch (e) {
+		console.warn('[plugin_loader] cannot save the seen plugins.');
+	}
+};
 
 Plugins.plugin_loader._loadSaved = function () {
 	try {
@@ -362,6 +446,8 @@ Plugins.plugin_loader._style = [
 	'.plugin-loader__badge { flex: none; padding: 0 5px; border-radius: 3px; font-size: 7.5pt; line-height: 14px;',
 	'  text-transform: uppercase; background: rgba(255, 255, 255, 0.15); }',
 	'.plugin-loader__badge--reload { background: #8a6d1f; }',
+	'.plugin-loader__badge--new { background: #c77d1a; }',
+	'.plugin-loader__row--new { padding-left: 9px; box-shadow: inset 3px 0 #c77d1a; background: rgba(199, 125, 26, 0.12); }',
 	'.plugin-loader__badge--error { background: #8f2f2f; }',
 	'.plugin-loader__desc { margin-top: 1px; font-size: 8.5pt; line-height: 1.3; opacity: 0.7; overflow: hidden;',
 	'  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }',
@@ -415,10 +501,12 @@ Plugins.plugin_loader._row = function (p) {
 	else if (locked) badge = [self._admin[p.id] ? 'admin' : 'active', ''];
 	else if (p.category === 'deprecated') badge = ['deprecated', ''];
 
-	var row = el('label', 'plugin-loader__row' + (locked ? ' plugin-loader__row--locked' : ''));
+	var row = el('label', 'plugin-loader__row' + (locked ? ' plugin-loader__row--locked' : '')
+		+ (self._new[p.id] ? ' plugin-loader__row--new' : ''));
 	var info = el('div', 'plugin-loader__info');
 	var title = el('div', 'plugin-loader__title');
 	title.appendChild(el('span', 'plugin-loader__name', p.id));
+	if (self._new[p.id]) title.appendChild(el('span', 'plugin-loader__badge plugin-loader__badge--new', 'new'));
 	if (badge) {
 		title.appendChild(el('span', 'plugin-loader__badge' + (badge[1] ? ' plugin-loader__badge--' + badge[1] : ''), badge[0]));
 	}

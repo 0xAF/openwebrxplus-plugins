@@ -16,6 +16,7 @@ Each plugin has an on/off switch and a short description. Badges show the plugin
 - Dependencies (`utils`, `notify`, ...) are loaded automatically.
 - Deprecated plugins are hidden when their built-in replacement is available.
 - Plugins that conflict with an already running plugin (for example `magic_key` and `KeyPlugin`) are refused.
+- New plugins in the list are highlighted. When the list has plugins the user has not seen yet, the button turns orange and, if the [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/notify) plugin is loaded, a notification is shown. This repeats on every page load until the user opens the window. The **new** marks then stay in the list until the next page load. On the first visit nothing is marked as new.
 
 Requires an OpenWebRX+ version with native plugin buttons and windows.
 
