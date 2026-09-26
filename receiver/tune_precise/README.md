@@ -8,7 +8,7 @@ This plugin is an implementation of a feature we saw on rikmotik.ru for precise 
 
 It adds six buttons in your receiver's panel to precisely tune the frequency up and down with different steps.
 
-On OpenWebRX+ 1.2.125 and newer, open the **Precise Tuning** section in the receiver panel to use the buttons. On versions before 1.2.124, the buttons remain beside the frequency display. OpenWebRX+ 1.2.124 is not supported, because `Plugins.addSection()` changed in 1.2.125.
+On newer OpenWebRX+ versions, open the **Precise Tuning** section in the receiver panel to use the buttons. On older versions, the buttons remain beside the frequency display.
 
 Default steps are 10kHz, 1kHz, 500Hz. To change the steps see below.
 

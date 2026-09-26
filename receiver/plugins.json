@@ -194,7 +194,7 @@
 		{
 			"id": "magic_key",
 			"category": "deprecated",
-			"description": "Use the built-in `KeyPlugin` on OpenWebRX+ 1.2.125 and newer; the plugin remains for older versions",
+			"description": "Use the built-in `KeyPlugin` on newer OpenWebRX+ versions; the plugin remains for older versions",
 			"requires": ["utils"],
 			"replaced_by": "KeyPlugin",
 			"conflicts": ["KeyPlugin", "ui_magic_key"]
@@ -202,7 +202,7 @@
 		{
 			"id": "mouse_freq",
 			"category": "deprecated",
-			"description": "Built into OpenWebRX+ 1.2.124 as **Settings → Show pointer frequency**; plugin remains for older versions",
+			"description": "Built into newer OpenWebRX+ versions as **Settings → Show pointer frequency**; plugin remains for older versions",
 			"requires": ["utils"]
 		},
 		{

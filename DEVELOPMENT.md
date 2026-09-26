@@ -6,7 +6,7 @@ permalink: /development
 
 # Development Guide
 
-How to write receiver plugins for OpenWebRX+ 1.2.125 and newer, and how to add them to this repository.
+How to write receiver plugins for current OpenWebRX+ versions, and how to add them to this repository.
 
 - [Quickstart](#quickstart)
 - [Plugin Structure](#plugin-structure)
@@ -88,12 +88,12 @@ Adds a collapsible section to the receiver panel, before the Settings section, a
 var content = Plugins.addSection('my_plugin', 'My Plugin');
 content.appendChild(myControls);
 // open it by default when the user has not chosen yet
-if (!LS.has('plugin-section-my_plugin')) UI.toggleSection(content.previousElementSibling, true);
+if (!LS.has('plugin-section-my_plugin')) Plugins.toggleSection('my_plugin', true);
 ```
 
-### `Plugins.toggleSection(id)`
+### `Plugins.toggleSection(id, on)`
 
-Toggles the section open or closed. To set a specific state, use `UI.toggleSection(divider, on)`.
+Opens (`on = true`), closes (`on = false`) or toggles (no `on`) the section. The state is saved in localStorage.
 
 ## Built-in Plugins
 

@@ -4,7 +4,7 @@ title: "OpenWebRX+ Receiver Plugin: Mouse Freq"
 permalink: /receiver/mouse_freq
 ---
 
-**Deprecated on OpenWebRX+ 1.2.124 and newer.** Open the receiver's **Settings** section and enable **Show pointer frequency** instead. If this plugin is loaded on a version with the built-in option, it prints that instruction in the browser console and does not create a second frequency tooltip. It continues to work on older versions.
+**Deprecated on newer OpenWebRX+ versions.** Open the receiver's **Settings** section and enable **Show pointer frequency** instead. If this plugin is loaded on a version with the built-in option, it prints that instruction in the browser console and does not create a second frequency tooltip. It continues to work on older versions.
 
 This `receiver` plugin will:
 

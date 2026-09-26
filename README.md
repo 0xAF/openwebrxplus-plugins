@@ -143,8 +143,8 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 | :------ | :---------- |
 |[~~search_bookmarks_old~~](receiver/search_bookmarks_old)|This is the old version of the plugin, working on OWRX+ before v1.2.118 ([Yannis](#contributors))|
 |[~~minimap~~](receiver/minimap)|Use the built-in `MapPlugin` on newer OpenWebRX+; the plugin remains for older versions ([13MAD86](#contributors))|
-|[~~magic_key~~](receiver/magic_key)|Use the built-in `KeyPlugin` on OpenWebRX+ 1.2.125 and newer; the plugin remains for older versions|
-|[~~mouse_freq~~](receiver/mouse_freq)|Built into OpenWebRX+ 1.2.124 as **Settings → Show pointer frequency**; plugin remains for older versions|
+|[~~magic_key~~](receiver/magic_key)|Use the built-in `KeyPlugin` on newer OpenWebRX+ versions; the plugin remains for older versions|
+|[~~mouse_freq~~](receiver/mouse_freq)|Built into newer OpenWebRX+ versions as **Settings → Show pointer frequency**; plugin remains for older versions|
 |[~~show_band_plan~~](receiver/show_band_plan)|Show the band plan ribbon by default ([fustinoni-net](#contributors))|
 |[~~keyboard_shortcuts~~](receiver/keyboard_shortcuts)|Add keyboard shortcuts|
 |[~~set_waterfall_theme~~](receiver/set_waterfall_theme)|Set the default waterfall theme ([fustinoni-net](#contributors))|
@@ -256,7 +256,7 @@ A: Add `Plugins._enable_debug = true;` at the top of `init.js`, reload the page 
 A: The loader could not read `plugins.json`. Check the browser console. When the plugins are hosted on your own server, `plugins.json` must be in the `receiver` folder next to the plugin folders, and a server other than OpenWebRX+ must send the `Access-Control-Allow-Origin` header. See [plugin_loader](receiver/plugin_loader).
 
 **Q: The section of a plugin in the receiver panel is empty.**  
-A: Receiver sections need OpenWebRX+ 1.2.125 or newer. Update OpenWebRX+.
+A: Receiver sections need a current OpenWebRX+ version. Update OpenWebRX+.
 
 ---
 

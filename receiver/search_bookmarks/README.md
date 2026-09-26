@@ -5,7 +5,7 @@ Search all owrx bookmarks and click to tune. Jumping to tune based on "frequency
 ## Prerequisites
 
 You must enable "Allow users to change center frequency" and in case you have set a magic key, you will have to provide it with a '#key=[KEY]' at the end of the URL.
-On OpenWebRX+ 1.2.125 and newer you can also enable the built-in `KeyPlugin` (see [Built-in Plugins](https://0xaf.github.io/openwebrxplus-plugins/#built-in-plugins)); on older versions use the [magic_key](https://0xaf.github.io/openwebrxplus-plugins/receiver/magic_key) plugin.
+On newer OpenWebRX+ versions you can also enable the built-in `KeyPlugin` (see [Built-in Plugins](https://0xaf.github.io/openwebrxplus-plugins/#built-in-plugins)); on older versions use the [magic_key](https://0xaf.github.io/openwebrxplus-plugins/receiver/magic_key) plugin.
 
 ## Installation
 

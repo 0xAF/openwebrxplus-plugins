@@ -6,7 +6,7 @@ permalink: /receiver/antenna_switcher
 
 This is a `receiver` plugin to add antenna switching functionality for Raspberry Pi devices, providing logical levels on their GPIO ports that correspond to the user's antenna selection via buttons on the OWRX's front-end.
 
-The antenna buttons appear in a collapsible **Antenna** section in the receiver panel after the back-end reports how many antennas are available. On OpenWebRX+ 1.2.125 and newer, the plugin uses the built-in section API. On versions before 1.2.124, it creates the same section itself. OpenWebRX+ 1.2.124 is not supported, because `Plugins.addSection()` changed in 1.2.125. The selected antenna stays highlighted, and the section's open/closed state is kept when upgrading to the built-in section.
+The antenna buttons appear in a collapsible **Antenna** section in the receiver panel after the back-end reports how many antennas are available. On newer OpenWebRX+ versions, the plugin uses the built-in section API. On older versions, it creates the same section itself. The selected antenna stays highlighted, and the section's open/closed state is kept when upgrading to the built-in section.
 
 It consists of a **front-end** and **back-end** part.
 

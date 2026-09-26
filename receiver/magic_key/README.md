@@ -4,7 +4,7 @@ title: "OpenWebRX+ Receiver Plugin: MagicKey"
 permalink: /receiver/magic_key
 ---
 
-**Deprecated on OpenWebRX+ 1.2.125 and newer.** Use the built-in `KeyPlugin` instead. Add `KeyPlugin.init();` once in your receiver `init.js` to get a Magic Key input in the receiver Settings section. The built-in plugin is available but is not started automatically.
+**Deprecated on newer OpenWebRX+ versions.** Use the built-in `KeyPlugin` instead. Add `KeyPlugin.init();` once in your receiver `init.js` to get a Magic Key input in the receiver Settings section. The built-in plugin is available but is not started automatically.
 
 This `receiver` plugin will allow you to set the MagicKey without typing it in the browser's address bar.
 

@@ -6,7 +6,7 @@ permalink: /receiver/doppler
 
 This `receiver` plugin will track the Doppler shift frequency of a chosen satellite. Useful for SSTV/Packet.
 
-The Sat ID and TRACK/STOP controls appear in a collapsible **Doppler** section on OpenWebRX+ 1.2.125 and newer. OpenWebRX+ 1.2.124 is not supported, because `Plugins.addSection()` changed in 1.2.125. Satellite Finder uses the built-in resizable plugin window when `Plugins.addWindow()` and `Plugins.toggleWindow()` are available. Older versions keep the original receiver row and Finder dialog. Closing Finder stops its automatic five-second refresh but does not stop active Doppler tracking.
+The Sat ID and TRACK/STOP controls appear in a collapsible **Doppler** section on newer OpenWebRX+ versions. Satellite Finder uses the built-in resizable plugin window when `Plugins.addWindow()` and `Plugins.toggleWindow()` are available. Older versions keep the original receiver row and Finder dialog. Closing Finder stops its automatic five-second refresh but does not stop active Doppler tracking.
 
 This plugin started as a port of [work](https://github.com/studentkra/OpenWebRX-Doppler) by [Sergey Osipov](https://github.com/studentkra).  
 Then I switched to [CelesTrak JSON API](https://celestrak.org/) and created Satellite Finder modal window.

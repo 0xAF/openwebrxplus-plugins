@@ -17,7 +17,7 @@ Each plugin has an on/off switch and a short description. Badges show the plugin
 - Deprecated plugins are hidden when their built-in replacement is available.
 - Plugins that conflict with an already running plugin (for example `magic_key` and `KeyPlugin`) are refused.
 
-Requires OpenWebRX+ 1.2.124 or newer (native plugin buttons and windows).
+Requires an OpenWebRX+ version with native plugin buttons and windows.
 
 ## Load
 
