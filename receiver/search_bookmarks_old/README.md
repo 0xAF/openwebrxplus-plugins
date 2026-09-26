@@ -1,11 +1,19 @@
-## owrx-search-bookmarks by [Yannis](https://github.com/ysamouhos)
+---
+layout: page
+title: "OpenWebRX+ Receiver Plugin: Search Bookmarks (old)"
+permalink: /receiver/search_bookmarks_old
+---
+
+**Deprecated.** This is the old version of [search_bookmarks](https://0xaf.github.io/openwebrxplus-plugins/receiver/search_bookmarks) for OpenWebRX+ versions before 1.2.118. On newer versions use `search_bookmarks` instead.
+
+## owrx-search-bookmarks (old) by [Yannis](https://github.com/ysamouhos)
 
 Search all owrx bookmarks and click to tune. Jumping to tune based on "frequency_far_jump" plugin by (LZ2DMV)
 
 ## Prerequisites
 
 You must enable "Allow users to change center frequency" and in case you have set a magic key, you will have to provide it with a '#key=[KEY]' at the end of the URL.
-On OpenWebRX+ 1.2.125 and newer you can also enable the built-in `KeyPlugin` (see [Built-in Plugins](https://0xaf.github.io/openwebrxplus-plugins/#built-in-plugins)); on older versions use the [magic_key](https://0xaf.github.io/openwebrxplus-plugins/receiver/magic_key) plugin.
+You can also use the [magic_key](https://0xaf.github.io/openwebrxplus-plugins/receiver/magic_key) plugin.
 
 ## Installation
 
@@ -20,8 +28,10 @@ On OpenWebRX+ 1.2.125 and newer you can also enable the built-in `KeyPlugin` (se
    2. Add this line in your `init.js` file:
 
       ```js
-      Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/search_bookmarks/search_bookmarks.js');
+      await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/search_bookmarks_old/search_bookmarks_old.js');
       ```
+
+      The plugin file was renamed from `search_bookmarks.js` to `search_bookmarks_old.js`. The old URL `search_bookmarks_old/search_bookmarks.js` still works and loads the renamed file.
 
    3. Reload UI and you should have search bookmarks functionality on the receiver panel
 
@@ -42,3 +52,7 @@ You can reach Yannis on Telegram [@ysamouhos](https://t.me/ysamouhos) or [Github
 ## Preview
 
 ![image](https://github.com/user-attachments/assets/3b58fcf5-2b26-4f0d-8a72-f868f1c0eb52)
+
+## Code
+
+[Github repo](https://github.com/0xAF/openwebrxplus-plugins/tree/main/receiver/search_bookmarks_old)
