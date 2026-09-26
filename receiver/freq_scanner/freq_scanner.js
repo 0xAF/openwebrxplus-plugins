@@ -174,8 +174,9 @@ function fs_create_ui() {
         if (nativeSection) {
             var sectionId = 'plugin-section-freq_scanner';
             var expanded = LS.has(sectionId) ? LS.loadBool(sectionId) : true;
-            fs_scanner_ui.sectionHeader = Plugins.addSection('freq_scanner', 'Frequency Scanner');
-            panel = fs_scanner_ui.sectionHeader.nextElementSibling;
+            // addSection() returns the section content (OpenWebRX+ 1.2.125+)
+            panel = Plugins.addSection('freq_scanner', 'Frequency Scanner');
+            fs_scanner_ui.sectionHeader = panel.previousElementSibling;
             panel.id = 'fs-floating-panel';
             UI.toggleSection(fs_scanner_ui.sectionHeader, expanded);
         } else {

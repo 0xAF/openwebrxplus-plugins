@@ -51,9 +51,10 @@ Plugins.doppler.init = async function () {
     if (typeof Plugins.addSection === 'function' && $('#openwebrx-section-settings').length) {
       const sectionId = 'plugin-section-doppler';
       const expanded = LS.has(sectionId) ? LS.loadBool(sectionId) : true;
-      const divider = Plugins.addSection('doppler', 'Doppler');
-      $(divider.nextElementSibling).append(controls);
-      UI.toggleSection(divider, expanded);
+      // addSection() returns the section content (OpenWebRX+ 1.2.125+)
+      const content = Plugins.addSection('doppler', 'Doppler');
+      $(content).append(controls);
+      UI.toggleSection(content.previousElementSibling, expanded);
     } else {
       $('.openwebrx-modes').after(controls);
     }

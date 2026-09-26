@@ -109,7 +109,7 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 
 ### OpenWebRX+ UI Compatibility
 
-`antenna_switcher`, `doppler`, `freq_scanner`, `smeter`, and `tune_precise` use the built-in receiver sections or plugin windows supported by newer OpenWebRX+ versions. Each keeps its previous interface on older versions. See the individual plugin pages for details.
+`antenna_switcher`, `doppler`, `freq_scanner`, `smeter`, and `tune_precise` use the built-in receiver sections or plugin windows supported by newer OpenWebRX+ versions. Each keeps its previous interface on older versions. The receiver sections need OpenWebRX+ 1.2.125 or newer; `antenna_switcher`, `doppler`, `freq_scanner`, and `tune_precise` do not support OpenWebRX+ 1.2.124. See the individual plugin pages for details.
 
 ### Utility & Example Plugins
 

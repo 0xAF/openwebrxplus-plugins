@@ -54,9 +54,9 @@ Plugins.tune_precise.init = async function () {
     </div>
   `);
 
-  const section = typeof Plugins.addSection === 'function'
+  // addSection() returns the section content (OpenWebRX+ 1.2.125+)
+  const sectionBody = typeof Plugins.addSection === 'function'
     ? Plugins.addSection('tune-precise', 'Precise Tuning') : null;
-  const sectionBody = section && section.nextElementSibling;
   if (sectionBody && sectionBody.classList.contains('openwebrx-section') && sectionBody.parentNode) {
     sectionBody.appendChild($controls[0]);
   } else {

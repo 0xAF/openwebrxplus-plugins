@@ -56,9 +56,9 @@ Plugins.antenna_switcher.init = function () {
       const sectionId = 'plugin-section-antenna_switcher';
       const expanded = LS.has(sectionId) ? LS.loadBool(sectionId) :
         (LS.has('openwebrx-section-ant') ? LS.loadBool('openwebrx-section-ant') : true);
-      const divider = Plugins.addSection('antenna_switcher', 'Antenna');
-      antSection = divider.nextElementSibling;
-      UI.toggleSection(divider, expanded);
+      // addSection() returns the section content (OpenWebRX+ 1.2.125+)
+      antSection = Plugins.addSection('antenna_switcher', 'Antenna');
+      UI.toggleSection(antSection.previousElementSibling, expanded);
     } else {
       // OpenWebRX+ versions before the native section API.
       antSection = document.createElement('div');

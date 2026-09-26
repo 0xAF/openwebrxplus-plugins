@@ -23,7 +23,7 @@ Plugins.load('freq_scanner');
 
 ## Usage
 
-On OpenWebRX+ versions with `Plugins.addSection()`, open the **Frequency Scanner** section in the receiver panel. It contains the display and Scan, Skip, Block, and Setup controls. Closing the section does not stop a running scan. Setup and Manage Blacklist use built-in plugin windows when available; Scan and Block long-press menus stay next to their buttons.
+On OpenWebRX+ 1.2.125 and newer, open the **Frequency Scanner** section in the receiver panel. It contains the display and Scan, Skip, Block, and Setup controls. Closing the section does not stop a running scan. Setup and Manage Blacklist use built-in plugin windows when available; Scan and Block long-press menus stay next to their buttons. OpenWebRX+ 1.2.124 is not supported, because `Plugins.addSection()` changed in 1.2.125.
 
 On older OpenWebRX+ versions, the **SC** button at the bottom left of the receiver panel opens the original draggable scanner panel. The original setup menus and blacklist editor remain available when the built-in window API is missing.
 
