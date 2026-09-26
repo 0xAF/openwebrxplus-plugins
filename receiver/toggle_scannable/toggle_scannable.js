@@ -2,7 +2,7 @@
  * Plugin: ToggleScannable - Toggle scannable state of the bookmarks in the receiver
  *
  * License: MIT
- * Copyright (c) 2024 Stanislav Lechev [0xAF], LZ2SLL
+ * Copyright (c) 2024-2026 Stanislav Lechev [0xAF], LZ2SLL
  */
 
 
@@ -37,18 +37,20 @@ Plugins.toggle_scannable.init = async function () {
 }
 
 Plugins.toggle_scannable.rework_bookmarks = function () {
-  $('#openwebrx-bookmarks-container').children().each(function (i, b) {
+  // only bookmarks - the container also holds the tune buttons
+  $('#openwebrx-bookmarks-container').find('.bookmark').each(function (i, b) {
     const data = $(b).data();
-    if (!data) return;
+    if (!data || !data.source) return;
     if (data.scannable) $(b).addClass('scannable-enabled');
     if (data.toggle_scannable) return; // already processed
     $(b)
       .data('toggle_scannable', true)
       .prop('title', 'Right click to toggle scannable state')
       .on('contextmenu', function () {
-        const index = bookmarks.bookmarks[data.source].findIndex(bm => bm.name === data.name && bm.frequency === data.frequency);
+        const list = bookmarks.bookmarks[data.source] || [];
+        const index = list.findIndex(bm => bm.name === data.name && bm.frequency === data.frequency);
         data.scannable = !data.scannable;
-        bookmarks.bookmarks[data.source][index].scannable = data.scannable;
+        if (index >= 0) list[index].scannable = data.scannable;
         $(b)
           .toggleClass('scannable-enabled', data.scannable)
           .data('scannable', data.scannable);
