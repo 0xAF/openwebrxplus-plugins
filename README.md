@@ -36,8 +36,8 @@ permalink: /
 This repository provides a set of plugins for OpenWebRX+, allowing users to customize and enhance their SDR experience. Plugins are grouped into:
 
 - **Built-in Plugins**: Optional plugins included with OpenWebRX+ and enabled from `init.js`.
-- **Receiver Plugins**: Enhance the receiver UI and add new features.
-- **Utility & Example Plugins**: Shared helpers used by other plugins, the [plugin_loader](receiver/plugin_loader) that lets users enable plugins themselves, and examples for developers.
+- **Receiver Plugins**: Enhance the receiver UI and add new features, including the [plugin_loader](receiver/plugin_loader) that lets users enable plugins themselves.
+- **Utility & Example Plugins**: Shared helpers used by other plugins, and examples for developers.
 - **Deprecated Receiver Plugins**: Older plugins kept for older OpenWebRX+ versions.
 - **Map Plugins**: Add new layers or features to the map interface.
 - **Third-party Plugins**: Plugins from other authors, hosted in their own repositories.
@@ -107,6 +107,7 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 |[doppler](receiver/doppler)|Track Doppler shift/effect of satellites; uses a receiver section and Satellite Finder window when available|
 |[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner; uses a receiver section and setup windows when available ([Joerg](#contributors))|
 |[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
+|[plugin_loader](receiver/plugin_loader)|Let users enable admin-approved plugins from a native plugin window|
 |[screenshot](receiver/screenshot)|Take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|Provide spoken notifications for accessibility|
 |[search_bookmarks](receiver/search_bookmarks)|Search all OWRX bookmarks and click to tune ([Yannis](#contributors))|
@@ -129,7 +130,6 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 |[example](receiver/example)|Example plugin for developers|
 |[example_theme](receiver/example_theme)|Example theme plugin for developers|
 |[notify](receiver/notify)|Notification utility plugin|
-|[plugin_loader](receiver/plugin_loader)|Let users enable admin-approved plugins from a native plugin window|
 |[utils](receiver/utils)|Utility plugin, required by many plugins|
 
 <!-- plugins:utility:end -->

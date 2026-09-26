@@ -238,7 +238,7 @@ Plugins.plugin_loader._isReplaced = function (p) {
 
 Plugins.plugin_loader._isVisible = function (p) {
 	var self = Plugins.plugin_loader;
-	if (p.category === 'utility') return false;
+	if (p.category === 'utility' || p.id === 'plugin_loader') return false;
 	if (!self._isAvailable(p)) return false;
 	if (self._isLoaded(p)) return true;
 	if (p.category === 'deprecated' && self._isReplaced(p)) return false;

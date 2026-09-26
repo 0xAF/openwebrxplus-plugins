@@ -82,6 +82,11 @@
 			"requires": ["utils"]
 		},
 		{
+			"id": "plugin_loader",
+			"category": "receiver",
+			"description": "Let users enable admin-approved plugins from a native plugin window"
+		},
+		{
 			"id": "screenshot",
 			"category": "receiver",
 			"description": "Take screenshot of the waterfall"
@@ -159,11 +164,6 @@
 			"id": "notify",
 			"category": "utility",
 			"description": "Notification utility plugin"
-		},
-		{
-			"id": "plugin_loader",
-			"category": "utility",
-			"description": "Let users enable admin-approved plugins from a native plugin window"
 		},
 		{
 			"id": "uikit",
