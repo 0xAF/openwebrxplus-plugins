@@ -168,6 +168,10 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 |[owrxantswitcher](https://github.com/jrghnng/owrxantswitcher)|Switch antenna ports using a WebAPI on the server.|
 |[owrx_devices_status](https://github.com/fustinoni-net/owrx_devices_status)|Extend the status panel by displaying the profile name each receiver is currently tuned to.|
 |[OWRX_Antenna_manager](https://github.com/fustinoni-net/OWRX_Antenna_manager)|A foundation for developing an antenna manager for OpenWebRX+.|
+|[audio_filter](https://github.com/joer123/openwebrxplus-plugins-test/tree/main/receiver/audio_filter)|Client-side audio filters: noise blanker, spectral noise reduction, AGC/compressor, auto notch and 3-band EQ with a visualizer ([Joerg](#contributors))|
+|[dxcluster](https://github.com/joer123/openwebrxplus-plugins-test/tree/main/receiver/dxcluster)|Show DX Cluster spots on the waterfall; click a spot to tune ([Joerg](#contributors))|
+|[mode_selector](https://github.com/joer123/openwebrxplus-plugins-test/tree/main/receiver/mode_selector)|Replace the analog mode buttons with one compact mode selector ([Joerg](#contributors))|
+|[rig_skin](https://github.com/aganet/openwebrxplus-rig-skin)|Rig-style theme for the receiver panel: VFO dial, segmented S-meter, band scope, propagation, satellite and DX cluster windows|
 
 <!-- plugins:thirdparty:end -->
 

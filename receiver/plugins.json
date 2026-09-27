@@ -267,6 +267,37 @@
 			"category": "thirdparty",
 			"homepage": "https://github.com/fustinoni-net/OWRX_Antenna_manager",
 			"description": "A foundation for developing an antenna manager for OpenWebRX+."
+		},
+		{
+			"id": "audio_filter",
+			"category": "thirdparty",
+			"homepage": "https://github.com/joer123/openwebrxplus-plugins-test/tree/main/receiver/audio_filter",
+			"url": "https://cdn.jsdelivr.net/gh/joer123/openwebrxplus-plugins-test@main/receiver/audio_filter/audio_filter.js",
+			"description": "Client-side audio filters: noise blanker, spectral noise reduction, AGC/compressor, auto notch and 3-band EQ with a visualizer",
+			"author": "Joerg"
+		},
+		{
+			"id": "dxcluster",
+			"category": "thirdparty",
+			"homepage": "https://github.com/joer123/openwebrxplus-plugins-test/tree/main/receiver/dxcluster",
+			"url": "https://cdn.jsdelivr.net/gh/joer123/openwebrxplus-plugins-test@main/receiver/dxcluster/dxcluster.js",
+			"description": "Show DX Cluster spots on the waterfall; click a spot to tune",
+			"author": "Joerg"
+		},
+		{
+			"id": "mode_selector",
+			"category": "thirdparty",
+			"homepage": "https://github.com/joer123/openwebrxplus-plugins-test/tree/main/receiver/mode_selector",
+			"url": "https://cdn.jsdelivr.net/gh/joer123/openwebrxplus-plugins-test@main/receiver/mode_selector/mode_selector.js",
+			"description": "Replace the analog mode buttons with one compact mode selector",
+			"author": "Joerg"
+		},
+		{
+			"id": "rig_skin",
+			"category": "thirdparty",
+			"homepage": "https://github.com/aganet/openwebrxplus-rig-skin",
+			"url": "https://aganet.github.io/openwebrxplus-rig-skin/receiver/rig_skin/rig_skin.js",
+			"description": "Rig-style theme for the receiver panel: VFO dial, segmented S-meter, band scope, propagation, satellite and DX cluster windows"
 		}
 	]
 }
