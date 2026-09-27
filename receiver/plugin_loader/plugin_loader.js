@@ -16,13 +16,15 @@
  *  - initial release
  * 0.2:
  *  - highlight the button, notify and mark plugins that are new since the list was last opened
+ * 0.3:
+ *  - detect plugins that replace their Plugins.<name> object and drop _version
  *
  * License: MIT
  * Copyright (c) 2026 Stanislav Lechev [0xAF], LZ2SLL
  */
 
 Plugins.plugin_loader = Plugins.plugin_loader || {};
-Plugins.plugin_loader._version = 0.2;
+Plugins.plugin_loader._version = 0.3;
 
 // styles are injected by the plugin
 Plugins.plugin_loader.no_css = true;
@@ -217,7 +219,7 @@ Plugins.plugin_loader._isAvailable = function (p) {
 
 Plugins.plugin_loader._isLoaded = function (p) {
 	var self = Plugins.plugin_loader;
-	if (p.category !== 'builtin') return !!Plugins.isLoaded(self._pluginName(p));
+	if (p.category !== 'builtin') return self._scriptLoaded(self._pluginName(p));
 	if (!self._isAvailable(p)) return false;
 	if (self._started[p.id]) return true;
 	// built-ins have no "started" flag - look for the DOM they create
@@ -233,6 +235,12 @@ Plugins.plugin_loader._isLoaded = function (p) {
 	} catch (e) {
 		return false;
 	}
+};
+
+// Like Plugins.isLoaded(), but without the version check: some third-party
+// plugins replace their Plugins.<name> object and lose _version.
+Plugins.plugin_loader._scriptLoaded = function (name) {
+	return !!(Plugins[name] && typeof Plugins[name] === 'object' && Plugins[name]._script_loaded);
 };
 
 Plugins.plugin_loader._isPermitted = function (p) {
@@ -298,7 +306,7 @@ Plugins.plugin_loader._loadScript = async function (p) {
 	const self = Plugins.plugin_loader;
 	const name = self._pluginName(p);
 	await Plugins.load(self._url(p));
-	if (Plugins.isLoaded(name)) return true;
+	if (self._scriptLoaded(name)) return true;
 	// Plugins.load() refuses to retry once Plugins[name] exists
 	delete Plugins[name];
 	return false;
