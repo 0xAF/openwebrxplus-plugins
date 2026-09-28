@@ -2,6 +2,7 @@
 layout: default
 title: Listeners
 parent: Receiver Plugins
+permalink: /receiver/listeners/
 ---
 
 # Listeners
