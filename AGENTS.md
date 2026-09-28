@@ -69,7 +69,7 @@ Existing plugins are being migrated to use uikit for their UI. Rules:
 - The original plugin is left untouched for backward compatibility.
 - Migrated plugins capture `_baseUrl` at load time via `document.currentScript.src` and use it for auto-loading dependencies.
 - Migrated plugins require `uikit >= 0.3` and `utils >= 0.6`.
-- **Only bump dependency version checks** (`Plugins.isLoaded('uikit', x)` and `Plugins.isLoaded('utils', x)`) when the plugin actually uses a feature introduced in that version. Do not blindly bump to latest just because you touched the plugin. Current versions: `uikit = 0.5`, `utils = 0.8`.
+- **Only bump dependency version checks** (`Plugins.isLoaded('uikit', x)` and `Plugins.isLoaded('utils', x)`) when the plugin actually uses a feature introduced in that version. Do not blindly bump to latest just because you touched the plugin. Current versions: `uikit = 0.5`, `utils = 0.9`.
 - Use `var ui = Plugins.uikit;` as the local shorthand alias inside migrated plugin `init()` functions.
 
 ## uikit specifics

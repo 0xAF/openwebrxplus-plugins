@@ -27,13 +27,15 @@
  * 0.8:
  *  - add observe_mutations() helper to standardize MutationObserver setup
  *  - add disconnect_observers() helper to safely tear down observer handles
+ * 0.9:
+ *  - deepMerge: accept multiple source objects, applied from left to right
  */
 
 // Disable CSS loading for this plugin
 Plugins.utils.no_css = true;
 
 // Utils plugin version
-Plugins.utils._version = 0.8;
+Plugins.utils._version = 0.9;
 
 /**
  * Wrap an existing function with before and after callbacks.
@@ -233,19 +235,41 @@ Plugins.utils.disconnect_observers = function (handles) {
   return disconnected;
 };
 
-Plugins.utils.deepMerge = function (target, source) {
+/**
+ * Deeply merge one or more source objects into a target object.
+ *
+ * @param {Object} target Object to mutate and return. Invalid targets become a new object.
+ * @param {...Object} sources One or more source objects, applied from left to right.
+ * @returns {Object} The merged target object.
+ *
+ * @description
+ * - Existing two-argument calls remain fully supported.
+ * - Later sources override values from earlier sources.
+ * - Nested non-array objects are merged recursively.
+ * - Arrays, primitives and null property values replace the previous value.
+ * - Invalid source arguments are ignored.
+ *
+ * @example
+ * var settings = Plugins.utils.deepMerge({}, defaults, userOptions);
+ */
+Plugins.utils.deepMerge = function (target) {
   if (typeof target !== 'object' || target === null) target = {};
-  if (typeof source !== 'object' || source === null) return target;
 
-  for (const key in source) {
-    if (source.hasOwnProperty(key)) {
-      if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
-        target[key] = Plugins.utils.deepMerge(target[key], source[key]);
-      } else {
-        target[key] = source[key];
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+    if (typeof source !== 'object' || source === null) continue;
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+          target[key] = Plugins.utils.deepMerge(target[key], source[key]);
+        } else {
+          target[key] = source[key];
+        }
       }
     }
   }
+
   return target;
 };
 

@@ -11,6 +11,7 @@ This plugin is a dependency for almost all plugins.
 
 - Function interception via `wrap_func()`
 - Initialization hook via `on_ready()`
+- Deep object merging via `deepMerge()`
 - DOM mutation helper via `observe_mutations()`
 - Observer cleanup helper via `disconnect_observers()`
 
@@ -36,6 +37,35 @@ Wrap a function and intercept calls before and/or after execution.
 ### `Plugins.utils.on_ready(callback)`
 
 Run `callback` once OpenWebRX+ has completed initialization.
+
+### `Plugins.utils.deepMerge(target, ...sources)`
+
+Deeply merge one or more source objects into `target` and return the mutated target.
+
+- Sources are applied from left to right; later values take precedence.
+- Nested objects are merged recursively.
+- Arrays, primitives and `null` property values replace the previous value.
+- Invalid source arguments are ignored.
+- Existing two-argument calls remain supported.
+
+```js
+var defaults = {
+	open: false,
+	colors: {background: 'black', foreground: 'white'},
+	steps: [100, 1000]
+};
+var options = {
+	open: true,
+	colors: {foreground: 'yellow'}
+};
+
+var settings = Plugins.utils.deepMerge({}, defaults, options);
+// {
+//   open: true,
+//   colors: {background: 'black', foreground: 'yellow'},
+//   steps: [100, 1000]
+// }
+```
 
 ### `Plugins.utils.observe_mutations(targets, options, callback, run_now)`
 

@@ -105,13 +105,13 @@ OpenWebRX+ ships optional plugins as global objects with an `init()` method: `Ma
 
 ## utils Plugin API
 
-[utils](receiver/utils) (current version 0.8) is the shared helper plugin. Require the version that introduced the function you use: `Plugins.isLoaded('utils', 0.8)`.
+[utils](receiver/utils) (current version 0.9) is the shared helper plugin. Require the version that introduced the function you use: `Plugins.isLoaded('utils', 0.9)`.
 
 | Function | Since | Description |
 | :------- | :---- | :---------- |
 | `wrap_func(name, before_cb, after_cb, obj)` | 0.1 | Wrap the function `obj[name]` (default `obj` is `window`). `before_cb(orig, thisArg, args)` returns `true` to call the original; `after_cb(result)` can change the return value |
 | `on_ready(callback)` | 0.4 | Call `callback` once OpenWebRX+ has finished initializing the page (`document.owrx_initialized`) |
-| `deepMerge(target, source)` | 0.5 | Deep-merge `source` into `target`, e.g. user options into defaults |
+| `deepMerge(target, ...sources)` | 0.5 | Deep-merge objects into `target`; multiple sources applied left-to-right are supported since 0.9 |
 | `fillTemplate(template, variables)` | 0.5 | Replace `{name}` placeholders with values |
 | `findCommonPrefix(strings)` | 0.6 | Longest common prefix of an array of strings |
 | `observe_mutations(targets, options, callback, run_now)` | 0.8 | `MutationObserver` setup for one or more targets; returns handles |
