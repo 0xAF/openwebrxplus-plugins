@@ -19,6 +19,7 @@ Each plugin is a folder under `receiver/` or `map/` containing at minimum `plugi
 - Third-party plugins get `"category": "thirdparty"` with `homepage`; add `url` only for single-file plugins that work with `Plugins.load()` and need no server-side setup.
 - Map plugins are not in the manifest; their README table is edited by hand.
 - Field reference: `DEVELOPMENT.md`, section "Adding a New Plugin to This Repository".
+- Plugins that cannot work without administrator configuration use `"setup": "required"` in the manifest. `plugin_loader` only offers them when `plugin_options.<id>` is configured and invokes their `setup()` after loading.
 - Developer documentation (plugin API, utils API, conventions) lives in `DEVELOPMENT.md`; keep it in sync when utils or the OpenWebRX+ plugin API change.
 
 ## Plugin options

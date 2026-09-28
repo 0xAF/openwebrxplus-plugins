@@ -85,7 +85,8 @@
 			"id": "listeners",
 			"category": "receiver",
 			"description": "Show active listeners, profiles, frequencies and modes through Supabase Realtime Presence",
-			"requires": ["utils"]
+			"requires": ["utils"],
+			"setup": "required"
 		},
 		{
 			"id": "plugin_loader",

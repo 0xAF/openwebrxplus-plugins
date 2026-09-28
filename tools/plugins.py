@@ -28,7 +28,7 @@ CATEGORIES = ('builtin', 'receiver', 'utility', 'deprecated', 'experimental', 't
 TABLES = ('builtin', 'receiver', 'utility', 'deprecated', 'thirdparty')
 KNOWN_KEYS = {
 	'id', 'category', 'description', 'author', 'requires', 'conflicts',
-	'replaced_by', 'global', 'since', 'detect', 'homepage', 'url',
+	'replaced_by', 'global', 'since', 'detect', 'homepage', 'url', 'setup',
 }
 
 
@@ -72,6 +72,8 @@ def validate(plugins):
 			errors.append('%s: category must be one of %s' % (where, ', '.join(CATEGORIES)))
 		if not p.get('description'):
 			errors.append('%s: missing "description"' % where)
+		if 'setup' in p and p.get('setup') != 'required':
+			errors.append('%s: "setup" must be "required"' % where)
 		category = p.get('category')
 		only = {
 			'global': 'builtin', 'since': 'builtin', 'detect': 'builtin',
@@ -86,6 +88,8 @@ def validate(plugins):
 					errors.append('%s: built-in plugins need "%s"' % (where, key))
 			if p.get('requires'):
 				errors.append('%s: built-in plugins cannot have "requires"' % where)
+			if p.get('setup'):
+				errors.append('%s: built-in plugins cannot require loader setup' % where)
 		elif category == 'thirdparty':
 			if not p.get('homepage'):
 				errors.append('%s: third-party plugins need "homepage"' % where)

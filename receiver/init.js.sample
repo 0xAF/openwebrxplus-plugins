@@ -60,11 +60,18 @@ const PluginsToLoad = [
 	// Let users enable plugins themselves from a Plugins window (puzzle button, OpenWebRX+ 1.2.124+).
 	// Keep it last: everything loaded before setup() is shown as "loaded by admin".
 	// await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/plugin_loader/plugin_loader.js');
-	// Plugins.plugin_loader.setup({
-	// 	allowed: ['doppler', 'screenshot', 'tune_precise', 'MapPlugin', 'SunPlugin'],
+	// await Plugins.plugin_loader.setup({
+	// 	allowed: ['doppler', 'listeners', 'screenshot', 'tune_precise', 'MapPlugin', 'SunPlugin'],
 	// 	allow_all: false,          // true = users may enable any repository or built-in plugin
 	// 	allow_experimental: false, // true = users may enable experimental plugins
 	// 	allow_thirdparty: false,   // true = users may enable third-party plugins
+	// 	plugin_options: {
+	// 		// Required-setup plugins are hidden unless their options are present here.
+	// 		listeners: {
+	// 			supabaseUrl: 'https://YOUR-PROJECT.supabase.co',
+	// 			supabaseKey: 'YOUR-PUBLISHABLE-KEY',
+	// 		},
+	// 	},
 	// });
 })();
 

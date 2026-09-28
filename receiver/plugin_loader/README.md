@@ -14,6 +14,7 @@ Each plugin has an on/off switch and a short description. Badges show the plugin
 - The user's selection is saved in the browser (localStorage) and loaded again on the next visit.
 - Turning a plugin off takes effect after a page reload. The window shows a **Reload** button.
 - Dependencies (`utils`, `notify`, ...) are loaded automatically.
+- Plugins marked as requiring setup are offered only when the admin provides their options. The loader calls and awaits the plugin's `setup()` when a user enables it.
 - Deprecated plugins are hidden when their built-in replacement is available.
 - Plugins that conflict with an already running plugin (for example `magic_key` and `KeyPlugin`) are refused.
 - New plugins in the list are highlighted. When the list has plugins the user has not seen yet, the button turns orange and, if the [notify](https://0xaf.github.io/openwebrxplus-plugins/receiver/notify) plugin is loaded, a notification is shown. This repeats on every page load until the user opens the window. The **new** marks then stay in the list until the next page load. On the first visit nothing is marked as new.
@@ -30,9 +31,15 @@ Load the plugin **at the end** of your `init.js`, after all plugins the admin wa
 	// ... other admin plugins ...
 
 	await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/plugin_loader/plugin_loader.js');
-	Plugins.plugin_loader.setup({
-		allowed: ['doppler', 'screenshot', 'tune_precise', 'MapPlugin', 'SunPlugin'],
-		allow_all: false
+	await Plugins.plugin_loader.setup({
+		allowed: ['doppler', 'listeners', 'screenshot', 'tune_precise', 'MapPlugin', 'SunPlugin'],
+		allow_all: false,
+		plugin_options: {
+			listeners: {
+				supabaseUrl: 'https://YOUR-PROJECT.supabase.co',
+				supabaseKey: 'YOUR-PUBLISHABLE-KEY'
+			}
+		}
 	});
 })();
 ```
@@ -47,8 +54,11 @@ Everything loaded before `setup()` counts as loaded by the admin. `setup()` wait
 | `allow_all` | `false` | Let the user enable any repository or built-in plugin, ignoring `allowed`. Unknown built-in plugins of newer OpenWebRX+ versions are shown too |
 | `allow_experimental` | `false` | Let the user enable any experimental plugin (for example the `ui_*` plugins) |
 | `allow_thirdparty` | `false` | Let the user enable any third-party plugin that has a script URL in `plugins.json` |
+| `plugin_options` | `{}` | Options keyed by plugin id. A plugin marked as requiring setup is hidden unless its id has an entry here; its options are passed to `setup()` when enabled |
 
 `allow_all` does not include experimental and third-party plugins. Enable them with their own option, or list single plugins in `allowed`. Third-party plugins run code from other authors and are not reviewed by this project.
+
+Required setup is declared by the plugin's manifest entry, for example `"setup": "required"`. `plugin_options` is sent to browser-side code, so it must contain only public configuration. Never put passwords, Supabase Secret/`service_role` keys or other server secrets there. A plugin loaded manually before `plugin_loader.setup()` remains an admin-loaded plugin; in that case the admin is responsible for calling its `setup()` directly.
 
 ## Plugin list
 

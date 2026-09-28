@@ -61,6 +61,21 @@ await Plugins.listeners.setup({
 });
 ```
 
+Alternatively, let visitors enable it through `plugin_loader`. Listeners is hidden from that window until its public Supabase settings are present:
+
+```javascript
+await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/plugin_loader/plugin_loader.js');
+await Plugins.plugin_loader.setup({
+	allowed: ['listeners'],
+	plugin_options: {
+		listeners: {
+			supabaseUrl: 'https://YOUR-PROJECT.supabase.co',
+			supabaseKey: 'YOUR-PUBLISHABLE-KEY'
+		}
+	}
+});
+```
+
 The minimal setup groups clients from the current receiver only. To create an SDR network, use the same Supabase project, key and `network` value on every receiver:
 
 ```javascript

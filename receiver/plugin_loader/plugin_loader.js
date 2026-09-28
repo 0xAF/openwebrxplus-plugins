@@ -6,7 +6,7 @@
  *
  * Usage (at the end of init.js):
  *   await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/plugin_loader/plugin_loader.js');
- *   Plugins.plugin_loader.setup({ allowed: ['doppler', 'MapPlugin'], allow_all: false });
+ *   await Plugins.plugin_loader.setup({ allowed: ['doppler', 'MapPlugin'], allow_all: false });
 
  *
  * Requires OpenWebRX+ 1.2.124+ (Plugins.addButton / Plugins.addWindow).
@@ -18,13 +18,15 @@
  *  - highlight the button, notify and mark plugins that are new since the list was last opened
  * 0.3:
  *  - detect plugins that replace their Plugins.<name> object and drop _version
+ * 0.4:
+ *  - support manifest plugins that require administrator-supplied setup options
  *
  * License: MIT
  * Copyright (c) 2026 Stanislav Lechev [0xAF], LZ2SLL
  */
 
 Plugins.plugin_loader = Plugins.plugin_loader || {};
-Plugins.plugin_loader._version = 0.3;
+Plugins.plugin_loader._version = 0.4;
 
 // styles are injected by the plugin
 Plugins.plugin_loader.no_css = true;
@@ -42,13 +44,20 @@ Plugins.plugin_loader._seenKey = 'plugin_loader_seen'; // plugin ids the user ha
 Plugins.plugin_loader._newColor = '#c77d1a';
 Plugins.plugin_loader._manifest = [];  // plugin entries from plugins.json (+ unknown built-ins)
 Plugins.plugin_loader._byId = {};
-Plugins.plugin_loader._config = { allowed: [], allow_all: false, allow_experimental: false, allow_thirdparty: false };
+Plugins.plugin_loader._config = {
+	allowed: [],
+	allow_all: false,
+	allow_experimental: false,
+	allow_thirdparty: false,
+	plugin_options: {}
+};
 Plugins.plugin_loader._admin = {};     // ids loaded before setup() - locked
 Plugins.plugin_loader._user = {};      // ids enabled by the user in this browser
 Plugins.plugin_loader._started = {};   // built-in plugins started by this loader
 Plugins.plugin_loader._removed = {};   // ids unchecked by the user, removed after reload
 Plugins.plugin_loader._busy = {};
 Plugins.plugin_loader._errors = {};
+Plugins.plugin_loader._configured = {}; // required setup() calls completed by this loader
 Plugins.plugin_loader._setupDone = false;
 Plugins.plugin_loader._new = {};       // ids shown as new until the page is reloaded
 Plugins.plugin_loader._manifestLoaded = false;
@@ -101,6 +110,7 @@ Plugins.plugin_loader.init = async function () {
  * config.allow_all          - true lets the user enable any repository or built-in plugin.
  * config.allow_experimental - true lets the user enable any experimental plugin.
  * config.allow_thirdparty   - true lets the user enable any third-party plugin with a script URL.
+ * config.plugin_options     - object keyed by plugin id; required plugins are hidden without an entry.
  *
  * `allow_all` does not include experimental and third-party plugins - they need
  * their own flag or an explicit entry in `allowed`.
@@ -123,6 +133,8 @@ Plugins.plugin_loader.setup = async function (config) {
 	self._config.allow_all = !!config.allow_all;
 	self._config.allow_experimental = !!config.allow_experimental;
 	self._config.allow_thirdparty = !!config.allow_thirdparty;
+	self._config.plugin_options = config.plugin_options && typeof config.plugin_options === 'object'
+		&& !Array.isArray(config.plugin_options) ? config.plugin_options : {};
 
 	// built-in plugins need the receiver page to be initialized
 	await self._whenReady();
@@ -156,9 +168,8 @@ Plugins.plugin_loader.setup = async function (config) {
 	const saved = self._loadSaved();
 	for (const id of saved) {
 		const p = self._byId[id];
-		if (!p || !self._isPermitted(p) || !self._isAvailable(p)) continue;
-		self._user[id] = true;
-		if (!self._isLoaded(p)) await self._enable(p);
+		if (!p || !self._isPermitted(p) || !self._isAvailable(p) || !self._hasRequiredOptions(p)) continue;
+		if (self._isLoaded(p) || await self._enable(p)) self._user[id] = true;
 	}
 	self._checkNew();
 	self._render();
@@ -251,6 +262,15 @@ Plugins.plugin_loader._isPermitted = function (p) {
 	return cfg.allow_all;
 };
 
+// Plugins marked with setup: "required" are only user-selectable when the
+// administrator supplied their options. An empty object is still an explicit
+// configuration and is passed to the plugin, which remains responsible for
+// validating its own required fields.
+Plugins.plugin_loader._hasRequiredOptions = function (p) {
+	if (p.setup !== 'required') return true;
+	return Object.prototype.hasOwnProperty.call(Plugins.plugin_loader._config.plugin_options, p.id);
+};
+
 // Deprecated plugins are hidden when their built-in replacement exists.
 Plugins.plugin_loader._isReplaced = function (p) {
 	var rep = p.replaced_by && Plugins.plugin_loader._byId[p.replaced_by];
@@ -263,7 +283,7 @@ Plugins.plugin_loader._isVisible = function (p) {
 	if (!self._isAvailable(p)) return false;
 	if (self._isLoaded(p)) return true;
 	if (p.category === 'deprecated' && self._isReplaced(p)) return false;
-	return self._isPermitted(p);
+	return self._isPermitted(p) && self._hasRequiredOptions(p);
 };
 
 // ---------------------------------------------------------------------------
@@ -272,6 +292,10 @@ Plugins.plugin_loader._isVisible = function (p) {
 // Load a plugin and its dependencies. Returns true on success.
 Plugins.plugin_loader._enable = async function (p) {
 	const self = Plugins.plugin_loader;
+	if (!self._hasRequiredOptions(p)) {
+		self._errors[p.id] = 'Required plugin_options are missing';
+		return false;
+	}
 	const conflict = (p.conflicts || []).filter(function (id) {
 		return self._byId[id] && self._isLoaded(self._byId[id]);
 	});
@@ -284,8 +308,16 @@ Plugins.plugin_loader._enable = async function (p) {
 	try {
 		for (const depId of p.requires || []) {
 			const dep = self._byId[depId];
-			if (dep && !self._isLoaded(dep) && !await self._loadScript(dep)) {
+			if (!dep) continue;
+			var depWasLoaded = self._isLoaded(dep);
+			if (!depWasLoaded && !self._hasRequiredOptions(dep)) {
+				throw new Error('Required plugin_options are missing for dependency ' + depId);
+			}
+			if (!depWasLoaded && !await self._loadScript(dep)) {
 				throw new Error('Cannot load dependency ' + depId);
+			}
+			if ((!depWasLoaded || !self._admin[dep.id]) && !await self._configure(dep)) {
+				throw new Error('Cannot configure dependency ' + depId);
 			}
 		}
 		if (p.category === 'builtin') {
@@ -294,11 +326,32 @@ Plugins.plugin_loader._enable = async function (p) {
 		} else if (!await self._loadScript(p)) {
 			throw new Error('Cannot load plugin');
 		}
+		if (p.category !== 'builtin' && !await self._configure(p)) {
+			throw new Error('Plugin setup failed');
+		}
 	} catch (e) {
 		self._errors[p.id] = e.message;
 		console.error('[plugin_loader] ' + p.id + ': ' + e.message);
 		return false;
 	}
+	return true;
+};
+
+// Run setup() for plugins whose manifest declares setup: "required".
+// Plugins without that declaration keep the pre-0.4 load-only behaviour.
+Plugins.plugin_loader._configure = async function (p) {
+	var self = Plugins.plugin_loader;
+	if (p.setup !== 'required' || self._configured[p.id]) return true;
+	if (!self._hasRequiredOptions(p)) throw new Error('Required plugin_options are missing for ' + p.id);
+
+	var name = self._pluginName(p);
+	var plugin = Plugins[name];
+	if (!plugin || typeof plugin.setup !== 'function') {
+		throw new Error(p.id + ' declares required setup but has no setup() method');
+	}
+	var result = await plugin.setup(self._config.plugin_options[p.id]);
+	if (result === false) return false;
+	self._configured[p.id] = true;
 	return true;
 };
 
@@ -499,8 +552,9 @@ Plugins.plugin_loader._row = function (p) {
 	var self = Plugins.plugin_loader;
 	var el = self._el;
 	var loaded = self._isLoaded(p);
+	var active = loaded && (p.setup !== 'required' || self._admin[p.id] || self._configured[p.id]);
 	// loaded by the admin, by another plugin, or as a dependency - cannot be turned off
-	var locked = loaded && !self._user[p.id] && !self._removed[p.id];
+	var locked = active && !self._user[p.id] && !self._removed[p.id];
 	var badge = null;
 
 	if (self._busy[p.id]) badge = ['loading', ''];
@@ -530,7 +584,7 @@ Plugins.plugin_loader._row = function (p) {
 	var sw = el('input', 'plugin-loader__switch');
 	sw.type = 'checkbox';
 	sw.setAttribute('role', 'switch');
-	sw.checked = (loaded && !self._removed[p.id]) || !!self._busy[p.id];
+	sw.checked = (active && !self._removed[p.id]) || !!self._busy[p.id];
 	sw.disabled = locked || !!self._busy[p.id];
 	if (locked) row.title = self._admin[p.id] ? 'Loaded by the administrator' : 'Already running';
 	sw.addEventListener('change', function () { self._toggle(p, sw.checked); });

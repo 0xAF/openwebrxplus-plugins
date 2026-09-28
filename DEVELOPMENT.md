@@ -174,6 +174,7 @@ Manifest entry fields:
 | `global` | built-in | Global object of the built-in plugin, e.g. `MapPlugin` |
 | `since` | built-in | First OpenWebRX+ version with the built-in plugin |
 | `detect` | no | Built-ins only: CSS selector that exists once the plugin is started, when it does not create `#plugin-button-<name>`, `#plugin-section-<name>` or `#plugin-window-<name>` |
+| `setup` | no | Set to `required` when the plugin cannot work without admin configuration. `plugin_loader` hides it until `plugin_options[id]` exists, then calls `Plugins.<name>.setup(plugin_options[id])` after loading it |
 
 When a new built-in plugin appears in OpenWebRX+, add it with `"category": "builtin"` and also add a commented-out line for it in [`receiver/init.js.sample`](receiver/init.js.sample).
 
