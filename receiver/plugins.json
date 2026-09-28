@@ -82,6 +82,12 @@
 			"requires": ["utils"]
 		},
 		{
+			"id": "listeners",
+			"category": "receiver",
+			"description": "Show active listeners, profiles, frequencies and modes through Supabase Realtime Presence",
+			"requires": ["utils"]
+		},
+		{
 			"id": "plugin_loader",
 			"category": "receiver",
 			"description": "Let users enable admin-approved plugins from a native plugin window"

@@ -49,6 +49,14 @@ const PluginsToLoad = [
 		await Plugins.load(`https://0xaf.github.io/openwebrxplus-plugins/receiver/${pluginName}/${pluginName}.js`);
 	}
 
+	// Show active listeners through Supabase Realtime Presence.
+	// await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/listeners/listeners.js');
+	// await Plugins.listeners.setup({
+	// 	supabaseUrl: 'https://YOUR-PROJECT.supabase.co',
+	// 	supabaseKey: 'YOUR-PUBLISHABLE-KEY',
+	// 	// network: 'shared-network-name', // optional: same value on several receivers
+	// });
+
 	// Let users enable plugins themselves from a Plugins window (puzzle button, OpenWebRX+ 1.2.124+).
 	// Keep it last: everything loaded before setup() is shown as "loaded by admin".
 	// await Plugins.load('https://0xaf.github.io/openwebrxplus-plugins/receiver/plugin_loader/plugin_loader.js');

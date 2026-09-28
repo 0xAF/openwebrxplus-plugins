@@ -107,6 +107,7 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 |[doppler](receiver/doppler)|Track Doppler shift/effect of satellites; uses a receiver section and Satellite Finder window when available|
 |[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner; uses a receiver section and setup windows when available ([Joerg](#contributors))|
 |[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
+|[listeners](receiver/listeners)|Show active listeners, profiles, frequencies and modes through Supabase Realtime Presence|
 |[plugin_loader](receiver/plugin_loader)|Let users enable admin-approved plugins from a native plugin window|
 |[screenshot](receiver/screenshot)|Take screenshot of the waterfall|
 |[screen_reader](receiver/screen_reader)|Provide spoken notifications for accessibility|
