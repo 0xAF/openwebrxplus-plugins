@@ -18,13 +18,15 @@
 
 // no css for this plugin
 // Plugins.doppler.no_css = true;
-Plugins.doppler._version = 0.1;
+Plugins.doppler._version = 0.2;
 
 // Initialize the plugin
 Plugins.doppler.init = async function () {
-  const nativeFinder = typeof Plugins.addWindow === 'function' &&
+  const nativeFinder = typeof Plugins.addButton === 'function' &&
+    typeof Plugins.addWindow === 'function' &&
     typeof Plugins.toggleWindow === 'function';
   Plugins.doppler.nativeFinder = nativeFinder;
+  Plugins.doppler.defaultStatus = nativeFinder ? 'Select satellite' : 'Open SAT Finder';
 
   await Plugins._load_script('https://0xaf.github.io/openwebrxplus-plugins/receiver/doppler/sat.js').catch(function() {
     throw ("Cannot load satellite-js script.");
@@ -44,18 +46,11 @@ Plugins.doppler.init = async function () {
   if ($("#satellite-row").length < 1) {
     const controls = `<div id="satellite-row" class="openwebrx-panel-line openwebrx-panel-flex-line">
       <input id="satellite-input" type="text" placeholder="Sat ID">
-      <div id="satellite-name" class="openwebrx-button">Open SAT Finder</div>
+      <div id="satellite-name" class="${nativeFinder ? 'satellite-status' : 'openwebrx-button'}">${Plugins.doppler.defaultStatus}</div>
       <div id="satellite-track" class="openwebrx-button">TRACK</div>
     </div>`;
 
-    if (typeof Plugins.addSection === 'function' && $('#openwebrx-section-settings').length) {
-      const sectionId = 'plugin-section-doppler';
-      const expanded = LS.has(sectionId) ? LS.loadBool(sectionId) : true;
-      // addSection() returns the section content (OpenWebRX+ 1.2.125+)
-      const content = Plugins.addSection('doppler', 'Doppler');
-      $(content).append(controls);
-      UI.toggleSection(content.previousElementSibling, expanded);
-    } else {
+    if (!nativeFinder) {
       $('.openwebrx-modes').after(controls);
     }
 
@@ -111,7 +106,15 @@ Plugins.doppler.init = async function () {
     `;
 
     if (nativeFinder) {
-      const content = '<div class="satellite-finder-native">' + modalTabs +
+      Plugins.doppler.launchButton = Plugins.addButton('doppler', 'DOP', function () {
+        const finder = $('#plugin-window-doppler-finder');
+        const closing = finder.is(':visible');
+        Plugins.toggleWindow('doppler-finder');
+        if (closing) Plugins.doppler.stopFinderRefresh();
+      });
+      if (Plugins.doppler.launchButton) Plugins.doppler.launchButton.title = 'Doppler';
+
+      const content = '<div class="satellite-finder-native">' + controls + modalTabs +
         '<div class="satellite-finder-footer">' +
         '<div class="openwebrx-button" onclick="Plugins.doppler.closeFinder()">Close</div>' +
         '</div></div>';
@@ -136,17 +139,15 @@ Plugins.doppler.init = async function () {
       $('#satellite-modal').on($.modal.BEFORE_CLOSE, Plugins.doppler.stopFinderRefresh);
     }
 
-    $("#satellite-name").click(() => {
-      if (nativeFinder) {
-        Plugins.toggleWindow('doppler-finder', true);
-      } else {
+    if (!nativeFinder) {
+      $("#satellite-name").click(() => {
         $('#satellite-modal').modal({
           escapeClose: true,
           clickClose: false,
           showClose: false,
         });
-      }
-    });
+      });
+    }
 
     $("#satellite-track").click(() => {
       if (Plugins.doppler.intervalId) {
@@ -189,7 +190,9 @@ Plugins.doppler.stop_tracker = function (info) {
   clearInterval(Plugins.doppler.intervalId);
   Plugins.doppler.intervalId = undefined;
   $('#satellite-track').removeClass('highlighted').text('TRACK');
-  $('#satellite-name').text((info && info.length) ? info : "Open SAT Finder");
+  $(Plugins.doppler.launchButton).removeClass('highlighted');
+  $('#satellite-name').text((info && info.length) ? info :
+    (Plugins.doppler.selectedSatelliteName || Plugins.doppler.defaultStatus));
 }
 
 Plugins.doppler.start_tracker = function (obj) {
@@ -208,8 +211,10 @@ Plugins.doppler.start_tracker = function (obj) {
     return;
   }
 
-  $("#satellite-name").text(obj.OBJECT_NAME);
+  Plugins.doppler.selectedSatelliteName = obj.OBJECT_NAME;
+  $("#satellite-name").text(Plugins.doppler.selectedSatelliteName);
   $("#satellite-track").addClass('highlighted').text("STOP");
+  $(Plugins.doppler.launchButton).addClass('highlighted');
   var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
   var startFreq = demodulator.get_offset_frequency() + center_freq;
   Plugins.doppler.intervalId = setInterval(() => {
@@ -353,9 +358,19 @@ Plugins.doppler.selectChange = async function (id) {
 Plugins.doppler.selectSatellite = function (id, grp) {
   Plugins.doppler.lastGroupName = grp;
   Plugins.doppler.lastSatId = id;
-  $('#satellite-input').val(id);
   if (Plugins.doppler.intervalId) Plugins.doppler.stop_tracker();
-  Plugins.doppler.closeFinder();
+  $('#satellite-input').val(id);
+
+  try {
+    var store = JSON.parse(LZString.decompress(LS.loadStr('satellites.' + grp)));
+    var satObj = store.data.find(obj => obj.NORAD_CAT_ID === id);
+    Plugins.doppler.selectedSatelliteName = satObj ? satObj.OBJECT_NAME : '';
+  } catch (e) {
+    Plugins.doppler.selectedSatelliteName = '';
+  }
+  $('#satellite-name').text(Plugins.doppler.selectedSatelliteName || Plugins.doppler.defaultStatus);
+
+  if (!Plugins.doppler.nativeFinder) Plugins.doppler.closeFinder();
 }
 
 Plugins.doppler.stopFinderRefresh = function () {

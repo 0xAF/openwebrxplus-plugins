@@ -104,7 +104,7 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 |[colorful_spectrum](receiver/colorful_spectrum)|Colorize the spectrum analyzer|
 |[compact_analog_modes](receiver/compact_analog_modes)|Compact the receiver analog modes section ([fustinoni-net](#contributors))|
 |[connect_notify](receiver/connect_notify)|Send/receive notifications on user connect/disconnect|
-|[doppler](receiver/doppler)|Track Doppler shift/effect of satellites; uses a receiver section and Satellite Finder window when available|
+|[doppler](receiver/doppler)|Track Doppler shift/effect of satellites in a native plugin window when available|
 |[freq_scanner](receiver/freq_scanner)|Adds a frequency scanner; uses a receiver section and setup windows when available ([Joerg](#contributors))|
 |[frequency_far_jump](receiver/frequency_far_jump)|Jump to a frequency outside the current profile ([LZ2DMV](#contributors))|
 |[listeners](receiver/listeners)|Show active listeners, profiles, frequencies and modes through Supabase Realtime Presence|

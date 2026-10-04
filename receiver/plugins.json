@@ -66,7 +66,7 @@
 		{
 			"id": "doppler",
 			"category": "receiver",
-			"description": "Track Doppler shift/effect of satellites; uses a receiver section and Satellite Finder window when available"
+			"description": "Track Doppler shift/effect of satellites in a native plugin window when available"
 		},
 		{
 			"id": "freq_scanner",

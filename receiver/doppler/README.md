@@ -6,7 +6,7 @@ permalink: /receiver/doppler
 
 This `receiver` plugin will track the Doppler shift frequency of a chosen satellite. Useful for SSTV/Packet.
 
-The Sat ID and TRACK/STOP controls appear in a collapsible **Doppler** section on newer OpenWebRX+ versions. Satellite Finder uses the built-in resizable plugin window when `Plugins.addWindow()` and `Plugins.toggleWindow()` are available. Older versions keep the original receiver row and Finder dialog. Closing Finder stops its automatic five-second refresh but does not stop active Doppler tracking.
+On newer OpenWebRX+ versions, the **DOP** button opens a built-in resizable plugin window containing the Sat ID, TRACK/STOP controls and Satellite Finder. The **DOP** button is highlighted while Doppler tracking is active. Older versions keep the original receiver row and Finder dialog. Closing Finder stops its automatic five-second refresh but does not stop active Doppler tracking.
 
 This plugin started as a port of [work](https://github.com/studentkra/OpenWebRX-Doppler) by [Sergey Osipov](https://github.com/studentkra).  
 Then I switched to [CelesTrak JSON API](https://celestrak.org/) and created Satellite Finder modal window.
@@ -17,10 +17,10 @@ Then I switched to [CelesTrak JSON API](https://celestrak.org/) and created Sate
 
 ## Usage
 
- 1. Open the Satellite finder window to choose a satellite or enter the SatID if you know it.
- 2. Click TRACK.
+ 1. Click **DOP** to open the Doppler window, then choose a satellite or enter its Sat ID if you know it. On older OpenWebRX+ versions, use **Open SAT Finder** in the receiver row.
+ 2. Click **TRACK**.
 
-The Satellite Finder window will help you find a satellite and will give useful information on each satellite.
+The Satellite Finder will help you find a satellite and will give useful information on each satellite. On newer OpenWebRX+ versions, selecting a satellite keeps the window open so you can start tracking immediately.
 ![doppler1](doppler/doppler1.png "FindSat")
 
 ## Load
