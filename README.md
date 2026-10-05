@@ -173,6 +173,7 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 |[dxcluster](https://github.com/joer123/openwebrxplus-plugins-test/tree/main/receiver/dxcluster)|Show DX Cluster spots on the waterfall; click a spot to tune ([Joerg](#contributors))|
 |[mode_selector](https://github.com/joer123/openwebrxplus-plugins-test/tree/main/receiver/mode_selector)|Replace the analog mode buttons with one compact mode selector ([Joerg](#contributors))|
 |[rig_skin](https://github.com/aganet/openwebrxplus-rig-skin)|Rig-style theme for the receiver panel: VFO dial, segmented S-meter, band scope, propagation, satellite and DX cluster windows|
+|[spider](https://github.com/Acuantico/owrx-spider)|DX cluster spots (telnet or MQTT) on the waterfall; a companion service keeps one cluster connection on the server and has its own configuration page|
 
 <!-- plugins:thirdparty:end -->
 

@@ -305,6 +305,12 @@
 			"homepage": "https://github.com/aganet/openwebrxplus-rig-skin",
 			"url": "https://aganet.github.io/openwebrxplus-rig-skin/receiver/rig_skin/rig_skin.js",
 			"description": "Rig-style theme for the receiver panel: VFO dial, segmented S-meter, band scope, propagation, satellite and DX cluster windows"
+		},
+		{
+			"id": "spider",
+			"category": "thirdparty",
+			"homepage": "https://github.com/Acuantico/owrx-spider",
+			"description": "DX cluster spots (telnet or MQTT) on the waterfall; a companion service keeps one cluster connection on the server and has its own configuration page"
 		}
 	]
 }
