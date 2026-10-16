@@ -174,6 +174,7 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 |[mode_selector](https://github.com/joer123/openwebrxplus-plugins-test/tree/main/receiver/mode_selector)|Replace the analog mode buttons with one compact mode selector ([Joerg](#contributors))|
 |[rig_skin](https://github.com/aganet/openwebrxplus-rig-skin)|Rig-style theme for the receiver panel: VFO dial, segmented S-meter, band scope, propagation, satellite and DX cluster windows|
 |[spider](https://github.com/Acuantico/owrx-spider)|DX cluster spots (telnet or MQTT) on the waterfall; a companion service keeps one cluster connection on the server and has its own configuration page|
+|[toolbox](https://github.com/G4EA5/openwebrx-toolbox)|Radio Toolbox: band/range survey, Explore, Identify, Log, Watch, peaks, bookmarks, audio clips, DX cluster and satellites for OpenWebRX+ ([G4EA5](#contributors))|
 
 <!-- plugins:thirdparty:end -->
 
@@ -275,6 +276,7 @@ A: Receiver sections need a current OpenWebRX+ version. Update OpenWebRX+.
 - [13MAD86](https://github.com/Rikku2000)
 - [UB1AON](https://github.com/UB1AON)
 - [René Jaun](https://github.com/the-swissionary)
+- [G4EA5](https://github.com/G4EA5)
 
 ---
 
