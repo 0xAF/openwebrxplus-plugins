@@ -311,6 +311,14 @@
 			"category": "thirdparty",
 			"homepage": "https://github.com/Acuantico/owrx-spider",
 			"description": "DX cluster spots (telnet or MQTT) on the waterfall; a companion service keeps one cluster connection on the server and has its own configuration page"
+		},
+		{
+			"id": "toolbox",
+			"category": "thirdparty",
+			"homepage": "https://github.com/G4EA5/openwebrx-toolbox",
+			"url": "https://cdn.jsdelivr.net/gh/G4EA5/openwebrx-toolbox@main/toolbox.js",
+			"description": "Radio Toolbox: band/range survey, Explore, Identify, Log, Watch, peaks, bookmarks, audio clips, DX cluster and satellites for OpenWebRX+",
+			"author": "G4EA5"
 		}
 	]
 }
