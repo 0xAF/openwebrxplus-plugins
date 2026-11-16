@@ -319,6 +319,13 @@
 			"url": "https://cdn.jsdelivr.net/gh/G4EA5/openwebrx-toolbox@main/toolbox.js",
 			"description": "Radio Toolbox: band/range survey, Explore, Identify, Log, Watch, peaks, bookmarks, audio clips, DX cluster and satellites for OpenWebRX+",
 			"author": "G4EA5"
+		},
+		{
+			"id": "ctcss_decoder",
+			"category": "thirdparty",
+			"homepage": "https://github.com/TOLYANDR/CTCSS-Decoder-Plugin-OpenWebRX-",
+			"url": "https://0xaf.github.io/openwebrxplus-plugins/receiver/ctcss_decoder/ctcss_decoder.js",
+			"description": "Detect CTCSS tones in the receiver audio with live tone display, stable LOCK, AUTO SQL and last-tone memory"
 		}
 	]
 }
