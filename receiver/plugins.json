@@ -22,10 +22,7 @@
 			"since": "1.2.125",
 			"description": "Add a Magic Key input to the receiver Settings section",
 			"detect": "#magic-key-input",
-			"conflicts": [
-				"magic_key",
-				"ui_magic_key"
-			]
+			"conflicts": ["magic_key", "ui_magic_key"]
 		},
 		{
 			"id": "RigPlugin",
@@ -34,14 +31,13 @@
 			"since": "1.2.125",
 			"description": "Add a TRANSMIT (PTT) button for a RigControl-connected transceiver; hold Backspace to transmit. Requires both RigControl options (transceiver control and PTT) enabled in Settings → Reporting"
 		},
+
 		{
 			"id": "accessible_bookmark_search",
 			"category": "receiver",
 			"description": "Replaces the built-in bookmark search dialog with a native dropdown and improves keyboard navigation",
 			"author": "René Jaun",
-			"requires": [
-				"utils"
-			]
+			"requires": ["utils"]
 		},
 		{
 			"id": "antenna_switcher",
@@ -53,9 +49,7 @@
 			"id": "colorful_spectrum",
 			"category": "receiver",
 			"description": "Colorize the spectrum analyzer",
-			"requires": [
-				"utils"
-			]
+			"requires": ["utils"]
 		},
 		{
 			"id": "compact_analog_modes",
@@ -67,9 +61,7 @@
 			"id": "connect_notify",
 			"category": "receiver",
 			"description": "Send/receive notifications on user connect/disconnect",
-			"requires": [
-				"notify"
-			]
+			"requires": ["notify"]
 		},
 		{
 			"id": "doppler",
@@ -87,17 +79,13 @@
 			"category": "receiver",
 			"description": "Jump to a frequency outside the current profile",
 			"author": "LZ2DMV",
-			"requires": [
-				"utils"
-			]
+			"requires": ["utils"]
 		},
 		{
 			"id": "listeners",
 			"category": "receiver",
 			"description": "Show active listeners, profiles, frequencies and modes through Supabase Realtime Presence",
-			"requires": [
-				"utils"
-			],
+			"requires": ["utils"],
 			"setup": "required"
 		},
 		{
@@ -114,21 +102,15 @@
 			"id": "screen_reader",
 			"category": "receiver",
 			"description": "Provide spoken notifications for accessibility",
-			"requires": [
-				"utils"
-			]
+			"requires": ["utils"]
 		},
 		{
 			"id": "search_bookmarks",
 			"category": "receiver",
 			"description": "Search all OWRX bookmarks and click to tune",
 			"author": "Yannis",
-			"requires": [
-				"utils"
-			],
-			"conflicts": [
-				"search_bookmarks_old"
-			]
+			"requires": ["utils"],
+			"conflicts": ["search_bookmarks_old"]
 		},
 		{
 			"id": "smeter",
@@ -140,26 +122,20 @@
 			"id": "sort_profiles",
 			"category": "receiver",
 			"description": "Sort profiles by name",
-			"requires": [
-				"utils"
-			]
+			"requires": ["utils"]
 		},
 		{
 			"id": "thumbtune",
 			"category": "receiver",
 			"description": "Minimalistic floating control panel optimized for one-finger mobile tuning",
 			"author": "UB1AON",
-			"requires": [
-				"utils"
-			]
+			"requires": ["utils"]
 		},
 		{
 			"id": "toggle_scannable",
 			"category": "receiver",
 			"description": "Toggle the scannable state of bookmarks with right mouse button",
-			"requires": [
-				"utils"
-			]
+			"requires": ["utils"]
 		},
 		{
 			"id": "tune_checkbox",
@@ -173,13 +149,12 @@
 			"description": "Add buttons for precise frequency tuning in a receiver section when available",
 			"author": "LZ2DMV"
 		},
+
 		{
 			"id": "example",
 			"category": "utility",
 			"description": "Example plugin for developers",
-			"requires": [
-				"utils"
-			]
+			"requires": ["utils"]
 		},
 		{
 			"id": "example_theme",
@@ -190,9 +165,7 @@
 			"id": "example_uikit",
 			"category": "experimental",
 			"description": "Demo plugin showcasing all UIKit features",
-			"requires": [
-				"uikit"
-			]
+			"requires": ["uikit"]
 		},
 		{
 			"id": "notify",
@@ -209,17 +182,14 @@
 			"category": "utility",
 			"description": "Utility plugin, required by many plugins"
 		},
+
 		{
 			"id": "search_bookmarks_old",
 			"category": "deprecated",
 			"description": "This is the old version of the plugin, working on OWRX+ before v1.2.118",
 			"author": "Yannis",
-			"requires": [
-				"utils"
-			],
-			"conflicts": [
-				"search_bookmarks"
-			]
+			"requires": ["utils"],
+			"conflicts": ["search_bookmarks"]
 		},
 		{
 			"id": "minimap",
@@ -232,22 +202,15 @@
 			"id": "magic_key",
 			"category": "deprecated",
 			"description": "Use the built-in `KeyPlugin` on newer OpenWebRX+ versions; the plugin remains for older versions",
-			"requires": [
-				"utils"
-			],
+			"requires": ["utils"],
 			"replaced_by": "KeyPlugin",
-			"conflicts": [
-				"KeyPlugin",
-				"ui_magic_key"
-			]
+			"conflicts": ["KeyPlugin", "ui_magic_key"]
 		},
 		{
 			"id": "mouse_freq",
 			"category": "deprecated",
 			"description": "Built into newer OpenWebRX+ versions as **Settings → Show pointer frequency**; plugin remains for older versions",
-			"requires": [
-				"utils"
-			]
+			"requires": ["utils"]
 		},
 		{
 			"id": "show_band_plan",
@@ -259,9 +222,7 @@
 			"id": "keyboard_shortcuts",
 			"category": "deprecated",
 			"description": "Add keyboard shortcuts",
-			"requires": [
-				"notify"
-			]
+			"requires": ["notify"]
 		},
 		{
 			"id": "set_waterfall_theme",
@@ -269,45 +230,33 @@
 			"description": "Set the default waterfall theme",
 			"author": "fustinoni-net"
 		},
+
 		{
 			"id": "ui_basic_theme",
 			"category": "experimental",
 			"description": "Dark theme matching uikit's original built-in colors",
-			"requires": [
-				"uikit"
-			]
+			"requires": ["uikit"]
 		},
 		{
 			"id": "ui_chat",
 			"category": "experimental",
 			"description": "Chat/Log tab in the uikit panel",
-			"requires": [
-				"utils",
-				"uikit"
-			]
+			"requires": ["utils", "uikit"]
 		},
 		{
 			"id": "ui_magic_key",
 			"category": "experimental",
 			"description": "Set the MagicKey via a UIKit settings tab",
-			"requires": [
-				"utils",
-				"uikit"
-			],
-			"conflicts": [
-				"KeyPlugin",
-				"magic_key"
-			]
+			"requires": ["utils", "uikit"],
+			"conflicts": ["KeyPlugin", "magic_key"]
 		},
 		{
 			"id": "ui_status",
 			"category": "experimental",
 			"description": "Status bar footer in the uikit panel",
-			"requires": [
-				"utils",
-				"uikit"
-			]
+			"requires": ["utils", "uikit"]
 		},
+
 		{
 			"id": "owrxantswitcher",
 			"category": "thirdparty",
@@ -374,9 +323,9 @@
 		{
 			"id": "ctcss_decoder",
 			"category": "thirdparty",
-			"description": "Detect CTCSS tones in the receiver audio with live tone display, stable LOCK, AUTO SQL and last-tone memory",
 			"homepage": "https://github.com/TOLYANDR/CTCSS-Decoder-Plugin-OpenWebRX-",
-			"url": "https://0xaf.github.io/openwebrxplus-plugins/receiver/ctcss_decoder/ctcss_decoder.js"
+			"url": "https://0xaf.github.io/openwebrxplus-plugins/receiver/ctcss_decoder/ctcss_decoder.js",
+			"description": "Detect CTCSS tones in the receiver audio with live tone display, stable LOCK, AUTO SQL and last-tone memory"
 		}
 	]
 }
