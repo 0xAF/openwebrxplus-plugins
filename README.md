@@ -176,6 +176,7 @@ The sample [`init.js`](receiver/init.js.sample) includes commented-out lines for
 |[spider](https://github.com/Acuantico/owrx-spider)|DX cluster spots (telnet or MQTT) on the waterfall; a companion service keeps one cluster connection on the server and has its own configuration page|
 |[toolbox](https://github.com/G4EA5/openwebrx-toolbox)|Radio Toolbox: band/range survey, Explore, Identify, Log, Watch, peaks, bookmarks, audio clips, DX cluster and satellites for OpenWebRX+ ([G4EA5](#contributors))|
 
+|[ctcss_decoder](https://github.com/TOLYANDR/CTCSS-Decoder-Plugin-OpenWebRX-)|Detect CTCSS tones in the receiver audio with live tone display, stable LOCK, AUTO SQL and last-tone memory|
 <!-- plugins:thirdparty:end -->
 
 ## Detailed Installation & Loading Instructions
